@@ -4,18 +4,19 @@ import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class DataService {
+  BASE_URL = 'http://localhost:3000';
 
   constructor(
     public http: Http
   ) { }
 
-  postData(payload: any): Observable<any> {
+  postAction(type: string, payload: any): Observable<any> {
     let headers = new Headers({
       'Content-Type': 'application/json',
       'charset': 'UTF-8'
     });
     let options = new RequestOptions({ headers: headers });
-    return this.http.post('/api/datasource', payload, options).map( res => res.json());
+    return this.http.post(`${this.BASE_URL}/api/actions`, {type: type, payload: payload}, options).map( res => res.json());
   }
 
 }

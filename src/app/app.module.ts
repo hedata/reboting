@@ -6,17 +6,22 @@ import { MaterialModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { Ng2FileInputModule } from 'ng2-file-input';
+
+import { DataService } from './services/data.service';
+
+import { uploadState } from './stores/upload-state.store';
 
 import { AppComponent } from './app.component';
 import { ImportCsvComponent } from './components/import-csv/import-csv.component';
-
-import { DataService } from './services/data.service';
+import { BotComponent } from './components/bot/bot.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ImportCsvComponent
+    ImportCsvComponent,
+    BotComponent
   ],
   imports: [
     BrowserModule,
@@ -29,6 +34,12 @@ import { DataService } from './services/data.service';
       showPreviews: false,
       multiple: false
     }),
+    StoreModule.provideStore({
+      uploadState
+    }),
+    StoreDevtoolsModule.instrumentOnlyWithExtension({
+      maxAge: 5
+    })
   ],
   providers: [
     DataService

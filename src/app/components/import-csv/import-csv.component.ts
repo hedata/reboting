@@ -1,7 +1,10 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import {Store} from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
 import * as papa from 'papaparse';
 
 import { DataService } from './../../services/data.service';
+import { AppStore } from './../../models/app-store.model';
 
 @Component({
   selector: 'app-import-csv',
@@ -9,12 +12,14 @@ import { DataService } from './../../services/data.service';
   styleUrls: ['./import-csv.component.css']
 })
 export class ImportCsvComponent implements OnInit {
-  @Output() uploadReady = new EventEmitter();
   name: string;
+  uploadState = false;
 
   constructor(
-    private dataService: DataService
-  ) { }
+    private dataService: DataService,
+    private store: Store<AppStore>
+  ) {
+  }
 
   ngOnInit() {
   }
@@ -34,11 +39,16 @@ export class ImportCsvComponent implements OnInit {
             type: fileInput.currentFiles[0].type,
             data: results.data.slice(1, results.data.length - 1)
           };
-        this.dataService.postData(file).subscribe(
-          res => console.log(res)
+        this.dataService.postAction('csvupload', file).subscribe(
+          res => {
+            console.log(res);
+            this.store.dispatch({type: 'UPLOAD_SUCCESS'});
+          },
+          err => {
+            console.log(err);
+            this.store.dispatch({type: 'UPLOAD_ERROR'});
+          }
         );
-        console.log(this.name);
-
       }
     });
   }
