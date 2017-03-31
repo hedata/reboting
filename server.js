@@ -8,6 +8,10 @@ const logger = require('winston');
 require('./server/db/db');
 
 
+//  Bring in the authenticated routes
+var routesApi = require('./server/routes/index');
+
+
 const app = express();
 
 app.use(function(req, res, next) {
@@ -20,6 +24,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, 'dist')));
+
+
+
+app.use('/api', routesApi);
+
 
 app.get('*', (req, res) => {
     console.log(req.params);
