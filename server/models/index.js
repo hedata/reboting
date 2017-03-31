@@ -3,4 +3,3 @@
  */
 require('./datasources.js');
 require('./visuals.js');
-require('./users.js');

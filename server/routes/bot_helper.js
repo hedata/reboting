@@ -17,12 +17,17 @@ module.exports.fulfillFacebookDataupload = function(context) {
     }
     else
     {
-      context.botparams.query=" I just uploaded this csv file!";
+      context.botparams.event = {
+        name: "facebook_insights_upload",
+        data: {
+          filename: newdatasource.fileName
+        }
+      };
       context.responseObj.action={
         status: "ok",
         payload: { data: newdatasource }
       };
-      askBot(context);
+      botEvent(context);
     }
   });
 };

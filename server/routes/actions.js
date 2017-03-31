@@ -9,12 +9,11 @@ module.exports.takeAction = function(req, res) {
     request: req,
     response: res,
     botparams: {
-        session_id : "12346567203949465445321"
+        session_id : req.body.userName
     },
     responseObj : {}
    };
-  console.log("taking action");
-  console.log("action type: "+req.body.type);
+  console.log("action type: "+req.body.type+" for very unsecure user: "+req.body.userName);
   switch(req.body.type) {
     case 'csvupload':
         ctrlBot.fulfillFacebookDataupload(context);
@@ -22,8 +21,8 @@ module.exports.takeAction = function(req, res) {
     case 'showvisual':
         console.log("showvisual");
         break;
-    case 'helloworld':
-        context.botparams.query = "HO";
+    case 'query':
+        context.botparams.query = req.body.payload.query;
         context.responseObj = {
           action:{
             status: "ok",

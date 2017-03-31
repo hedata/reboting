@@ -1,5 +1,8 @@
 # Reboting
 
+##Dev Server
+npm run server
+
 # Deployment:
 * running on normal vm azure  - port 80 , 443 and ssh open from the outside world
   * login ssh is only valid with key
