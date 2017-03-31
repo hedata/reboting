@@ -22,8 +22,8 @@ module.exports.takeAction = function(req, res) {
     case 'showvisual':
         console.log("showvisual");
         break;
-    case 'helloworld':
-        context.botparams.query = "HO";
+    case 'query':
+        context.botparams.query = req.body.payload.query;
         context.responseObj = {
           action:{
             status: "ok",
