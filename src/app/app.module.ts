@@ -10,9 +10,11 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { Ng2FileInputModule } from 'ng2-file-input';
 
 import { DataService } from './services/data.service';
+import { BotService } from './services/bot.service';
 
 import { uploadState } from './stores/upload-state.store';
 import { response } from './stores/response.store';
+import { botQuery } from './stores/bot-query.store';
 
 import { AppComponent } from './app.component';
 import { ImportCsvComponent } from './components/import-csv/import-csv.component';
@@ -44,7 +46,8 @@ import { BotComponent } from './components/bot/bot.component';
     })
   ],
   providers: [
-    DataService
+    DataService,
+    BotService
   ],
   bootstrap: [AppComponent]
 })

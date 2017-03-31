@@ -1,21 +1,23 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, RequestOptions, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
+import { Store } from '@ngrx/store';
+
+import { DataService } from './data.service';
+import { BotQueryResponse } from './../models/bot-query-response.model';
 
 @Injectable()
 export class BotService {
-  BASE_URL = 'http://localhost:3000';
 
   constructor(
-    public http: Http
-  ) { }
+    private dataService: DataService
+   ) { }
 
-  postAction(type: string, payload: any): Observable<any> {
-    let headers = new Headers({
-      'Content-Type': 'application/json'
-    });
-    let options = new RequestOptions({ headers: headers });
-    return this.http.post(`${this.BASE_URL}/api/actions`, {type: type, payload: payload}, options).map( res => res.json());
-  }
+   // Takes a string as payload and gives back a botQueryResponse to which we can subscribe
+   queryBot(payload: string): Observable<BotQueryResponse> {
+     return this.dataService.postAction('query', {query: payload})
+              .map((data) => {
+                return new BotQueryResponse(payload, data.bot_response.result.fulfillment.speech);
+              });
+   }
 
 }

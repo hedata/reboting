@@ -7,5 +7,4 @@ export const response = (state: Response = new Response(), {type, payload}) => {
         default:
             return state;
     }
-
-}
+};

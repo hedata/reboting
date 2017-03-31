@@ -1,4 +1,13 @@
 <h3 *ngIf="!(uploadState | async)">Bot waiting...</h3>
 <div *ngIf="uploadState | async">
   <h3>Bot ready for your input</h3>
+  <ul>
+    <li *ngFor="let message of botChat"> {{ message }}</li>
+  </ul>
+  <form class="chat-message">
+    <md-input-container class="full-width">
+      <input mdInput placeholder="Write stuff" #message (keyup.enter)="queryBot(message.value)">
+    </md-input-container>
+  </form>
+  
 </div>
