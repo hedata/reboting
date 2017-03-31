@@ -1,0 +1,9 @@
+<h1>
+  Reboting File Upload
+</h1>
+<form class="csv-import">
+  <md-input-container class="full-width">
+    <input mdInput placeholder="Your name" #name (keyup)="onKey(name.value)" value="Dirk Data">
+  </md-input-container>
+    <ng2-file-input (onChange)="onFileChange($event)" ></ng2-file-input> 
+</form>

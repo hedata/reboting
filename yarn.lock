@@ -2,6 +2,10 @@
 # yarn lockfile v1
 
 
+"@angular/animations@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-4.0.1.tgz#154420c8ee5c22fbaf1434b6d156150cf5218da6"
+
 "@angular/cli@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-1.0.0.tgz#7bfde1e7c5f28bf5bed4dda1352ee67ee887302f"
@@ -144,6 +148,10 @@
 "@types/node@^6.0.46", "@types/node@~6.0.60":
   version "6.0.68"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.68.tgz#0c43b6b8b9445feb86a0fbd3457e3f4bc591e66d"
+
+"@types/papaparse@^4.1.28":
+  version "4.1.28"
+  resolved "https://registry.yarnpkg.com/@types/papaparse/-/papaparse-4.1.28.tgz#f71a521f37e1046944fb152df7aa600849cea3ee"
 
 "@types/q@^0.0.32":
   version "0.0.32"
@@ -507,6 +515,12 @@ bcrypt-pbkdf@^1.0.0:
   resolved "https://registry.yarnpkg.com/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.1.tgz#63bc5dcb61331b92bc05fd528953c33462a06f8d"
   dependencies:
     tweetnacl "^0.14.3"
+
+bergben-angular2-file-drop@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/bergben-angular2-file-drop/-/bergben-angular2-file-drop-0.2.0.tgz#bc6200789f90afedb592ad9689b4d61dcda68c36"
+  dependencies:
+    fileapi "^2.0.20"
 
 better-assert@~1.0.0:
   version "1.0.2"
@@ -1699,6 +1713,10 @@ file-loader@^0.10.0:
   resolved "https://registry.yarnpkg.com/file-loader/-/file-loader-0.10.1.tgz#815034119891fc6441fb5a64c11bc93c22ddd842"
   dependencies:
     loader-utils "^1.0.2"
+
+fileapi@^2.0.20:
+  version "2.0.21"
+  resolved "https://registry.yarnpkg.com/fileapi/-/fileapi-2.0.21.tgz#e8f01b408005147a8426e9247f7c064b581ded2d"
 
 filename-regex@^2.0.0:
   version "2.0.0"
@@ -3016,6 +3034,12 @@ negotiator@0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.1.tgz#2b327184e8992101177b28563fb5e7102acd0ca9"
 
+ng2-file-input@^0.1.11:
+  version "0.1.11"
+  resolved "https://registry.yarnpkg.com/ng2-file-input/-/ng2-file-input-0.1.11.tgz#f853bd4b32420bb7722e9ac6866700959a6c7c91"
+  dependencies:
+    bergben-angular2-file-drop "^0.2.0"
+
 no-case@^2.2.0:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/no-case/-/no-case-2.3.1.tgz#7aeba1c73a52184265554b7dc03baf720df80081"
@@ -3295,6 +3319,10 @@ package-json@^4.0.0:
 pako@~0.2.0:
   version "0.2.9"
   resolved "https://registry.yarnpkg.com/pako/-/pako-0.2.9.tgz#f3f7522f4ef782348da8161bad9ecfd51bf83a75"
+
+papaparse@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/papaparse/-/papaparse-4.2.0.tgz#ac5bed7de39445dabb6616a507024b8b88eee7c3"
 
 param-case@2.1.x:
   version "2.1.1"
