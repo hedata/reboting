@@ -1,60 +1,57 @@
-var mongoose = require('mongoose');
-var DataSources = mongoose.model('DataSources');
 var ctrlBot = require('./bot_helper');
+/*
+  every action sends data to the bot
+*/
+
 
 module.exports.takeAction = function(req, res) {
-  //console.log(req.body);
+  var context = {
+    request: req,
+    response: res,
+    botparams: {
+        session_id : "12346567203949465445321"
+    },
+    responseObj : {}
+   };
   console.log("taking action");
   console.log("action type: "+req.body.type);
   switch(req.body.type) {
     case 'csvupload':
-        fulfillFacebookDataupload(req,res);
+        ctrlBot.fulfillFacebookDataupload(context);
         break;
     case 'showvisual':
         console.log("showvisual");
         break;
     case 'helloworld':
-        ctrlBot.askBot('HI','12346567203949465445321',req,res,{
+        context.botparams.query = "HO";
+        context.responseObj = {
           action:{
             status: "ok",
             payload: {}
           }
-        })
+        };
+        ctrlBot.askBot(context);
         break;
     case 'testing':
-        ctrlBot.askBotevent('facebook_insights_upload','12346567203949465445321',req,res,{
+        context.botparams.event = {
+          name: "facebook_insights_upload",
+          data: {
+              filename: "myfacebookfile.csv"
+          }
+        };
+        context.responseObj = {
           action:{
             status: "ok",
             payload: {}
           }
-        });
+        };
+        ctrlBot.botEvent(context);
         break;
     default:
-        console.log("action note implemented");
+        console.log("action not implemented");
         res.status(200).json({
           action: { status: "ok"  },
           bot_response : { speach: "you suck" }
         })
 }
-};
-
-fulfillFacebookDataupload = function(req,res) {
-  console.log("fulfullfacebookdataupload");
-  //console.log(req.body.payload);
-  var datasource = new DataSources(req.body.payload);
-  datasource.save(function(err,newdatasource) {
-  if(err){
-    console.log("error on save: "+err);
-    res.status(500).json({'error': 'error on save: '+err})
-   }
-    else
-    {
-      ctrlBot.askBot('hello dabi from our express route','12346567203949465445321',req,res,{
-        action:{
-          status: "ok",
-          payload: {}
-        }
-      });
-    }
-  });
 };
