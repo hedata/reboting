@@ -4,6 +4,10 @@ const http = require('http');
 const bodyParser = require('body-parser');
 const logger = require('winston');
 
+//db config
+require('./server/db/db');
+
+
 const app = express();
 
 app.use(function(req, res, next) {
