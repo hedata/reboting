@@ -41,7 +41,7 @@ app.set('port',port);
 const server = http.createServer(app);
 
 var ctrlBot = require('./server/bottesting');
-ctrlBot.greetBot();
+ctrlBot.greetBot('hello dabi from our express route','12346567203949465445321');
 
 
 
