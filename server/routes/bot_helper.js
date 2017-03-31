@@ -79,7 +79,7 @@ returnJsonResponse = function(context) {
     if(err) {
       console.log("error on logentry"+err);
     } else {
-      console.log("saved: " + JSON.stringify(logentry));
+      console.log("saved: logentry");
     }
   });
 };
