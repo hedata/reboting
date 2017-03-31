@@ -1,10 +1,9 @@
 
 var mongoose = require('mongoose');
 
-var visualSchema = mongoose.Schema({
-  data_source_id : String,
-  params: {}
+var userSchema = mongoose.Schema({
+  name : String
 });
 
-var Visuals = mongoose.model('Visuals', visualSchema);
-module.exports = Visuals;
+var Users = mongoose.model('Users', userSchema);
+module.exports = Users;

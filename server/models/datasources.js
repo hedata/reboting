@@ -2,7 +2,13 @@
 var mongoose = require('mongoose');
 
 var dataSourceSchema = mongoose.Schema({
-  datasource: {}
+  userName: String,
+  fileName: String,
+  lastModified: String,
+  lastModifiedDate: Date,
+  size: Number,
+  type: String,
+  data: []
 });
 
 var DataSources = mongoose.model('DataSources', dataSourceSchema);
