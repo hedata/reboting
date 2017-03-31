@@ -3,7 +3,7 @@ import { Http, Response, RequestOptions, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 
 @Injectable()
-export class DataService {
+export class BotService {
   BASE_URL = 'http://localhost:3000';
 
   constructor(

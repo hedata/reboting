@@ -1,3 +1,6 @@
+import { Response } from './response.model';
+
 export interface AppStore {
-    uploadSuccess: boolean;
+    uploadState: boolean;
+    response: Response;
 };

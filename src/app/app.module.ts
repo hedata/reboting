@@ -12,6 +12,7 @@ import { Ng2FileInputModule } from 'ng2-file-input';
 import { DataService } from './services/data.service';
 
 import { uploadState } from './stores/upload-state.store';
+import { response } from './stores/response.store';
 
 import { AppComponent } from './app.component';
 import { ImportCsvComponent } from './components/import-csv/import-csv.component';
@@ -35,7 +36,8 @@ import { BotComponent } from './components/bot/bot.component';
       multiple: false
     }),
     StoreModule.provideStore({
-      uploadState
+      uploadState,
+      response
     }),
     StoreDevtoolsModule.instrumentOnlyWithExtension({
       maxAge: 5
