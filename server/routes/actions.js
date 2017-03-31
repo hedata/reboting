@@ -39,15 +39,20 @@ module.exports.takeAction = function(req, res) {
 };
 
 fulfillFacebookDataupload = function(req,res) {
-   var datasource = new DataSources(req.body.payload);
-   datasource.save(function(err,newdatasource) {
-  if(err){ }
+  console.log("fulfullfacebookdataupload");
+  //console.log(req.body.payload);
+  var datasource = new DataSources(req.body.payload);
+  datasource.save(function(err,newdatasource) {
+  if(err){
+    console.log("error on save: "+err);
+    res.status(500).json({'error': 'error on save: '+err})
+   }
     else
     {
       ctrlBot.askBot('hello dabi from our express route','12346567203949465445321',req,res,{
         action:{
           status: "ok",
-          payload: newdatasource
+          payload: {}
         }
       });
     }
