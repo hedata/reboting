@@ -2,7 +2,7 @@
 <div *ngIf="uploadState | async">
   <h3>Bot ready for your input</h3>
   <ul>
-    <li *ngFor="let message of botChat"> {{ message }}</li>
+    <li *ngFor="let message of botChat | async"> {{ message }}</li>
   </ul>
   <form class="chat-message">
     <md-input-container class="full-width">

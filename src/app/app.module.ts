@@ -39,7 +39,8 @@ import { BotComponent } from './components/bot/bot.component';
     }),
     StoreModule.provideStore({
       uploadState,
-      response
+      response,
+      botQuery
     }),
     StoreDevtoolsModule.instrumentOnlyWithExtension({
       maxAge: 5

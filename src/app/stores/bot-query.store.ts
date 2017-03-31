@@ -1,11 +1,9 @@
 import { BotQueryResponse } from './../models/bot-query-response.model';
 
-export const botQuery = (state: BotQueryResponse = new BotQueryResponse(), {type, payload}) => {
+export const botQuery = (state: string[] = [], {type, payload}) => {
     switch (type) {
-        case 'NEW_QUERY':
-            return new BotQueryResponse(payload);
-        case 'NEW_RESPONSE':
-            return payload;
+        case 'NEW_MESSAGE':
+            return [...state, payload];
         default:
             return state;
     }

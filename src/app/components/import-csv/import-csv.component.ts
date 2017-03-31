@@ -24,6 +24,7 @@ export class ImportCsvComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.name = 'Dirk Data';
   }
 
   onFileChange(fileInput) {
@@ -39,11 +40,12 @@ export class ImportCsvComponent implements OnInit {
             data: results.data
           };
           console.log(file);
-        this.dataService.postAction('csvupload', file).subscribe(
+        this.dataService.postAction('csvupload', file, this.name).subscribe(
           res => {
             console.log(res);
             this.store.dispatch({ type: 'UPLOAD_SUCCESS' });
             this.store.dispatch({ type: 'NEW_RESPONSE', payload: res });
+            this.store.dispatch({ type: 'NEW_MESSAGE', payload: res.bot_response.result.fulfillment.speech });
           },
           err => {
             console.log(err);

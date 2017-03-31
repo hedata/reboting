@@ -4,5 +4,5 @@ import { BotQueryResponse } from './bot-query-response.model';
 export interface AppStore {
     uploadState: boolean;
     response: Response;
-    botQuery: BotQueryResponse;
+    botQuery: string[];
 };
