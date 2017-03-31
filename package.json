@@ -30,6 +30,8 @@
     "express": "^4.15.2",
     "ng2-file-input": "^0.1.11",
     "papaparse": "^4.2.0",
+    "apiai": "^4.0.1",
+    "mongoose": "^4.9.2",
     "rxjs": "^5.1.0",
     "winston": "^2.3.1",
     "zone.js": "^0.8.4"

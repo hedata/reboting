@@ -36,3 +36,11 @@ Before running the tests make sure you are serving the app via `ng serve`.
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+
+
+# mongodb
+run in a docker container for simplicity -> mapped to a local volume for data
+
+docker pull mongo
+docker run -p 27017:27017 --name rebotting -v /var/thrive_dev/data_mongo:/data/db -d mongo:latest
