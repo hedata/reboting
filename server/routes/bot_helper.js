@@ -1,52 +1,64 @@
 /**
  * Created by hedata on 31.03.17.
  */
+var apiai = require('apiai');
+var app = apiai("f610e349415a4c64a579812f53a5679f");
+var mongoose = require('mongoose');
+var DataSources = mongoose.model('DataSources');
 
-module.exports.askBot = function(query,session_id,req,res,responseObject) {
-  console.log("greeting from bot");
-  var apiai = require('apiai');
 
-  var app = apiai("f610e349415a4c64a579812f53a5679f");
-
-  var request = app.textRequest(query, {
-        sessionId: session_id
+module.exports.fulfillFacebookDataupload = function(context) {
+  //console.log(req.body.payload);
+  var datasource = new DataSources(context.request.body.payload);
+  datasource.save(function(err,newdatasource) {
+    if(err){
+      console.log("error on save: "+err);
+      context.response.status(500).json({'error': 'error on save: '+err})
+    }
+    else
+    {
+      context.botparams.query=" I just uploaded this csv file!";
+      context.responseObj.action={
+        status: "ok",
+        payload: { data: newdatasource }
+      };
+      askBot(context);
+    }
   });
-
-  request.on('response', function(response) {
-        console.log("setting response");
-        responseObject.bot_response = response;
-        res.status(200).json(responseObject);
-  });
-  request.on('error', function(error) {
-        console.log(error);
-    });
-
-    request.end();
 };
 
-module.exports.askBotevent = function(query,session_id, req, res ,responseObject) {
-  console.log("greeting from bot");
-  var apiai = require('apiai');
-  var event = {
-    name: "facebook_insights_upload",
-    data: {
-        filename: "myfacebookfile.csv",
-    }
-  };
-  var app = apiai("f610e349415a4c64a579812f53a5679f");
-    var request = app.eventRequest(event, {
-          sessionId: session_id
-    });
 
+module.exports.askBot = function(context) {
+  askBot(context);
+};
+module.exports.botEvent = function(context) {
+  botEvent(context);
+};
+
+askBot = function(context) {
+  var request = app.textRequest(context.botparams.query, {
+    sessionId: context.botparams.session_id
+  });
   request.on('response', function(response) {
-        console.log("setting response");
-        responseObject.bot_response = response;
-        res.status(200).json(responseObject);
+    context.responseObj.bot_response = response;
+    //Place for additonal querying
+    context.response.status(200).json(context.responseObj);
   });
   request.on('error', function(error) {
-        console.log(error);
-    });
-
-    request.end();
-
-}
+    context.response.status(500).json({'error': 'error on bot query: '+error});
+  });
+  request.end();
+};
+botEvent = function(context) {
+  var request = app.eventRequest(context.botparams.event, {
+    sessionId: context.botparams.session_id
+  });
+  request.on('response', function(response) {
+    context.responseObj.bot_response = response;
+    context.response.status(200).json(context.responseObj);
+  });
+  request.on('error', function(error) {
+    console.log(error);
+  });
+  request.end();
+};
