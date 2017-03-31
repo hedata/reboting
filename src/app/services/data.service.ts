@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Http, Response, RequestOptions, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
+import { BASE_URL } from './../../config';
 
 @Injectable()
 export class DataService {
-  BASE_URL = 'http://localhost:3000';
   headers = new Headers({'Content-Type': 'application/json'});
   options = new RequestOptions({ headers: this.headers });
   userName = 'Dirk Data';
@@ -17,7 +17,8 @@ export class DataService {
     if (userName) {
       this.userName = userName ;
     }
-    return this.http.post(`${this.BASE_URL}/api/actions`, {userName: this.userName, type: type, payload: payload}, this.options).map( res => res.json());
+    console.log(BASE_URL);
+    return this.http.post(`${BASE_URL}/api/actions`, {userName: this.userName, type: type, payload: payload}, this.options).map( res => res.json());
   }
 
 }
