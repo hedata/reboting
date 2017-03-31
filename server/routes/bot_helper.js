@@ -5,6 +5,7 @@ var apiai = require('apiai');
 var app = apiai("f610e349415a4c64a579812f53a5679f");
 var mongoose = require('mongoose');
 var DataSources = mongoose.model('DataSources');
+var Logs = mongoose.model('Logs');
 
 
 module.exports.fulfillFacebookDataupload = function(context) {
@@ -47,7 +48,7 @@ askBot = function(context) {
   request.on('response', function(response) {
     context.responseObj.bot_response = response;
     //Place for additonal querying
-    context.response.status(200).json(context.responseObj);
+    returnJsonResponse(context);
   });
   request.on('error', function(error) {
     context.response.status(500).json({'error': 'error on bot query: '+error});
@@ -60,10 +61,25 @@ botEvent = function(context) {
   });
   request.on('response', function(response) {
     context.responseObj.bot_response = response;
-    context.response.status(200).json(context.responseObj);
+    returnJsonResponse(context);
   });
   request.on('error', function(error) {
     console.log(error);
   });
   request.end();
+};
+
+returnJsonResponse = function(context) {
+  //put this shit into the log
+  context.response.status(200).json(context.responseObj);
+  context.responseObj.bot_response.result.contexts = {};
+  //console.log(context.responseObj);
+  var logEntry = new Logs(context.responseObj);
+  logEntry.save(function(err,logentry) {
+    if(err) {
+      console.log("error on logentry"+err);
+    } else {
+      console.log("saved: " + JSON.stringify(logentry));
+    }
+  });
 };
