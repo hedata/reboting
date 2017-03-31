@@ -11,6 +11,8 @@ import { Ng2FileInputModule } from 'ng2-file-input';
 import { AppComponent } from './app.component';
 import { ImportCsvComponent } from './components/import-csv/import-csv.component';
 
+import { DataService } from './services/data.service';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -28,7 +30,9 @@ import { ImportCsvComponent } from './components/import-csv/import-csv.component
       multiple: false
     }),
   ],
-  providers: [],
+  providers: [
+    DataService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
