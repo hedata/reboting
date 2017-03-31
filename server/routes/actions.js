@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var DataSources = mongoose.model('DataSources');
+var ctrlBot = require('./bot_helper');
 
 module.exports.takeAction = function(req, res) {
   //console.log(req.body);
@@ -11,6 +12,14 @@ module.exports.takeAction = function(req, res) {
         break;
     case 'showvisual':
         console.log("showvisual");
+        break;
+    case 'helloworld':
+        ctrlBot.askBot('HI','12346567203949465445321',req,res,{
+          action:{
+            status: "ok",
+            payload: {}
+          }
+        })
         break;
     default:
         console.log("action note implemented");
@@ -27,7 +36,6 @@ fulfillFacebookDataupload = function(req,res) {
   if(err){ }
     else
     {
-      var ctrlBot = require('./bot_helper');
       ctrlBot.askBot('hello dabi from our express route','12346567203949465445321',req,res,{
         action:{
           status: "ok",
