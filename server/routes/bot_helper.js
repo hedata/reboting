@@ -2,7 +2,7 @@
  * Created by hedata on 31.03.17.
  */
 
-module.exports.greetBot = function(query,session_id) {
+module.exports.askBot = function(query,session_id,req,res,responseObject) {
   console.log("greeting from bot");
   var apiai = require('apiai');
 
@@ -13,9 +13,10 @@ module.exports.greetBot = function(query,session_id) {
   });
 
   request.on('response', function(response) {
-        console.log(response);
+        console.log("setting response");
+        responseObject.bot_response = response;
+        res.status(200).json(responseObject);
   });
-
   request.on('error', function(error) {
         console.log(error);
     });

@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-var ctrlDataSource = require('./datasources');
+var ctrlActions = require('./actions');
 
 console.log("adding route datasources");
-router.post('/datasource', ctrlDataSource.newDataSource);
+router.post('/actions',ctrlActions.takeAction);
 
 module.exports = router;
