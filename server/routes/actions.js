@@ -21,6 +21,14 @@ module.exports.takeAction = function(req, res) {
           }
         })
         break;
+    case 'testing':
+        ctrlBot.askBotevent('facebook_insights_upload','12346567203949465445321',req,res,{
+          action:{
+            status: "ok",
+            payload: {}
+          }
+        });
+        break;
     default:
         console.log("action note implemented");
         res.status(200).json({
