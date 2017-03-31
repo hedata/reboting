@@ -7,7 +7,7 @@ module.exports.takeAction = function(req, res) {
   console.log("taking action");
   console.log("action type: "+req.body.type);
   switch(req.body.type) {
-    case 'facebookdataupload':
+    case 'csvupload':
         fulfillFacebookDataupload(req,res);
         break;
     case 'showvisual':
