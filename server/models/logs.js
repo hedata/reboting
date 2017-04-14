@@ -4,8 +4,6 @@
 var mongoose = require('mongoose');
 
 var logSchema = mongoose.Schema({
-  action : {},
-  bot_response: {}
 });
 
 var Logs = mongoose.model('Logs', logSchema);

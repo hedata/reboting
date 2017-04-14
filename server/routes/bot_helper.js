@@ -74,7 +74,7 @@ returnJsonResponse = function(context) {
   context.response.status(200).json(context.responseObj);
   context.responseObj.bot_response.result.contexts = {};
   //console.log(context.responseObj);
-  var logEntry = new Logs(context.responseObj);
+  var logEntry = new Logs(context);
   logEntry.save(function(err,logentry) {
     if(err) {
       console.log("error on logentry"+err);
