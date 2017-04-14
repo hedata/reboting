@@ -24,7 +24,7 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json({
   limit: '50mb'
 }));
-app.use(bodyParser.urlencoded({ 
+app.use(bodyParser.urlencoded({
   extended: false,
   limit: '50mb'
 }));
@@ -33,7 +33,7 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 
 
-app.use('/api', routesApi);
+app.use('/rb', routesApi);
 
 
 app.get('*', (req, res) => {
