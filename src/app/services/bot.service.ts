@@ -33,7 +33,7 @@ export class BotService {
               .subscribe( response => {
                 console.log('bot chat response: ');
                 console.log(response);
-                this.store.dispatch({type: 'NEW_MESSAGE', payload: response})
+                this.store.dispatch({type: 'NEW_MESSAGE', payload: response});
               });
    }
 
