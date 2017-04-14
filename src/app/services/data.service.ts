@@ -17,8 +17,7 @@ export class DataService {
     if (userName) {
       this.userName = userName ;
     }
-    console.log(BASE_URL);
-    return this.http.post(`${BASE_URL}/api/actions`, {userName: this.userName, type: type, payload: payload}, this.options).map( res => res.json());
+    return this.http.post(`${BASE_URL}/rb/actions`, {userName: this.userName, type: type, payload: payload}, this.options).map( res => res.json());
   }
 
 }
