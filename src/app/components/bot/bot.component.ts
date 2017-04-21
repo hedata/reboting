@@ -6,6 +6,7 @@ import { Response } from './../../models/response.model';
 
 import { BotService } from './../../services/bot.service';
 import { BotQueryResponse } from './../../models/bot-query-response.model';
+import {DataService} from "../../services/data.service";
 
 @Component({
   selector: 'app-bot',
@@ -13,27 +14,29 @@ import { BotQueryResponse } from './../../models/bot-query-response.model';
   styleUrls: ['./bot.component.css']
 })
 export class BotComponent implements OnInit {
-  chat: string[];
-  uploadState: Observable<boolean>;
-  botChat: Observable<Array<string>>;
-  initialResponse: Observable<string>;
-
+  botChat = [];
   constructor(
-    private store: Store<AppStore>,
-    private botService: BotService
+    private dataService: DataService
   ) {
-    this.uploadState = this.store.select('uploadState');
-    this.botChat = this.store.select('botQuery');
   }
 
   ngOnInit() {
   }
-
-  // TODO Refactor so query and response are a Array Store and don't just represent the current query and response,
-  // in this case storing is kind of useless
   queryBot(query: string) {
+    console.log('enter: ' + query);
+    this.botChat.push({you:  query});
+    this.dataService.postAction('query',{query: query}).subscribe(data => {
+      console.log(data);
+      this.botChat.push(data);
+      this.dataService.emitChange({
+        message: 'botanswer',
+        data: data
+      });
+    });
+    /*
     this.store.dispatch({type: 'NEW_MESSAGE', payload: query});
     this.botService.queryBot(query);
+    */
   }
 
 }

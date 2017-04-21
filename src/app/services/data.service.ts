@@ -2,13 +2,25 @@ import { Injectable } from '@angular/core';
 import { Http, Response, RequestOptions, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { BASE_URL } from './../../config';
+import {Subject} from "rxjs/Subject";
 
 @Injectable()
 export class DataService {
+  /*
+      Shared Service
+   */
+  // Observable string sources
+  private emitdataSource = new Subject<any>();
+  // Observable string streams
+  changeEmitted$ = this.emitdataSource.asObservable();
+  // Service message commands
+  emitChange(change: any) {
+    console.log('emit change in service');
+    this.emitdataSource.next(change);
+  }
   headers = new Headers({'Content-Type': 'application/json'});
   options = new RequestOptions({ headers: this.headers });
   userName = 'Dirk Data';
-
   constructor(
     public http: Http
   ) { }

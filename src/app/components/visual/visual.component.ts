@@ -1,5 +1,5 @@
 'use strict';
-import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef, Input} from '@angular/core';
 // Polyfill for ES6 Promises
 // import 'es6-promise';
 
@@ -14,6 +14,7 @@ import {
   RenderMime
 }
 from 'jupyterlab/lib/rendermime';
+import {DataService} from "../../services/data.service";
 
 declare var $: any ;
 
@@ -23,9 +24,12 @@ declare var $: any ;
   styleUrls: ['./visual.component.css']
 })
 export class VisualComponent implements OnInit {
+  @Input()
+  visual_id: String;
+
   public widget: any;
-  @ViewChild('notebookElement')
-  notebookElement: ElementRef;
+  public loading: boolean = true;
+  private session: Session.ISession;
   public code_string = `import plotly;
 plotly.offline.init_notebook_mode();
 import plotly.graph_objs as go;
@@ -51,6 +55,27 @@ plt.plot(x, np.sin(x**2))
 plt.title('A simple chirp')
 plt.show()`;
   ngOnInit(): void {
+  }
+
+  constructor(
+      private dataService: DataService
+  ) {
+    dataService.changeEmitted$.subscribe(
+      data => {
+        console.log('Visual Component reacting to change');
+        // which change was it?
+        switch (data.message) {
+          case 'botanswer':
+            console.log(data.data);
+            break;
+          default:
+            console.log('error');
+            console.log(data);
+        }
+      });
+  }
+  createVisual() {
+    this.loading = true;
     console.log('after view Checked');
     // set rendermine
     const rendermime = new RenderMime({ items: RenderMime.getDefaultItems() });
@@ -61,56 +86,28 @@ plt.show()`;
     // Start a new session.
     let options: Session.IOptions = {
       kernelName: 'python',
-      path: 'foo.ipynb'
+      path: 'x.ipynb'
     };
-    let session: Session.ISession;
-
     console.log('Starting session');
     Session.startNew(options).then(s => {
       console.log('Session started');
-      session = s;
-      // Rename the session.
-      return session.rename('bar.ipynb');
+      this.session = s;
+      return this.session.rename('x.ipynb');
     }).then(() => {
-      console.log(`Session renamed to ${session.path}`);
-      // Execute and handle replies on the kernel.
       // create the widget
       this.widget = new OutputAreaWidget({ rendermime, model });
-      console.log(this.widget);
-      this.widget.execute(this.code_string, session.kernel).then(reply => {
+      this.widget.execute(this.code_string, this.session.kernel).then(reply => {
         console.log('got reply from kernel: ' + reply.content.status);
-        session.shutdown().then(() => {
+        this.session.shutdown().then(() => {
           console.log('Session shut down');
-          console.log('Test Complete!');
         });
-        console.log(this.widget);
-        console.log($('#notebook'));
-        $('#notebook').append(this.widget.node);
+        // append widget to notebook
+        this.loading = false;
+        $('#' + this.visual_id).append(this.widget.node);
       });
-      /*
-      let future = session.kernel.requestExecute({ code: 'a = 1' });
-      future.onReply = (reply) => {
-        console.log('Got execute reply');
-      };*/
-      /*
-      future.onDone = () => {
-        console.log('Future is fulfilled');
-        // Shut down the session.
-        session.shutdown().then(() => {
-          console.log('Session shut down');
-          console.log('Test Complete!');
-        });
-      };
-      */
     }).catch(err => {
       console.error(err);
-      console.log('Test Failed! See the console output for details');
+      console.log('Error on executing code');
     });
   }
-
-  constructor(
-
-  ) {
-  }
-
 }
