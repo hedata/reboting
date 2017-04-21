@@ -29,11 +29,12 @@ export class BotService {
     */
 
      this.dataService.postAction('query', {query: payload})
-              .map((data) => data.bot_response.result.fulfillment.speech )
+              .map((data) => data )
               .subscribe( response => {
                 console.log('bot chat response: ');
                 console.log(response);
-                this.store.dispatch({type: 'NEW_MESSAGE', payload: response});
+                this.store.dispatch({type: 'NEW_MESSAGE', payload: response.bot_response.result.fulfillment.speech});
+                this.store.dispatch({ type: 'NEW_RESPONSE', payload: response })
               });
    }
 
