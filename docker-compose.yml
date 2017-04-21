@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  reboting:
+    build: .
+    volumes:
+      - .:/usr/src/app/:rw
+    links:
+      - mongo
+  nginx:
+    image: nginx:latest
+    ports:
+      - "2323:80"
+    volumes:
+      - ./dev_config/nginx.conf:/etc/nginx/nginx.conf:ro
+    links:
+      - reboting
+      - dabi
+  mongo:
+    image: mongo:latest
+    volumes:
+      - ./db:/data/db
+  dabi:
+    image: hedata/dabi:v001
+    volumes:
+      - ./uploaded_data:/home/jovyan/work
+  

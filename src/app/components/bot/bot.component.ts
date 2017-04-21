@@ -6,7 +6,7 @@ import { Response } from './../../models/response.model';
 
 import { BotService } from './../../services/bot.service';
 import { BotQueryResponse } from './../../models/bot-query-response.model';
-import {DataService} from "../../services/data.service";
+import { DataService } from '../../services/data.service';
 
 @Component({
   selector: 'app-bot',

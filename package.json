@@ -10,7 +10,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "server:prod": "ng build --prod && nodemon server.js",
-    "server": "ng build && nodemon server.js"
+    "server": "ng build && nodemon server.js",
+    "server:docker": "ng build && ./node_modules/.bin/nodemon server.js"
   },
   "private": true,
   "dependencies": {
@@ -34,6 +35,7 @@
     "jupyterlab": "^0.17.5",
     "mongoose": "^4.9.2",
     "ng2-file-input": "^0.1.11",
+    "nodemon": "^1.11.0",
     "papaparse": "^4.2.0",
     "rxjs": "^5.1.0",
     "winston": "^2.3.1",

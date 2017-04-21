@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var gracefulShutdown;
-var dbURI = 'mongodb://localhost:27017/reboting';
+var dbURI = 'mongodb://mongo:27017/reboting';
 
 mongoose.connect(dbURI);
 

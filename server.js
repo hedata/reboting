@@ -31,7 +31,7 @@ app.use(bodyParser.urlencoded({
 
 app.use(express.static(path.join(__dirname, 'dist')));
 
-
+console.log("Toast");
 
 app.use('/rb', routesApi);
 
