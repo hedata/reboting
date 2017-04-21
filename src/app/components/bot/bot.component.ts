@@ -21,6 +21,16 @@ export class BotComponent implements OnInit {
   }
 
   ngOnInit() {
+    let query = 'Hi';
+    this.botChat.push({you:  query});
+    this.dataService.postAction('query',{query: query}).subscribe(data => {
+      console.log(data);
+      this.botChat.push(data);
+      this.dataService.emitChange({
+        message: 'botanswer',
+        data: data
+      });
+    });
   }
   queryBot(query: string) {
     console.log('enter: ' + query);
