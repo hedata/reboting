@@ -5,4 +5,5 @@ export interface AppStore {
     uploadState: boolean;
     response: Response;
     botQuery: string[];
+    visual: any;
 };

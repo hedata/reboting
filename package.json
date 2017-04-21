@@ -31,6 +31,7 @@
     "apiai": "^4.0.1",
     "core-js": "^2.4.1",
     "express": "^4.15.2",
+    "jupyterlab": "^0.17.5",
     "mongoose": "^4.9.2",
     "ng2-file-input": "^0.1.11",
     "papaparse": "^4.2.0",

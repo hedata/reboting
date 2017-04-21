@@ -19,12 +19,14 @@ import { botQuery } from './stores/bot-query.store';
 import { AppComponent } from './app.component';
 import { ImportCsvComponent } from './components/import-csv/import-csv.component';
 import { BotComponent } from './components/bot/bot.component';
+import {VisualComponent} from "./components/visual/visual.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     ImportCsvComponent,
-    BotComponent
+    BotComponent,
+    VisualComponent
   ],
   imports: [
     BrowserModule,
