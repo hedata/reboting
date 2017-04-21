@@ -4,3 +4,4 @@
 require('./datasources.js');
 require('./visuals.js');
 require('./logs');
+require('./scripts');

@@ -44,3 +44,4 @@ process.on('SIGTERM', function() {
 
 // BRING IN YOUR SCHEMAS & MODELS
 require('../models/index');
+require('./base_import');

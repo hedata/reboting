@@ -6,6 +6,7 @@ var app = apiai("f610e349415a4c64a579812f53a5679f");
 var mongoose = require('mongoose');
 var DataSources = mongoose.model('DataSources');
 var Logs = mongoose.model('Logs');
+var Scripts = mongoose.model('Scripts');
 
 
 module.exports.fulfillFacebookDataupload = function(context) {
@@ -47,8 +48,7 @@ askBot = function(context) {
   });
   request.on('response', function(response) {
     context.responseObj.bot_response = response;
-    //Place for additonal querying
-    returnJsonResponse(context);
+    addExecutionScripts(context);
   });
   request.on('error', function(error) {
     context.response.status(500).json({'error': 'error on bot query: '+error});
@@ -82,4 +82,21 @@ returnJsonResponse = function(context) {
       console.log("saved: logentry");
     }
   });
+};
+
+
+addExecutionScripts = function(context) {
+  if(context.responseObj.bot_response.result.action){
+    console.log("searching for action: "+context.responseObj.bot_response.result.action);
+    Scripts.findOne({action_name : context.responseObj.bot_response.result.action},function(err,obj) {
+      if(obj) {
+        context.responseObj.code = obj.code;
+        returnJsonResponse(context)
+      } else {
+        returnJsonResponse(context)
+      }
+    });
+  } else {
+    returnJsonResponse(context);
+  }
 };
