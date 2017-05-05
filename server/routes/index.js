@@ -3,7 +3,7 @@ var router = express.Router();
 
 var ctrlActions = require('./actions');
 
-console.log("adding route datasources");
+console.log("adding route action");
 router.post('/actions',ctrlActions.takeAction);
 
 module.exports = router;
