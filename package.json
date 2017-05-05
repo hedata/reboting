@@ -11,7 +11,7 @@
     "e2e": "ng e2e",
     "server:prod": "ng build --prod && nodemon server.js",
     "server": "ng build && nodemon server.js",
-    "server:docker": "ng build && ./node_modules/.bin/nodemon server.js"
+    "server:docker": "ng build && nodemon server.js"
   },
   "private": true,
   "dependencies": {
