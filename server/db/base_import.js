@@ -51,3 +51,36 @@ plt.title('A simple chirp')
 plt.show()`;
 intentname = 'random_plot';
 insertIt(code,intentname);
+
+code =`from bokeh.plotting import figure, output_file, show, output_notebook
+
+import pandas as pd
+
+fbData = pd.read_csv("FB_insights.csv", encoding = "ISO-8859-1")
+
+dataShort = fbData.iloc[1:, 1:10]
+
+dataShort.columns = ['Laufzeit_like_total', 'Daily_likes', 'Daily_Dislikes', 'PeoplePerDay', 'PeoplePerWeek', 'PeoplePer28Days', 'ReachDaily', 'ReachWeekly', 'Reach28Days']
+
+days = list(range(1,32))
+var1 = list(dataShort['Daily_likes'])
+var2 = list(dataShort['Daily_Dislikes'])
+
+output_notebook()
+
+p = figure(
+   tools="pan,box_zoom,reset,save", title="FB N°1",
+   x_axis_label='Days of the month', y_axis_label='(Dis)Likes'
+)
+
+# add some renderers
+p.line(days, var1, legend="likes", line_width=1, line_color="green", line_dash = "4 4")
+p.circle(days, var1, legend="likes", fill_color="green", size=8)
+p.line(days, var2, legend="dislikes", line_width=1, line_color="red")
+
+# show the results
+show(p)
+
+`;
+intentname= 'bokeh_plot';
+insertIt(code,intentname);

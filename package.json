@@ -9,7 +9,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "devstart" : "ng build",
+    "devstart" : "ng build --watch",
     "server:prod": "ng build --prod && nodemon server.js",
     "server": "ng build && nodemon server.js",
     "server:docker": "nodemon server.js"
