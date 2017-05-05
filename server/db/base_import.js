@@ -3,11 +3,12 @@
  */
 var mongoose = require('mongoose');
 var Scripts = mongoose.model('Scripts');
-insertIt = function(code,actionname) {
+insertIt = function(code,actionname,params) {
   var query = { action_name : actionname },
     update = {
       action_name : actionname,
-      code : code
+      code : code,
+      params: params
     },
     options = { upsert: true, new: true, setDefaultsOnInsert: true };
   Scripts.findOneAndUpdate(query, update, options, function(error) {
@@ -35,11 +36,14 @@ var2 = list(dataShort['Daily_Dislikes']);
 trace0 = go.Scatter(x = days, y = var1, name = "Daily_likes", line = dict(color = ('rgb(205, 12, 24)'), width = 4));
 trace1 = go.Scatter(x = days, y = var2, name = "Daily_Dislikes", line = dict(color = ('rgb(22, 96, 167)'), width = 4));
 data = [trace0, trace1];
-layout = dict(title = '(Dis)Likes and People per Day', xaxis = dict(title = 'Days'), yaxis = dict(title = 'absolut'),);
+layout = dict(title = title, xaxis = dict(title = 'Days'), yaxis = dict(title = 'absolut'),);
 fig = dict(data = data, layout = layout);
 plotly.offline.iplot(fig);`;
 var intentname = 'fb_likes_and_people_per_day';
-insertIt(code,intentname);
+var params = [{
+  title: '(Dis)Likes and People per Day'
+}];
+insertIt(code,intentname,params);
 
 code =`import matplotlib
 import numpy as np
@@ -47,10 +51,13 @@ import matplotlib.pyplot as plt
 %matplotlib inline  
 x = np.linspace(0, 3*np.pi, 500)
 plt.plot(x, np.sin(x**2))
-plt.title('A simple chirp')
+plt.title(title)
 plt.show()`;
 intentname = 'random_plot';
-insertIt(code,intentname);
+params = [{
+  title: 'A random random graph'
+}];
+insertIt(code,intentname,params);
 
 code =`from bokeh.plotting import figure, output_file, show, output_notebook
 
@@ -69,7 +76,7 @@ var2 = list(dataShort['Daily_Dislikes'])
 output_notebook()
 
 p = figure(
-   tools="pan,box_zoom,reset,save", title="FB N°1",
+   tools="pan,box_zoom,reset,save", title=title,
    x_axis_label='Days of the month', y_axis_label='(Dis)Likes'
 )
 
@@ -82,5 +89,8 @@ p.line(days, var2, legend="dislikes", line_width=1, line_color="red")
 show(p)
 
 `;
+params = [{
+  title: 'FB N°1'
+}];
 intentname= 'bokeh_plot';
-insertIt(code,intentname);
+insertIt(code,intentname,params);

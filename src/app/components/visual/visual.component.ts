@@ -30,7 +30,7 @@ export class VisualComponent implements OnInit {
   public widget: any;
   public loading: boolean = true;
   private session: Session.ISession;
-  public code_string = "";
+  public code_string = '';
   ngOnInit(): void {
   }
 
@@ -45,8 +45,27 @@ export class VisualComponent implements OnInit {
           case 'botanswer':
             console.log(data.data);
             const response = data.data;
-            if (response.code) {
-              this.code_string = response.code;
+            if (response.script) {
+              const script = response.script;
+              const params = data.data.bot_response.result.parameters;
+              this.code_string = '';
+              const that = this;
+              // for all parameters of the script if the bot response has values for the params
+              // otherwise take values defined in code
+              script.params.forEach(function(element) {
+                console.log(element);
+                // test if the params have our object
+                if (params.hasOwnProperty(Object.keys(element)[0])) {
+                  that.code_string = that.code_string + '' + Object.keys(element)[0] + ' =\'' + params[Object.keys(element)[0]] + '\';';
+                } else {
+                  // for now this code just works for strings - need to check for escape chars and shit
+                  that.code_string = that.code_string + '' + Object.keys(element)[0] + ' =\'' + element[Object.keys(element)[0]] + '\';';
+                }
+              });
+              console.log(response.script);
+
+
+              this.code_string = this.code_string + response.script.code;
               this.createVisual(); }
             break;
           default:
@@ -57,6 +76,7 @@ export class VisualComponent implements OnInit {
   }
   createVisual() {
     this.loading = true;
+    $('#' + this.visual_id).empty();
     console.log('after view Checked');
     // TODO think about refactoring constants and when to instantiate to avoid meory leaks
     // set rendermine
@@ -84,7 +104,6 @@ export class VisualComponent implements OnInit {
         });
         // append widget to notebook
         this.loading = false;
-        $('#' + this.visual_id).empty();
         $('#' + this.visual_id).append(this.widget.node);
       });
     }).catch(err => {

@@ -6,7 +6,8 @@ var mongoose = require('mongoose');
 
 var scriptsSchema = mongoose.Schema({
   code: String,
-  action_name: { type: String, index: { unique: true }}
+  action_name: { type: String, index: { unique: true }},
+  params: []
 });
 
 var Scripts = mongoose.model('Scripts', scriptsSchema);
