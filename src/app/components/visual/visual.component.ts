@@ -30,7 +30,11 @@ export class VisualComponent implements OnInit {
   public widget: any;
   public loading: boolean = true;
   private session: Session.ISession;
-  public code_string = '';
+  private code_string = '';
+  // variables for saving a visual
+  private currentParams: any;
+  private currentScript: any;
+
   ngOnInit(): void {
   }
 
@@ -46,6 +50,8 @@ export class VisualComponent implements OnInit {
             console.log(data.data);
             const response = data.data;
             if (response.script) {
+              this.currentParams = [];
+              this.currentScript = response.script;
               const script = response.script;
               const params = data.data.bot_response.result.parameters;
               this.code_string = '';
@@ -56,15 +62,18 @@ export class VisualComponent implements OnInit {
                 console.log(element);
                 // test if the params have our object
                 if (params.hasOwnProperty(Object.keys(element)[0])) {
+                  const tmp = element;
+                  tmp[Object.keys(element)[0]] = params[Object.keys(element)[0]];
+                  that.currentParams.push(tmp);
                   that.code_string = that.code_string + '' + Object.keys(element)[0] + ' =\'' + params[Object.keys(element)[0]] + '\';';
                 } else {
+                  that.currentParams.push(element);
                   // for now this code just works for strings - need to check for escape chars and shit
+                  console.log('elementname: ' + element[Object.keys(element)[0]]);
                   that.code_string = that.code_string + '' + Object.keys(element)[0] + ' =\'' + element[Object.keys(element)[0]] + '\';';
                 }
               });
               console.log(response.script);
-
-
               this.code_string = this.code_string + response.script.code;
               this.createVisual(); }
             break;
@@ -78,7 +87,7 @@ export class VisualComponent implements OnInit {
     this.loading = true;
     $('#' + this.visual_id).empty();
     console.log('after view Checked');
-    // TODO think about refactoring constants and when to instantiate to avoid meory leaks
+    // TODO think about refactoring constants and when to instantiate to avoid memory leaks
     // set rendermine
     const rendermime = new RenderMime({ items: RenderMime.getDefaultItems() });
     console.log(rendermime);
@@ -105,6 +114,18 @@ export class VisualComponent implements OnInit {
         // append widget to notebook
         this.loading = false;
         $('#' + this.visual_id).append(this.widget.node);
+        // visual is created time for saving it
+        const saveobj = {
+          model : this.widget.model.toJSON(),
+          script: this.currentScript,
+          params: this.currentParams
+        };
+        console.log(saveobj);
+        this.dataService.postAction('save_visual', saveobj).subscribe(
+          result => console.log(result),
+          error => console.log(error)
+        );
+
       });
     }).catch(err => {
       console.error(err);

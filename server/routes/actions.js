@@ -18,8 +18,9 @@ module.exports.takeAction = function(req, res) {
     case 'csvupload':
         ctrlBot.fulfillFacebookDataupload(context);
         break;
-    case 'showvisual':
-        console.log("showvisual");
+    case 'save_visual':
+        console.log("save_visual");
+        ctrlBot.saveVisual(context);
         break;
     case 'query':
         context.botparams.query = req.body.payload.query;
