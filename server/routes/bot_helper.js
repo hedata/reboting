@@ -90,7 +90,7 @@ addExecutionScripts = function(context) {
     console.log("searching for action: "+context.responseObj.bot_response.result.action);
     Scripts.findOne({action_name : context.responseObj.bot_response.result.action},function(err,obj) {
       if(obj) {
-        context.responseObj.code = obj.code;
+        context.responseObj.script = obj;
         returnJsonResponse(context)
       } else {
         returnJsonResponse(context)

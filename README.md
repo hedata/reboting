@@ -3,7 +3,8 @@
 ##Dev Server
 docker-compose up
 
-for serving new client files use 
+for testing ipynbs
+docker run -p 10001:8888  hedata/dabi:v001 start-notebook.sh --NotebookApp.token='' --NotebookApp.allow_origin="*"
 
 # Deployment:
 * running on normal vm azure  - port 80 , 443 and ssh open from the outside world
