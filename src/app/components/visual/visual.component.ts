@@ -77,11 +77,36 @@ export class VisualComponent implements OnInit {
               this.code_string = this.code_string + response.script.code;
               this.createVisual(); }
             break;
+          case 'show_visual':
+            console.log('show visual in Visual Component');
+            console.log(data.data);
+            this.showExistingVisual(data.data);
+            break;
           default:
             console.log('error');
             console.log(data);
         }
       });
+  }
+  showExistingVisual(data: any) {
+    console.log('show existing visual');
+    console.log(data);
+    this.loading = true;
+    $('#' + this.visual_id).empty();
+    // set rendermine
+    const rendermime = new RenderMime({ items: RenderMime.getDefaultItems() });
+    console.log(rendermime);
+    // set outputare model
+    const model = new OutputAreaModel({ trusted: true });
+    // Start a new session.
+    const options: Session.IOptions = {
+      kernelName: 'python',
+      path: 'x.ipynb'
+    };
+    this.widget = new OutputAreaWidget({ rendermime, model });
+    this.widget.model.fromJSON(data.visual.model);
+    $('#' + this.visual_id).append(this.widget.node);
+    this.loading= false;
   }
   createVisual() {
     this.loading = true;
