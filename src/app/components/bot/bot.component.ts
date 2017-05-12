@@ -48,6 +48,7 @@ export class BotComponent implements OnInit {
   }
   queryBot(query: string) {
     console.log('enter: ' + query);
+    this.botChat = [];
     this.botChat.push({you:  query});
     this.dataService.postAction('query',{query: query}).subscribe(data => {
       console.log(data);

@@ -85,7 +85,7 @@ p = figure(
    tools="pan,box_zoom,reset,save", title=title,
    x_axis_label='Days of the month', y_axis_label='(Dis)Likes'
 )
-
+p.sizing_mode = 'scale_width'
 # add some renderers
 p.line(days, var1, legend="likes", line_width=1, line_color="green", line_dash = "4 4")
 p.circle(days, var1, legend="likes", fill_color="green", size=8)
@@ -185,7 +185,8 @@ output_notebook(hide_banner=True)
 
 source = ColumnDataSource(data=dict(x=x, y=y))
 
-plot = figure(y_range=(-10, 10), plot_width=400, plot_height=400)
+plot = figure(y_range=(-10, 10))
+plot.sizing_mode = 'scale_width'
 
 plot.line('x', 'y', source=source, line_width=3, line_alpha=0.6)
 
