@@ -1,6 +1,40 @@
 var ctrlBot = require('./bot_helper');
+var mongoose = require('mongoose');
+var Visuals = mongoose.model('Visuals');
 /*
   every action sends data to the bot
+
+  The most important object is the context object which is given down to every subfunction call
+
+  context = {
+      request : http Request Object (has request params and req body),
+      response: http response Object (can be used to send responses),
+      botbarams: {
+        session_id : Unique identifier of the Session for API ai,
+        query? : Text the user entered,
+        visual_id? : id defining the visual
+      }
+      responseObj : {
+         action:{
+         status: "ok",
+         payload: {
+
+         },
+         bot_response : {
+
+         },
+         script? : if a script was found that needs to be executed on the client
+         visual? : if a visual was found its attached here as visual object
+      }
+
+  }
+
+  The request always has:
+  request.body.type
+  request.body.payload
+
+
+
 */
 
 
@@ -18,8 +52,9 @@ module.exports.takeAction = function(req, res) {
     case 'csvupload':
         ctrlBot.fulfillFacebookDataupload(context);
         break;
-    case 'showvisual':
-        console.log("showvisual");
+    case 'save_visual':
+        console.log("save_visual");
+        ctrlBot.saveVisual(context);
         break;
     case 'query':
         context.botparams.query = req.body.payload.query;
@@ -30,6 +65,23 @@ module.exports.takeAction = function(req, res) {
           }
         };
         ctrlBot.askBot(context);
+        break;
+    case 'show_visual':
+        //find Visual in Db and return the object
+        var visual_id = req.body.payload.visual_id;
+        Visuals.findOne({_id : visual_id}).exec(function(err,obj){
+          if(obj) {
+            console.log("sending response");
+            context.responseObj = {
+              action:{
+                status: "ok",
+                payload: {}
+              }
+            };
+            context.responseObj.visual = obj;
+            res.status(200).json(context.responseObj);
+          }
+        });
         break;
     case 'testing':
         context.botparams.event = {

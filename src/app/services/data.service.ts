@@ -6,6 +6,9 @@ import {Subject} from "rxjs/Subject";
 
 @Injectable()
 export class DataService {
+  headers = new Headers({'Content-Type': 'application/json'});
+  options = new RequestOptions({ headers: this.headers });
+  userName = 'Dirk Data';
   /*
       Shared Service
    */
@@ -18,9 +21,6 @@ export class DataService {
     console.log('emit change in service');
     this.emitdataSource.next(change);
   }
-  headers = new Headers({'Content-Type': 'application/json'});
-  options = new RequestOptions({ headers: this.headers });
-  userName = 'Dirk Data';
   constructor(
     public http: Http
   ) { }
@@ -29,7 +29,9 @@ export class DataService {
     if (userName) {
       this.userName = userName ;
     }
-    return this.http.post(`${BASE_URL}/rb/actions`, {userName: this.userName, type: type, payload: payload}, this.options).map( res => res.json());
+    return this.http.post(`${BASE_URL}/rb/actions`,
+      {userName: this.userName, type: type, payload: payload}
+      , this.options).map( res => res.json());
   }
 
 }

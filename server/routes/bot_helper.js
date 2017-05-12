@@ -7,6 +7,29 @@ var mongoose = require('mongoose');
 var DataSources = mongoose.model('DataSources');
 var Logs = mongoose.model('Logs');
 var Scripts = mongoose.model('Scripts');
+var Visuals = mongoose.model('Visuals');
+/*
+ var context = {
+ request: req,
+ response: res,
+ botparams: {
+ session_id : req.body.userName
+ },
+ responseObj : {}
+ };
+ */
+
+
+module.exports.saveVisual = function(context) {
+  var visual = new Visuals(context.request.body.payload);
+  visual.save(function(err,obj) {
+    if(err) {
+      console.log("error on logentry"+err);
+    } else {
+      context.response.status(200).json(obj);
+    }
+  });
+};
 
 
 module.exports.fulfillFacebookDataupload = function(context) {

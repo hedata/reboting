@@ -60,7 +60,8 @@ params = [{
 insertIt(code,intentname,params);
 
 code =`from bokeh.plotting import figure, output_file, show, output_notebook
-
+import warnings
+warnings.filterwarnings("ignore")
 import pandas as pd
 
 fbData = pd.read_csv("FB_insights.csv", encoding = "ISO-8859-1")

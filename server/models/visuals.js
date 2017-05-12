@@ -1,8 +1,10 @@
 var mongoose = require('mongoose');
 var visualSchema = mongoose.Schema({
   datasource_id : String,
-  username: String,
-  params: {}
+  user_id: String,
+  params: [],
+  model: [],
+  script: {}
 });
 
 /*
