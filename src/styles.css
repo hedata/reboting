@@ -24,7 +24,6 @@ body {
   background-size: cover;
 
   /* Pick a solid background color that will be displayed while the background image is loading */
-  background-color:@brand-primary;
 
   /* SHORTHAND CSS NOTATION
    * background: url(background-photo.jpg) center center cover no-repeat fixed;
