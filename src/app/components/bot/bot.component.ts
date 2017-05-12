@@ -21,7 +21,7 @@ export class BotComponent implements OnInit {
   }
 
   ngOnInit() {
-    const query = 'Show me a random bokeh plot';
+    const query = 'Show me a bokeh plot';
     this.botChat.push({you:  query});
     this.dataService.postAction('query', {query: query}).subscribe(data => {
       console.log(data);
