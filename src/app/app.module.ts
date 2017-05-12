@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import { MaterialModule } from '@angular/material';
+import { MaterialModule, MdCardModule, MdInputModule } from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { StoreModule } from '@ngrx/store';
@@ -46,7 +46,9 @@ import {VisualComponent} from "./components/visual/visual.component";
     }),
     StoreDevtoolsModule.instrumentOnlyWithExtension({
       maxAge: 5
-    })
+    }),
+    MdCardModule,
+    MdInputModule
   ],
   providers: [
     DataService,
