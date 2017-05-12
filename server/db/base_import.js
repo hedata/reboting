@@ -95,3 +95,66 @@ params = [{
 }];
 intentname= 'bokeh_plot';
 insertIt(code,intentname,params);
+
+code = `# line chart
+from bokeh.plotting import figure, output_file, show, output_notebook
+
+# stacked bar chart
+from bokeh.charts import Bar, show
+from bokeh.charts.attributes import cat, color
+from bokeh.charts.operations import blend
+from bokeh.models import LabelSet
+import bokeh
+
+import random
+import pandas as pd
+import warnings
+
+#Parameter
+time = 20 #Anzahl der Tage die betrachtet werden (ausgehend von heute)
+
+warnings.filterwarnings("ignore")
+temp = pd.read_csv("FB_insights.csv", encoding = "ISO-8859-1")
+
+fbData = temp[1:len(temp.index)]
+fbData = fbData.apply(pd.to_numeric, args=('coerce', ))
+
+Bezahlte_Reichweite_col = "Daily Paid reach"
+Bezahlte_Reichweite_agg = fbData[Bezahlte_Reichweite_col].sum(axis=0)
+Bezahlte_Reichweite_line = list(fbData[Bezahlte_Reichweite_col])
+
+Reichweite_col = "Daily Total reach"
+Reichweite_agg = fbData[Reichweite_col].sum(axis=0)
+Reichweite_line = list(fbData[Reichweite_col])
+
+Organische_Reichweite_agg = Reichweite_agg - Bezahlte_Reichweite_agg
+Organische_Reichweite_line = list(fbData[Reichweite_col] - fbData[Bezahlte_Reichweite_col])
+# plotting Reichweite
+proxy = random.sample(range(1, 100), 29)
+
+
+
+days = list(range(1, len(fbData)+1))
+df = pd.DataFrame({'Tage': days, 'Bezahlte Reichweite': proxy, 'Organische Reichweite': Organische_Reichweite_line})
+
+df = df[0:time]
+
+output_notebook(hide_banner=True)
+
+bar = Bar(df,
+          values=blend('Bezahlte Reichweite', 'Organische Reichweite', name='Reichweite', labels_name='reach'),
+          label=cat(columns='Tage', sort=False),
+          stack=cat(columns='reach', sort=False),
+          color=color(columns='reach', palette=['SaddleBrown', 'Silver'],sort=False),
+          legend='top_right',
+          title=title,
+          tooltips=[('Reichweite', '@reach'), ('Tage', '@Tage')]
+         )
+bar.sizing_mode = 'scale_width'
+
+show(bar)`;
+params = [{
+  title: 'Bezahlte und organische Reichweite'
+}];
+intentname= 'reichweite';
+insertIt(code,intentname,params);
