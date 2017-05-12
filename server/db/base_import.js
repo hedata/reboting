@@ -11,11 +11,12 @@ insertIt = function(code,actionname,params) {
       params: params
     },
     options = { upsert: true, new: true, setDefaultsOnInsert: true };
-  Scripts.findOneAndUpdate(query, update, options, function(error) {
+  Scripts.findOneAndUpdate(query, update, options, function(error, obj) {
     if (error) {
       console.log(error)
     } else {
       console.log("insert/update successfull");
+      console.log(obj);
     }
   });
 };
@@ -41,7 +42,9 @@ fig = dict(data = data, layout = layout);
 plotly.offline.iplot(fig);`;
 var intentname = 'fb_likes_and_people_per_day';
 var params = [{
-  title: '(Dis)Likes and People per Day'
+  name: 'title',
+  value: '(Dis)Likes and People per Day',
+  type: 'string'
 }];
 insertIt(code,intentname,params);
 
@@ -55,7 +58,9 @@ plt.title(title)
 plt.show()`;
 intentname = 'random_plot';
 params = [{
-  title: 'A random random graph'
+  name : 'title',
+  value: 'A random random graph',
+  type: 'string'
 }];
 insertIt(code,intentname,params);
 
@@ -91,7 +96,9 @@ show(p)
 
 `;
 params = [{
-  title: 'FB N°1'
+  name : 'title',
+  value: 'FB N°1',
+  type: 'string'
 }];
 intentname= 'bokeh_plot';
 insertIt(code,intentname,params);
@@ -111,7 +118,7 @@ import pandas as pd
 import warnings
 
 #Parameter
-time = 20 #Anzahl der Tage die betrachtet werden (ausgehend von heute)
+#time = 20 #Anzahl der Tage die betrachtet werden (ausgehend von heute)
 
 warnings.filterwarnings("ignore")
 temp = pd.read_csv("FB_insights.csv", encoding = "ISO-8859-1")
@@ -154,7 +161,13 @@ bar.sizing_mode = 'scale_width'
 
 show(bar)`;
 params = [{
-  title: 'Bezahlte und organische Reichweite'
+  name: 'title',
+  value: 'Bezahlte und organische Reichweite',
+  type: 'string'
+},{
+  name : 'time',
+  value : 28,
+  type: 'int'
 }];
 intentname= 'reichweite';
 insertIt(code,intentname,params);

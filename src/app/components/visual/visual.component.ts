@@ -47,9 +47,10 @@ export class VisualComponent implements OnInit {
         // which change was it?
         switch (data.message) {
           case 'botanswer':
-            console.log(data.data);
             const response = data.data;
             if (response.script) {
+              console.log('BOTANSWER in the visual');
+              console.log(data.data);
               this.currentParams = [];
               this.currentScript = response.script;
               const script = response.script;
@@ -59,18 +60,27 @@ export class VisualComponent implements OnInit {
               // for all parameters of the script if the bot response has values for the params
               // otherwise take values defined in code
               script.params.forEach(function(element) {
+                // element has : name, value, type
                 console.log(element);
-                // test if the params have our object
-                if (params.hasOwnProperty(Object.keys(element)[0])) {
+                // test if the params have our object and the value of it != ""
+                if (params.hasOwnProperty(element.name) && params[element.name] !== '' ) {
                   const tmp = element;
-                  tmp[Object.keys(element)[0]] = params[Object.keys(element)[0]];
+                  tmp.value = params[tmp.name];
                   that.currentParams.push(tmp);
-                  that.code_string = that.code_string + '' + Object.keys(element)[0] + ' =\'' + params[Object.keys(element)[0]] + '\';';
+                  // type
+                  if (element.type === 'int') {
+                    that.code_string = that.code_string + '' + element.name + ' =' + params[element.name] + ';';
+                  } else {
+                    that.code_string = that.code_string + '' + element.name + ' =\'' + params[element.name] + '\';';
+                  }
                 } else {
                   that.currentParams.push(element);
                   // for now this code just works for strings - need to check for escape chars and shit
-                  console.log('elementname: ' + element[Object.keys(element)[0]]);
-                  that.code_string = that.code_string + '' + Object.keys(element)[0] + ' =\'' + element[Object.keys(element)[0]] + '\';';
+                  if (element.type === 'int') {
+                    that.code_string = that.code_string + '' + element.name + ' =' + element.value + ';';
+                  } else {
+                    that.code_string = that.code_string + '' + element.name + ' =\'' + element.value + '\';';
+                  }
                 }
               });
               console.log(response.script);
@@ -106,7 +116,7 @@ export class VisualComponent implements OnInit {
     this.widget = new OutputAreaWidget({ rendermime, model });
     this.widget.model.fromJSON(data.visual.model);
     $('#' + this.visual_id).append(this.widget.node);
-    this.loading= false;
+    this.loading = false;
   }
   createVisual() {
     this.loading = true;
