@@ -48,6 +48,9 @@ html, body{
 /*width: 700px; */
 .centered {
   max-width:800px;
+  width:800px;
+  height: 600px;
+  max-height: 600px;
   margin: 0 auto;
   margin-top:-18px;
   background-color:white;

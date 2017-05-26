@@ -175,7 +175,7 @@ insertIt(code,intentname,params);
 
 code =`import numpy as np
 
-from bokeh.layouts import row, widgetbox
+from bokeh.layouts import row,column, widgetbox
 from bokeh.models import CustomJS, Slider
 from bokeh.plotting import figure, show, ColumnDataSource, output_notebook
 
@@ -224,6 +224,7 @@ callback.args["offset"] = offset_slider
 layout = row(
     plot,
     widgetbox(amp_slider, freq_slider, phase_slider, offset_slider),
+    sizing_mode = 'scale_width'
 )
 
 show(layout)

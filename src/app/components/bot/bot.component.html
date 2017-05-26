@@ -8,7 +8,7 @@
   </md-list>
   <form class="chat-message" style="background-color: white;margin-top:10px;padding:20px;">
     <md-input-container style="width: 100%">
-      <input mdInput placeholder="Write stuff" #message (keyup.enter)="queryBot(message.value)" autocomplete="off">
+      <input mdInput placeholder="Write stuff" name="name" #message (keyup.enter)="queryBot()" autocomplete="off" [(ngModel)]="chatmessage">
     </md-input-container>
   </form>
 
