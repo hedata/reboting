@@ -27,17 +27,21 @@ export class BotComponent implements OnInit {
     /*
       setting base synthesis options
      */
-    this.msg.volume = 1;							// 0 to 1
-    this.msg.rate = 0.9;							// 0.1 to 10
-    this.msg.pitch = 0;							// 0 to 2
-    this.msg.lang = 'en-US';
-    const that = this;
-    window.speechSynthesis.onvoiceschanged = function () {
-      that.voices = speechSynthesis.getVoices();
-      that.msg.voice = that.voices[3];
-      console.log('VOICES');
-      // console.log(that.voices);
-    };
+    try {
+      this.msg.volume = 1;							// 0 to 1
+      this.msg.rate = 0.9;							// 0.1 to 10
+      this.msg.pitch = 0;							// 0 to 2
+      this.msg.lang = 'en-US';
+      const that = this;
+      window.speechSynthesis.onvoiceschanged = function () {
+        that.voices = speechSynthesis.getVoices();
+        that.msg.voice = that.voices[3];
+        console.log('VOICES');
+        // console.log(that.voices);
+      };
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   sendCommand(val) {
@@ -52,32 +56,34 @@ export class BotComponent implements OnInit {
     this.chatmessage = 'Show me a bokeh plot';
     this.queryBot();
     // Let's define our first command. First the text we expect, and then the function it should call
-    const commands = {
-      'okay then*val': (val) => {
-        console.log('command start');
-        this.sendCommand(val);
-      },
-      'okay Ben*val': (val) => {
-        console.log('command start');
-        this.sendCommand(val);
-      }
-    };
-    // Trying to start annyang
-    annyang.addCommands(commands);
-
-    annyang.addCallback('error', function (err)
-    {
-      console.log('error in annyang');
-      console.log(err);
-      if(err.error === 'no-speech') {
-        if ( !annyang.isListening() ) {
-          annyang.start();
+    try {
+      const commands = {
+        'okay then*val': (val) => {
+          console.log('command start');
+          this.sendCommand(val);
+        },
+        'okay Ben*val': (val) => {
+          console.log('command start');
+          this.sendCommand(val);
         }
-      }
-    });
-
-    // Start listening. You can call this here, or attach this call to an event, button, etc.
-    annyang.start({ autoRestart: true , continuous: false});
+      };
+      // Trying to start annyang
+      annyang.addCommands(commands);
+      annyang.addCallback('error', function (err)
+      {
+        console.log('error in annyang');
+        console.log(err);
+        if(err.error === 'no-speech') {
+          if ( !annyang.isListening() ) {
+            annyang.start();
+          }
+        }
+      });
+      // Start listening. You can call this here, or attach this call to an event, button, etc.
+      annyang.start({ autoRestart: true , continuous: false});
+    } catch (err) {
+      console.log(err);
+    }
     /*
     // temporary action for testing finding a visual - hardcoded ! 591584e35a2b8200abacd959
     this.dataService.postAction('show_visual', {
