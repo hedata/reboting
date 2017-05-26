@@ -7,6 +7,7 @@ background image
  */
 
 body {
+  /* width:100%;*/
   /* Location of the image */
   background-image: url(assets/background_2.jpg);
 
@@ -38,11 +39,16 @@ body {
     background-image: url(assets/background_2.jpg);
   }
 }
-
-
+html, body{
+  height: 100%;
+  width:100%;
+  margin:0px;
+}
+/* style="background-color:white;position:absolute;height:400px;width:400px;top:40px;left:40px;"*/
+/*width: 700px; */
 .centered {
-  position: relative;
-  left: 50%;
-  transform: translate(-50%);
-  width: 50%;
+  max-width:800px;
+  margin: 0 auto;
+  margin-top:-18px;
+  background-color:white;
 }

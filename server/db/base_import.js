@@ -78,12 +78,12 @@ dataShort.columns = ['Laufzeit_like_total', 'Daily_likes', 'Daily_Dislikes', 'Pe
 days = list(range(1,32))
 var1 = list(dataShort['Daily_likes'])
 var2 = list(dataShort['Daily_Dislikes'])
-
-output_notebook()
+output_notebook(hide_banner=True)
 
 p = figure(
    tools="pan,box_zoom,reset,save", title=title,
-   x_axis_label='Days of the month', y_axis_label='(Dis)Likes'
+   x_axis_label='Days of the month', y_axis_label='(Dis)Likes',
+   toolbar_location="right"
 )
 p.sizing_mode = 'scale_width'
 # add some renderers
@@ -155,6 +155,7 @@ bar = Bar(df,
           color=color(columns='reach', palette=['SaddleBrown', 'Silver'],sort=False),
           legend='top_right',
           title=title,
+          toolbar_location="right",
           tooltips=[('Reichweite', '@reach'), ('Tage', '@Tage')]
          )
 bar.sizing_mode = 'scale_width'

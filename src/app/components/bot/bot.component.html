@@ -1,7 +1,7 @@
 <!--<h3 *ngIf="!(uploadState | async)">Bot waiting...</h3>-->
-<md-card>
-  <md-list  style="background-color: white">
-    <md-list-item *ngFor="let message of botChat">
+<md-card style="background-color: transparent;position:absolute;top:0px;right:0px;z-index:2000;max-width: 400px;">
+  <md-list  >
+    <md-list-item style="background-color: white" *ngFor="let message of botChat">
       <b *ngIf="message.you">You: </b> {{message?.you}}
       <b *ngIf="message.bot_response">Rebotting: </b> {{ message?.bot_response?.result?.fulfillment?.speech }}
     </md-list-item>
