@@ -1,5 +1,5 @@
 'use strict';
-import {Component, OnInit, ViewChild, ElementRef, Input} from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef, Input, NgZone} from '@angular/core';
 // Polyfill for ES6 Promises
 // import 'es6-promise';
 
@@ -39,7 +39,8 @@ export class VisualComponent implements OnInit {
   }
 
   constructor(
-      private dataService: DataService
+      private dataService: DataService,
+      private _ngZone: NgZone
   ) {
     dataService.changeEmitted$.subscribe(
       data => {
@@ -119,52 +120,52 @@ export class VisualComponent implements OnInit {
     this.loading = false;
   }
   createVisual() {
-    this.loading = true;
-    $('#' + this.visual_id).empty();
-    console.log('after view Checked');
-    // TODO think about refactoring constants and when to instantiate to avoid memory leaks
-    // set rendermine
-    const rendermime = new RenderMime({ items: RenderMime.getDefaultItems() });
-    console.log(rendermime);
-    // set outputare model
-    let model = new OutputAreaModel({ trusted: true });
-    // Start a new session.
-    let options: Session.IOptions = {
-      kernelName: 'python',
-      path: 'x.ipynb'
-    };
-    console.log('Starting session');
-    Session.startNew(options).then(s => {
-      console.log('Session started');
-      this.session = s;
-      return this.session.rename('x.ipynb');
-    }).then(() => {
-      // create the widget
-      this.widget = new OutputAreaWidget({ rendermime, model });
-      this.widget.execute(this.code_string, this.session.kernel).then(reply => {
-        console.log('got reply from kernel: ' + reply.content.status);
-        this.session.shutdown().then(() => {
-          console.log('Session shut down');
+    this._ngZone.run(() => {
+      this.loading = true;
+      $('#' + this.visual_id).empty();
+      console.log('after view Checked');
+      // set rendermine
+      const rendermime = new RenderMime({ items: RenderMime.getDefaultItems() });
+      console.log(rendermime);
+      // set outputare model
+      const model = new OutputAreaModel({ trusted: true });
+      // Start a new session.
+      const options: Session.IOptions = {
+        kernelName: 'python',
+        path: 'x.ipynb'
+      };
+      console.log('Starting session');
+      Session.startNew(options).then(s => {
+        console.log('Session started');
+        this.session = s;
+        return this.session.rename('x.ipynb');
+      }).then(() => {
+        // create the widget // run in ngzone
+        this.widget = new OutputAreaWidget({ rendermime, model });
+        this.widget.execute(this.code_string, this.session.kernel).then(reply => {
+          console.log('got reply from kernel: ' + reply.content.status);
+          this.session.shutdown().then(() => {
+            console.log('Session shut down');
+          });
+          // append widget to notebook
+          this.loading = false;
+          $('#' + this.visual_id).append(this.widget.node);
+          // visual is created time for saving it
+          const saveobj = {
+            model : this.widget.model.toJSON(),
+            script: this.currentScript,
+            params: this.currentParams
+          };
+          console.log(saveobj);
+          this.dataService.postAction('save_visual', saveobj).subscribe(
+            result => console.log(result),
+            error => console.log(error)
+          );
         });
-        // append widget to notebook
-        this.loading = false;
-        $('#' + this.visual_id).append(this.widget.node);
-        // visual is created time for saving it
-        const saveobj = {
-          model : this.widget.model.toJSON(),
-          script: this.currentScript,
-          params: this.currentParams
-        };
-        console.log(saveobj);
-        this.dataService.postAction('save_visual', saveobj).subscribe(
-          result => console.log(result),
-          error => console.log(error)
-        );
-
+      }).catch(err => {
+        console.error(err);
+        console.log('Error on executing code');
       });
-    }).catch(err => {
-      console.error(err);
-      console.log('Error on executing code');
     });
   }
 }

@@ -2,7 +2,10 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import { MaterialModule, MdCardModule, MdInputModule } from '@angular/material';
+import {
+  MaterialModule, MdButtonModule, MdCardModule, MdIconModule, MdInputModule,
+  MdListModule
+} from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { StoreModule } from '@ngrx/store';
@@ -32,7 +35,6 @@ import {VisualComponent} from "./components/visual/visual.component";
     BrowserModule,
     FormsModule,
     HttpModule,
-    MaterialModule,
     BrowserAnimationsModule,
     Ng2FileInputModule.forRoot({
       extensions: ['csv'],
@@ -48,7 +50,10 @@ import {VisualComponent} from "./components/visual/visual.component";
       maxAge: 5
     }),
     MdCardModule,
-    MdInputModule
+    MdInputModule,
+    MdButtonModule,
+    MdIconModule,
+    MdListModule
   ],
   providers: [
     DataService,

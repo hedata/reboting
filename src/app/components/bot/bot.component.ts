@@ -17,6 +17,7 @@ import annyang from 'annyang';
 export class BotComponent implements OnInit {
   botChat = [];
   msg = new SpeechSynthesisUtterance();
+  showchatlog = false;
   voices;
 
   chatmessage: String = '' ;
@@ -100,25 +101,33 @@ export class BotComponent implements OnInit {
     */
   }
   queryBot() {
+    this.showchatlog = true;
     const query = this.chatmessage;
     console.log('enter: ' + query);
-    this.botChat = [];
-    this.botChat.push({you:  query});
-    this.dataService.postAction('query',{query: query}).subscribe(data => {
-      console.log(data);
-      this.botChat.push(data);
-      this.chatmessage = '';
-      this.dataService.emitChange({
-        message: 'botanswer',
-        data: data
+    if (query !== '') {
+      this.botChat = [];
+      this.botChat.push({you:  query});
+      this.dataService.postAction('query',{query: query}).subscribe(data => {
+        console.log(data);
+        this.botChat.push(data);
+        this.chatmessage = '';
+        this.dataService.emitChange({
+          message: 'botanswer',
+          data: data
+        });
+        // setup synthesis
+        const voices = window.speechSynthesis.getVoices();
+        console.log('Speech Synthesis');
+        console.log(voices);
+        this.msg.text = data.bot_response.result.fulfillment.speech;
+        speechSynthesis.speak(this.msg);
+        let that = this;
+        setTimeout(function(){
+          console.log('showing chatlog again');
+          that.showchatlog = false;
+        }, 3000 );
       });
-      // setup synthesis
-      const voices = window.speechSynthesis.getVoices();
-      console.log('Speech Synthesis');
-      console.log(voices);
-      this.msg.text = data.bot_response.result.fulfillment.speech;
-      speechSynthesis.speak(this.msg);
-    });
+    }
     /*
     this.store.dispatch({type: 'NEW_MESSAGE', payload: query});
     this.botService.queryBot(query);
