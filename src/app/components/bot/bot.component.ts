@@ -103,6 +103,10 @@ export class BotComponent implements OnInit {
             console.log('setting recording back to non record');
             that.configModel.recording = false;
           });
+          annyang.addCallback('error', function(){
+            console.log('setting recording back to non record cause of error');
+            that.configModel.recording = false;
+          });
           annyang.addCommands(this.commands_record);
           // Start listening. You can call this here, or attach this call to an event, button, etc.
           annyang.start({ autoRestart: false , continuous: false});
