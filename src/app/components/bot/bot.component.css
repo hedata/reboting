@@ -1,3 +1,10 @@
 .full-width {
     width: 90vw;
 }
+.input_container {
+  height: 60px;
+}
+.chat_input {
+  margin-top:6px;
+  margin-botton:6px;
+}

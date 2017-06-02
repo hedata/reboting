@@ -1,9 +1,0 @@
-<h2>
-  File Upload <span *ngIf="uploadState | async">Complete!</span>
-</h2>
-<form class="csv-import" *ngIf="!(uploadState | async)">
-  <md-input-container class="full-width">
-    <input mdInput placeholder="Your name" #name (keyup)="onKey(name.value)" value="Dirk Data">
-  </md-input-container>
-    <ng2-file-input (onChange)="onFileChange($event)" ></ng2-file-input> 
-</form>

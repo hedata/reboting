@@ -1,11 +1,4 @@
 import {Component, NgZone, OnInit} from '@angular/core';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Observable';
-import { AppStore } from './../../models/app-store.model';
-import { Response } from './../../models/response.model';
-
-import { BotService } from './../../services/bot.service';
-import { BotQueryResponse } from './../../models/bot-query-response.model';
 import { DataService } from '../../services/data.service';
 import annyang from 'annyang';
 
@@ -15,6 +8,8 @@ import annyang from 'annyang';
   styleUrls: ['./bot.component.css']
 })
 export class BotComponent implements OnInit {
+  public configModel: any = {recording: false, synthesis: false, autorecord: false};
+
   botChat = [];
   msg = new SpeechSynthesisUtterance();
   showchatlog = false;
@@ -44,7 +39,16 @@ export class BotComponent implements OnInit {
       console.log(err);
     }
   }
-
+  onClickRecord() {
+    console.log('clickonRecord');
+    console.log(this.configModel);
+  }
+  onClickSynthesis() {
+    console.log('clickonSyntesis');
+  }
+  onClickListen() {
+    console.log('clickonListen');
+  }
   sendCommand(val) {
     console.log('executing Voice Commands' + val);
     this._ngZone.run(() => {
@@ -121,7 +125,7 @@ export class BotComponent implements OnInit {
         console.log(voices);
         this.msg.text = data.bot_response.result.fulfillment.speech;
         speechSynthesis.speak(this.msg);
-        let that = this;
+        const that = this;
         setTimeout(function(){
           console.log('showing chatlog again');
           that.showchatlog = false;

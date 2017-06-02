@@ -3,22 +3,54 @@
     ;position:absolute
     ;top:0px;right:0px
     ;z-index:2000
-    ;max-width: 400px;width:100%;box-shadow: 0 0 0 0;
+    ;max-width: 500px;width:100%;box-shadow: 0 0 0 0;
     padding:0px;">
-  <form class="chat-message" style="background-color: white;padding:0px;">
-    <md-input-container >
-      <input mdInput
-             placeholder="Write stuff"
-             name="name" #message
-             (keyup.enter)="queryBot()"
-             autocomplete="off"
-             [(ngModel)]="chatmessage">
-    </md-input-container>
-  </form>
-  <md-list *ngIf="showchatlog">
-    <md-list-item style="background-color: white" *ngFor="let message of botChat">
-      <b *ngIf="message.you">You: </b> {{message?.you}}
-      <b *ngIf="message.bot_response">Ben: </b> {{ message?.bot_response?.result?.fulfillment?.speech }}
-    </md-list-item>
-  </md-list>
+  <div class="input_container">
+    <div class="input-group input-group-lg chat_input">
+      <input
+              class="form-control"
+              type="text"
+              placeholder="Write stuff"
+              (keyup.enter)="queryBot()"
+              autocomplete="off"
+              [(ngModel)]="chatmessage">
+      <!--- Buttons for
+         - enable / recording
+         - start recording enabled disabled
+         - enable / disable aut listening
+      -->
+      <span class="input-group-btn">
+          <button class="btn btn-success"
+                  type="button"
+                  [(ngModel)]="configModel.recording"
+                  title="Record Input"
+                  (click)="onClickRecord()"
+                  btnCheckbox>
+            <i class="fa fa-microphone" aria-hidden="true"></i>
+          </button>
+          <button class="btn btn-success"
+                  type="button"
+                  [(ngModel)]="configModel.synthesis"
+                  (click)="onClickSynthesis()"
+                  title="Speech Output"
+                  btnCheckbox>
+              <i class="fa fa-comment-o" aria-hidden="true"></i>
+          </button>
+          <button class="btn btn-success"
+                type="button"
+                title="Listen all the time to: Okay Ben"
+                [(ngModel)]="configModel.synthesis"
+                  (click)="onClickListen()"
+                btnCheckbox>
+              <i class="fa fa-assistive-listening-systems" aria-hidden="true"></i>
+          </button>
+      </span>
+    </div>
+  </div>
+  <div *ngIf="showchatlog">
+    <div *ngFor="let message of botChat" class="list-group-item">
+       <b *ngIf="message.you">You: </b> {{message?.you}}
+       <b *ngIf="message.bot_response">Ben: </b> {{ message?.bot_response?.result?.fulfillment?.speech }}
+    </div>
+  </div>
 </div>

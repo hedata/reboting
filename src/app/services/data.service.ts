@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { Http, Response, RequestOptions, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { BASE_URL } from './../../config';
-import {Subject} from "rxjs/Subject";
+import {Subject} from 'rxjs/Subject';
+import 'rxjs/Rx';
 
 @Injectable()
 export class DataService {
