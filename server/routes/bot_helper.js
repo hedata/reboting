@@ -71,6 +71,7 @@ askBot = function(context) {
   });
   request.on('response', function(response) {
     context.responseObj.bot_response = response;
+    console.log(response);
     addExecutionScripts(context);
   });
   request.on('error', function(error) {
@@ -110,15 +111,19 @@ returnJsonResponse = function(context) {
 
 addExecutionScripts = function(context) {
   if(context.responseObj.bot_response.result.action){
-    console.log("searching for action: "+context.responseObj.bot_response.result.action);
-    Scripts.findOne({action_name : context.responseObj.bot_response.result.action},function(err,obj) {
-      if(obj) {
-        context.responseObj.script = obj;
-        returnJsonResponse(context)
-      } else {
-        returnJsonResponse(context)
-      }
-    });
+    if(!context.responseObj.bot_response.result.actionIncomplete) {
+      console.log("searching for action: "+context.responseObj.bot_response.result.action);
+      Scripts.findOne({action_name : context.responseObj.bot_response.result.action},function(err,obj) {
+        if(obj) {
+          context.responseObj.script = obj;
+          returnJsonResponse(context)
+        } else {
+          returnJsonResponse(context)
+        }
+      });
+    }else {
+      returnJsonResponse(context)
+    }
   } else {
     returnJsonResponse(context);
   }
