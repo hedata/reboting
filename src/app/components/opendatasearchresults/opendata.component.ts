@@ -8,7 +8,7 @@ import annyang from 'annyang';
   styleUrls: ['./opendata.component.css']
 })
 export class OpenDataComponent {
-  private searchResults = [];
+  public searchResults = [];
   @Input()
   showComponent: String;
   constructor(
