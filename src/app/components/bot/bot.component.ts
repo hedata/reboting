@@ -8,13 +8,28 @@ import annyang from 'annyang';
   styleUrls: ['./bot.component.css']
 })
 export class BotComponent implements OnInit {
-  public configModel: any = {recording: false, synthesis: false, autorecord: false};
+  public configModel: any = {recording: false, synthesis: true, autorecord: false};
 
   botChat = [];
   msg = new SpeechSynthesisUtterance();
   showchatlog = false;
   voices;
-
+  private commands_listen = {
+    'okay then*val': (val) => {
+      console.log('command start');
+      this.sendCommand(val);
+    },
+    'okay Ben*val': (val) => {
+      console.log('command start');
+      this.sendCommand(val);
+    }
+  };
+  private commands_record = {
+    '*val': (val) => {
+      console.log('command start');
+      this.sendCommand(val);
+    }
+  };
   chatmessage: String = '' ;
   constructor(
     private dataService: DataService,
@@ -41,13 +56,11 @@ export class BotComponent implements OnInit {
   }
   onClickRecord() {
     console.log('clickonRecord');
-    console.log(this.configModel);
-  }
-  onClickSynthesis() {
-    console.log('clickonSyntesis');
+    this.initAnnyang();
   }
   onClickListen() {
     console.log('clickonListen');
+    this.initAnnyang();
   }
   sendCommand(val) {
     console.log('executing Voice Commands' + val);
@@ -56,39 +69,58 @@ export class BotComponent implements OnInit {
       this.queryBot();
     });
   }
-
+  initAnnyang() {
+    // test what current speech model is
+    if (this.configModel.autorecord) {
+      try {
+        // Trying to start annyang
+        annyang.removeCommands();
+        annyang.removeCallback();
+        annyang.addCommands(this.commands_listen);
+        annyang.addCallback('error', function (err)
+        {
+          console.log('error in annyang');
+          console.log(err);
+          if (err.error === 'no-speech') {
+            if ( !annyang.isListening() ) {
+              annyang.start();
+            }
+          }
+        });
+        // Start listening. You can call this here, or attach this call to an event, button, etc.
+        annyang.start({ autoRestart: true , continuous: false});
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      if (this.configModel.recording) {
+        try {
+          // Trying to start annyang
+          annyang.removeCommands();
+          annyang.removeCallback();
+          const that = this;
+          annyang.addCallback('end', function(){
+            console.log('setting recording back to non record');
+            that.configModel.recording = false;
+          });
+          annyang.addCommands(this.commands_record);
+          // Start listening. You can call this here, or attach this call to an event, button, etc.
+          annyang.start({ autoRestart: false , continuous: false});
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
+        // stop everything
+        annyang.removeCommands();
+        annyang.removeCallback();
+        annyang.abort();
+      }
+    }
+  }
   ngOnInit() {
     this.chatmessage = 'Show me a bokeh plot';
     this.queryBot();
     // Let's define our first command. First the text we expect, and then the function it should call
-    try {
-      const commands = {
-        'okay then*val': (val) => {
-          console.log('command start');
-          this.sendCommand(val);
-        },
-        'okay Ben*val': (val) => {
-          console.log('command start');
-          this.sendCommand(val);
-        }
-      };
-      // Trying to start annyang
-      annyang.addCommands(commands);
-      annyang.addCallback('error', function (err)
-      {
-        console.log('error in annyang');
-        console.log(err);
-        if(err.error === 'no-speech') {
-          if ( !annyang.isListening() ) {
-            annyang.start();
-          }
-        }
-      });
-      // Start listening. You can call this here, or attach this call to an event, button, etc.
-      annyang.start({ autoRestart: true , continuous: false});
-    } catch (err) {
-      console.log(err);
-    }
     /*
     // temporary action for testing finding a visual - hardcoded ! 591584e35a2b8200abacd959
     this.dataService.postAction('show_visual', {
@@ -119,12 +151,14 @@ export class BotComponent implements OnInit {
           message: 'botanswer',
           data: data
         });
-        // setup synthesis
-        const voices = window.speechSynthesis.getVoices();
-        console.log('Speech Synthesis');
-        console.log(voices);
-        this.msg.text = data.bot_response.result.fulfillment.speech;
-        speechSynthesis.speak(this.msg);
+        if (this.configModel.synthesis) {
+          // setup synthesis
+          const voices = window.speechSynthesis.getVoices();
+          console.log('Speech Synthesis');
+          console.log(voices);
+          this.msg.text = data.bot_response.result.fulfillment.speech;
+          speechSynthesis.speak(this.msg);
+        }
         const that = this;
         setTimeout(function(){
           console.log('showing chatlog again');

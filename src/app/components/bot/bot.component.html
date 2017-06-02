@@ -20,7 +20,7 @@
          - enable / disable aut listening
       -->
       <span class="input-group-btn">
-          <button class="btn btn-success"
+          <button *ngIf="!configModel.autorecord" class="btn btn-success"
                   type="button"
                   [(ngModel)]="configModel.recording"
                   title="Record Input"
@@ -31,7 +31,6 @@
           <button class="btn btn-success"
                   type="button"
                   [(ngModel)]="configModel.synthesis"
-                  (click)="onClickSynthesis()"
                   title="Speech Output"
                   btnCheckbox>
               <i class="fa fa-comment-o" aria-hidden="true"></i>
@@ -39,7 +38,7 @@
           <button class="btn btn-success"
                 type="button"
                 title="Listen all the time to: Okay Ben"
-                [(ngModel)]="configModel.synthesis"
+                [(ngModel)]="configModel.autorecord"
                   (click)="onClickListen()"
                 btnCheckbox>
               <i class="fa fa-assistive-listening-systems" aria-hidden="true"></i>
