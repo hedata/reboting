@@ -11,12 +11,14 @@ import { AppComponent } from './app.component';
 import { BotComponent } from './components/bot/bot.component';
 import {VisualComponent} from './components/visual/visual.component';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
+import {OpenDataComponent} from './components/opendatasearchresults/opendata.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     BotComponent,
-    VisualComponent
+    VisualComponent,
+    OpenDataComponent
   ],
   imports: [
     BrowserModule,

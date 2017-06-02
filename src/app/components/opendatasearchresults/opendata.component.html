@@ -1,0 +1,14 @@
+<div [class.hidden]="showComponent!=='opendata'" class="centered">
+  <h1> opendata seearch results</h1>
+<div *ngFor="let opendata of searchResults">
+  <div *ngIf="opendata.distribution.length>0">
+    {{opendata.name}} - {{opendata.description}}
+    <div *ngFor="let dist of opendata.distribution">
+      <div *ngIf="dist.fileFormat==='text/csv'">
+        <a href="{{dist.contentURL}}">Download CSV</a>
+      </div>
+    </div>
+    <hr>
+  </div>
+</div>
+</div>

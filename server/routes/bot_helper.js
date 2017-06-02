@@ -8,6 +8,8 @@ var DataSources = mongoose.model('DataSources');
 var Logs = mongoose.model('Logs');
 var Scripts = mongoose.model('Scripts');
 var Visuals = mongoose.model('Visuals');
+var request = require('request');
+
 /*
  var context = {
  request: req,
@@ -32,6 +34,112 @@ module.exports.saveVisual = function(context) {
 };
 
 
+module.exports.askBot = function(context) {
+  askBot(context);
+};
+module.exports.botEvent = function(context) {
+  botEvent(context);
+};
+
+askBot = function(context) {
+  var request = app.textRequest(context.botparams.query, {
+    sessionId: context.botparams.session_id
+  });
+  request.on('response', function(response) {
+    context.responseObj.bot_response = response;
+    console.log(response);
+    externalCalls(context);
+  });
+  request.on('error', function(error) {
+    context.response.status(500).json({'error': 'error on bot query: '+error});
+  });
+  request.end();
+};
+botEvent = function(context) {
+  var request = app.eventRequest(context.botparams.event, {
+    sessionId: context.botparams.session_id
+  });
+  request.on('response', function(response) {
+    context.responseObj.bot_response = response;
+    returnJsonResponse(context);
+  });
+  request.on('error', function(error) {
+    console.log(error);
+  });
+  request.end();
+};
+
+/*
+  hardcoded actions that need an external call
+ */
+externalCalls = function(context) {
+  if(context.responseObj.bot_response.result.action && context.responseObj.bot_response.result.action === 'search_opendata'){
+    if(!context.responseObj.bot_response.result.actionIncomplete) {
+      var keywords = context.responseObj.bot_response.result.parameters.keywords;
+      console.log("searching for: "+keywords);
+      //http://data.wu.ac.at/portalwatch/api/v1/search/tables?limit=50&q=feuerwehr
+      //result.parameters: { keywords: 'cats and dogs' }
+      request('http://data.wu.ac.at/portalwatch/api/v1/search/tables?limit=50&q='+keywords, function (error, response, body) {
+        //console.log('error:', error); // Print the error if one occurred
+        //console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+        //console.log('body:', body); // Print the HTML for the Google homepage.
+        if(error) {
+          console.log(error);
+          addExecutionScripts(context);
+        } else {
+          context.responseObj.opendata_search_results = JSON.parse(body);
+          addExecutionScripts(context);
+        }
+      });
+    } else {
+      addExecutionScripts(context);
+    }
+  } else {
+    addExecutionScripts(context)
+  }
+
+};
+
+addExecutionScripts = function(context) {
+  if(context.responseObj.bot_response.result.action){
+    if(!context.responseObj.bot_response.result.actionIncomplete) {
+      console.log("searching for action: "+context.responseObj.bot_response.result.action);
+      Scripts.findOne({action_name : context.responseObj.bot_response.result.action},function(err,obj) {
+        if(obj) {
+          context.responseObj.script = obj;
+          returnJsonResponse(context)
+        } else {
+          returnJsonResponse(context)
+        }
+      });
+    }else {
+      returnJsonResponse(context)
+    }
+  } else {
+    returnJsonResponse(context);
+  }
+};
+
+returnJsonResponse = function(context) {
+  //put this shit into the log
+  context.response.status(200).json(context.responseObj);
+  context.responseObj.bot_response.result.contexts = {};
+  //console.log(context.responseObj);
+  var logEntry = new Logs(context.responseObj);
+  logEntry.save(function(err,logentry) {
+    if(err) {
+      console.log("error on logentry"+err);
+    } else {
+      console.log("saved: logentry");
+    }
+  });
+};
+
+/*
+
+  Deprecated
+
+ */
 module.exports.fulfillFacebookDataupload = function(context) {
   //console.log(req.body.payload);
   var datasource = new DataSources(context.request.body.payload);
@@ -55,76 +163,4 @@ module.exports.fulfillFacebookDataupload = function(context) {
       botEvent(context);
     }
   });
-};
-
-
-module.exports.askBot = function(context) {
-  askBot(context);
-};
-module.exports.botEvent = function(context) {
-  botEvent(context);
-};
-
-askBot = function(context) {
-  var request = app.textRequest(context.botparams.query, {
-    sessionId: context.botparams.session_id
-  });
-  request.on('response', function(response) {
-    context.responseObj.bot_response = response;
-    console.log(response);
-    addExecutionScripts(context);
-  });
-  request.on('error', function(error) {
-    context.response.status(500).json({'error': 'error on bot query: '+error});
-  });
-  request.end();
-};
-botEvent = function(context) {
-  var request = app.eventRequest(context.botparams.event, {
-    sessionId: context.botparams.session_id
-  });
-  request.on('response', function(response) {
-    context.responseObj.bot_response = response;
-    returnJsonResponse(context);
-  });
-  request.on('error', function(error) {
-    console.log(error);
-  });
-  request.end();
-};
-
-returnJsonResponse = function(context) {
-  //put this shit into the log
-  context.response.status(200).json(context.responseObj);
-  context.responseObj.bot_response.result.contexts = {};
-  //console.log(context.responseObj);
-  var logEntry = new Logs(context.responseObj);
-  logEntry.save(function(err,logentry) {
-    if(err) {
-      console.log("error on logentry"+err);
-    } else {
-      console.log("saved: logentry");
-    }
-  });
-};
-
-
-addExecutionScripts = function(context) {
-  if(context.responseObj.bot_response.result.action){
-    if(!context.responseObj.bot_response.result.actionIncomplete) {
-      console.log("searching for action: "+context.responseObj.bot_response.result.action);
-      Scripts.findOne({action_name : context.responseObj.bot_response.result.action},function(err,obj) {
-        if(obj) {
-          context.responseObj.script = obj;
-          returnJsonResponse(context)
-        } else {
-          returnJsonResponse(context)
-        }
-      });
-    }else {
-      returnJsonResponse(context)
-    }
-  } else {
-    returnJsonResponse(context);
-  }
 };

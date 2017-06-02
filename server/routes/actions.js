@@ -25,6 +25,7 @@ var Visuals = mongoose.model('Visuals');
          },
          script? : if a script was found that needs to be executed on the client
          visual? : if a visual was found its attached here as visual object
+         opendata_search_results? : if it is an opendata visual its attached here
       }
 
   }

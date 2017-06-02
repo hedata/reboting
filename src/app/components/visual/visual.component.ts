@@ -27,6 +27,8 @@ export class VisualComponent implements OnInit {
   @Input()
   visual_id: String;
 
+  @Input()
+  showComponent: String;
   public widget: any;
   public loading: boolean = true;
   private session: Session.ISession;
