@@ -18,3 +18,11 @@ so we can run node service as non root user
 
 #fix inotify shit
 echo fs.inotify.max_user_watches=582222 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
+#Update Packages
+npm install -g npm-check-updates
+npm-check-updates -u
+npm install 
+
+#Updates
+docker-compose up -d --build 
