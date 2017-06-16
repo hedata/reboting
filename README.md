@@ -26,3 +26,5 @@ npm install
 
 #Updates
 docker-compose up -d --build 
+
+#Test
