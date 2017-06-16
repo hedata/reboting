@@ -1,5 +1,5 @@
 <div [class.hidden]="showComponent!=='opendata'" class="centered">
-  <h1> opendata seearch results</h1>
+  <h4>found: {{searchResults.length}}</h4>
 <div *ngFor="let opendata of searchResults">
   <div *ngIf="opendata.distribution.length>0">
     {{opendata.name}} - {{opendata.description}}

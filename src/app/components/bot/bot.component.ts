@@ -8,7 +8,7 @@ import annyang from 'annyang';
   styleUrls: ['./bot.component.css']
 })
 export class BotComponent implements OnInit {
-  public configModel: any = {recording: false, synthesis: false, autorecord: false};
+  public configModel: any = {recording: false, synthesis: true, autorecord: false};
   public quickreplies = [];
   botChat = [];
   msg = new SpeechSynthesisUtterance();
@@ -40,15 +40,21 @@ export class BotComponent implements OnInit {
      */
     try {
       this.msg.volume = 1;							// 0 to 1
-      this.msg.rate = 0.9;							// 0.1 to 10
+      this.msg.rate = 0.8;							// 0.1 to 10
       this.msg.pitch = 0;							// 0 to 2
       this.msg.lang = 'en-US';
       const that = this;
       window.speechSynthesis.onvoiceschanged = function () {
         that.voices = speechSynthesis.getVoices();
-        that.msg.voice = that.voices[3];
-        console.log('VOICES');
-        // console.log(that.voices);
+        //console.log(that.voices);
+        const index = that.findWithAttr(that.voices, 'name' , 'Google UK English Male' );
+        if (index !== -1) {
+          console.log('VOICE: Google Deutsch');
+          that.msg.voice = that.voices[index];
+        } else {
+          console.log('default voice');
+          that.msg.voice = that.voices[0];
+        }
       };
     } catch (err) {
       console.log(err);
@@ -172,9 +178,9 @@ export class BotComponent implements OnInit {
         });
         if (this.configModel.synthesis) {
           // setup synthesis
-          const voices = window.speechSynthesis.getVoices();
-          console.log('Speech Synthesis');
-          console.log(voices);
+          // const voices = window.speechSynthesis.getVoices();
+          // console.log('Speech Synthesis');
+          // console.log(voices);
           this.msg.text = data.bot_response.result.fulfillment.speech;
           speechSynthesis.speak(this.msg);
         }
@@ -191,4 +197,12 @@ export class BotComponent implements OnInit {
     */
   }
 
+  findWithAttr(array, attr, value) {
+    for(let i = 0; i < array.length; i += 1) {
+      if(array[i][attr] === value) {
+        return i;
+      }
+    }
+    return -1;
+  }
 }
