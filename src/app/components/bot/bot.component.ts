@@ -8,8 +8,8 @@ import annyang from 'annyang';
   styleUrls: ['./bot.component.css']
 })
 export class BotComponent implements OnInit {
-  public configModel: any = {recording: false, synthesis: true, autorecord: false};
-
+  public configModel: any = {recording: false, synthesis: false, autorecord: false};
+  public quickreplies = [];
   botChat = [];
   msg = new SpeechSynthesisUtterance();
   showchatlog = false;
@@ -53,6 +53,10 @@ export class BotComponent implements OnInit {
     } catch (err) {
       console.log(err);
     }
+  }
+  onQuickReply(reply) {
+    this.chatmessage = reply;
+    this.queryBot();
   }
   onClickRecord() {
     console.log('clickonRecord');
@@ -122,7 +126,7 @@ export class BotComponent implements OnInit {
     }
   }
   ngOnInit() {
-    this.chatmessage = 'Hi';
+    this.chatmessage = 'show me facebook reach last 10 days';
     this.queryBot();
     // Let's define our first command. First the text we expect, and then the function it should call
     /*
@@ -146,10 +150,21 @@ export class BotComponent implements OnInit {
     console.log('enter: ' + query);
     if (query !== '') {
       this.botChat = [];
+      this.quickreplies = [];
       this.botChat.push({you:  query});
       this.dataService.postAction('query',{query: query}).subscribe(data => {
         console.log(data);
         this.botChat.push(data);
+        // add quick replies
+        if (data.bot_response.result.fulfillment) {
+          const messages = data.bot_response.result.fulfillment.messages;
+          const that = this;
+          messages.forEach(function(element) {
+            if (element.type === 2) {
+              that.quickreplies = element.replies;
+            }
+          });
+        }
         this.chatmessage = '';
         this.dataService.emitChange({
           message: 'botanswer',

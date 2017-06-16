@@ -11,3 +11,16 @@
 .btn-success.active {
   color: black;
 }
+
+.quickreplies {
+  position:fixed;
+  bottom: 0;
+  left:0;
+  width:100%;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  #background-color:white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

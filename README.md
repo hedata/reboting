@@ -25,6 +25,4 @@ npm-check-updates -u
 npm install 
 
 #Updates
-docker-compose up -d --build 
-
-e
+docker-compose up -d --build

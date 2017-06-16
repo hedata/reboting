@@ -46,6 +46,15 @@
       </span>
     </div>
   </div>
+  <div *ngIf="quickreplies.length>0" class="quickreplies">
+      <div *ngFor="let reply of quickreplies" class="quickreply">
+        <button class="btn btn-info btn-lg" style="margin:6px"
+                type="button"
+                (click)="onQuickReply(reply)">
+          {{reply}}
+        </button>
+      </div>
+  </div>
   <div *ngIf="showchatlog">
     <div *ngFor="let message of botChat" class="list-group-item">
        <b *ngIf="message.you">You: </b> {{message?.you}}
@@ -53,3 +62,7 @@
     </div>
   </div>
 </div>
+
+
+
+
