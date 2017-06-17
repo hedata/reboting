@@ -43,10 +43,10 @@ dist
 .idea/
 
 db/
-#uploaded data 
-.uploaded_data/.config/
-.uploaded_data/.ipynb_checkpoints/
-.uploaded_data/.ipython/
-.uploaded_data/.jupyter/
-.uploaded_data/.local/
-.uploaded_data/.plotly/
+#uploaded data
+uploaded_data/.config/
+uploaded_data/.ipynb_checkpoints/
+uploaded_data/.ipython/
+uploaded_data/.jupyter/
+uploaded_data/.local/
+uploaded_data/.plotly/
