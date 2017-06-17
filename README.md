@@ -25,4 +25,6 @@ npm-check-updates -u
 npm install 
 
 #Updates
+docker-compose down
+ng build --prod --aot
 docker-compose up -d --build

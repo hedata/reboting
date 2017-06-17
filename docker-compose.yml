@@ -25,5 +25,5 @@ services:
   dabi:
     image: hedata/dabi:v001
     volumes:
-      - ./uploaded_data:/home/jovyan/work
+      - ./uploaded_data:/home/jovyan
     command: start-notebook.sh --NotebookApp.token='' --NotebookApp.allow_origin="*"

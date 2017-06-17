@@ -1,20 +1,19 @@
 'use strict';
 import {Component, OnInit, ViewChild, ElementRef, Input, NgZone} from '@angular/core';
 // Polyfill for ES6 Promises
-// import 'es6-promise';
+import 'es6-promise';
 
 import {
   Session, utils
 } from '@jupyterlab/services';
 import {
-  IOutputAreaModel, OutputAreaModel, OutputAreaWidget
+  OutputAreaModel, OutputAreaWidget
 } from 'jupyterlab/lib/outputarea';
 
 import {
   RenderMime
-}
-from 'jupyterlab/lib/rendermime';
-import {DataService} from "../../services/data.service";
+} from 'jupyterlab/lib/rendermime';
+import {DataService} from '../../services/data.service';
 
 declare var $: any ;
 
@@ -103,12 +102,12 @@ export class VisualComponent implements OnInit {
   }
   showExistingVisual(data: any) {
     console.log('show existing visual');
-    console.log(data);
+    // console.log(data);
     this.loading = true;
     $('#' + this.visual_id).empty();
     // set rendermine
     const rendermime = new RenderMime({ items: RenderMime.getDefaultItems() });
-    console.log(rendermime);
+    // console.log(rendermime);
     // set outputare model
     const model = new OutputAreaModel({ trusted: true });
     // Start a new session.
@@ -128,7 +127,7 @@ export class VisualComponent implements OnInit {
       console.log('after view Checked');
       // set rendermine
       const rendermime = new RenderMime({ items: RenderMime.getDefaultItems() });
-      console.log(rendermime);
+      // console.log(rendermime);
       // set outputare model
       const model = new OutputAreaModel({ trusted: true });
       // Start a new session.
@@ -140,8 +139,6 @@ export class VisualComponent implements OnInit {
       Session.startNew(options).then(s => {
         console.log('Session started');
         this.session = s;
-        return this.session.rename('x.ipynb');
-      }).then(() => {
         // create the widget // run in ngzone
         this.widget = new OutputAreaWidget({ rendermime, model });
         this.widget.execute(this.code_string, this.session.kernel).then(reply => {
