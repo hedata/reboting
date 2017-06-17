@@ -39,8 +39,13 @@ jspm_packages
 #dist
 dist
 
-#idea 
-.idea/workspace.xml
-.idea
+#idea
+.idea/
 
 db/
+.uploaded_data/.config/
+.uploaded_data/.ipynb_checkpoints/
+.uploaded_data/.ipython/
+.uploaded_data/.jupyter/
+.uploaded_data/.local/
+.uploaded_data/.plotly/
