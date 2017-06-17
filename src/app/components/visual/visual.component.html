@@ -1,7 +1,6 @@
-<div [class.hidden]="showComponent!=='visual'" class="centered_visual">
+<div [class.hidden]="showComponent!=='visual'"  class="centered_visual">
 
-  <div *ngIf="loading">
-    Loading Visual ...
+  <div *ngIf="loading" class="loading">
   </div>
 
   <div id ="{{visual_id}}">

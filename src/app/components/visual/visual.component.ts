@@ -157,7 +157,6 @@ export class VisualComponent implements OnInit {
           this.widget.execute(this.code_string, kernel).then(reply => {
             console.log('got reply from kernel: ' + reply.content.status);
             // append widget to notebook
-            this.loading = false;
             $('#' + this.visual_id).append(this.widget.node);
             // visual is created time for saving it
             const saveobj = {
@@ -167,7 +166,10 @@ export class VisualComponent implements OnInit {
             };
             console.log(saveobj);
             this.dataService.postAction('save_visual', saveobj).subscribe(
-              result => console.log(result),
+              result => {
+                console.log(result);
+                this.loading = false;
+              },
               error => console.log(error)
             );
             // Kill the kernel.

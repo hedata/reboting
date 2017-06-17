@@ -27,7 +27,7 @@ html, body{
   max-height: 100%;
   margin: 0 auto;
   margin-top: 6px;
-  background-color:white;
+  #background-color:white;
 }
 .centered {
   max-width:850px;
