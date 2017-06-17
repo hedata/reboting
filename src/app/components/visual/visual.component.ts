@@ -13,6 +13,13 @@ import {
 import {
   RenderMime
 } from 'jupyterlab/lib/rendermime';
+
+import {
+  KernelMessage, Kernel
+} from '@jupyterlab/services';
+
+
+
 import {DataService} from '../../services/data.service';
 
 declare var $: any ;
@@ -30,7 +37,7 @@ export class VisualComponent implements OnInit {
   showComponent: String;
   public widget: any;
   public loading: boolean = true;
-  private session: Session.ISession;
+  // private session: Session.ISession;
   private code_string = '';
   // variables for saving a visual
   private currentParams: any;
@@ -135,6 +142,45 @@ export class VisualComponent implements OnInit {
         kernelName: 'python',
         path: 'x.ipynb'
       };
+      console.log('Starting a kernel');
+      Kernel.getSpecs().then(kernelSpecs => {
+        console.log('got kernel specs');
+        console.log(kernelSpecs);
+        // use the default name
+        const kernel_options: Kernel.IOptions = {
+          name: kernelSpecs.default
+        };
+        Kernel.startNew(kernel_options).then(kernel => {
+          console.log(kernel);
+          // create the widget // run in ngzone
+          this.widget = new OutputAreaWidget({ rendermime, model });
+          this.widget.execute(this.code_string, kernel).then(reply => {
+            console.log('got reply from kernel: ' + reply.content.status);
+            // append widget to notebook
+            this.loading = false;
+            $('#' + this.visual_id).append(this.widget.node);
+            // visual is created time for saving it
+            const saveobj = {
+              model : this.widget.model.toJSON(),
+              script: this.currentScript,
+              params: this.currentParams
+            };
+            console.log(saveobj);
+            this.dataService.postAction('save_visual', saveobj).subscribe(
+              result => console.log(result),
+              error => console.log(error)
+            );
+            // Kill the kernel.
+            kernel.shutdown().then(() => {
+              console.log('Kernel shut down');
+            });
+          }).catch(err => {
+            console.error(err);
+            console.log('Error on executing code');
+          });
+        });
+      });
+      /*
       console.log('Starting session');
       Session.startNew(options).then(s => {
         console.log('Session started');
@@ -165,6 +211,7 @@ export class VisualComponent implements OnInit {
         console.error(err);
         console.log('Error on executing code');
       });
+      */
     });
   }
 }

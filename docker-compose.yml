@@ -26,4 +26,4 @@ services:
     image: hedata/dabi:v001
     volumes:
       - ./uploaded_data:/home/jovyan
-    command: start-notebook.sh --NotebookApp.token='' --NotebookApp.allow_origin="*"
+    command: start-notebook.sh --NotebookApp.token='' --NotebookApp.allow_origin="*" --NotebookApp.disable_check_xsrf=True
