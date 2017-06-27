@@ -4,11 +4,8 @@ var mongoose = require('mongoose');
 var dataSourceSchema = mongoose.Schema({
   userName: String,
   fileName: String,
-  lastModified: String,
-  lastModifiedDate: Date,
-  size: Number,
   type: String,
-  data: []
+  profiler : {}
 });
 
 var DataSources = mongoose.model('DataSources', dataSourceSchema);

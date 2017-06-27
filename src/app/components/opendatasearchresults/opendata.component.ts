@@ -21,8 +21,8 @@ export class OpenDataComponent {
         switch (data.message) {
           case 'botanswer':
             const response = data.data;
-            console.log("opendata reaction");
-            if (response.opendata_search_results) {
+            console.log('opendata reaction');
+            if (response.opendata_search_results && response.opendata_search_results.results) {
               this.searchResults = response.opendata_search_results.results;
               console.log(this.searchResults);
             }

@@ -46,10 +46,10 @@ export class BotComponent implements OnInit {
       const that = this;
       window.speechSynthesis.onvoiceschanged = function () {
         that.voices = speechSynthesis.getVoices();
-        //console.log(that.voices);
+        // console.log(that.voices);
         const index = that.findWithAttr(that.voices, 'name' , 'Google UK English Male' );
         if (index !== -1) {
-          console.log('VOICE: Google Deutsch');
+          console.log('Google UK English Male');
           that.msg.voice = that.voices[index];
         } else {
           console.log('default voice');
@@ -73,11 +73,13 @@ export class BotComponent implements OnInit {
     this.initAnnyang();
   }
   sendCommand(val) {
-    console.log('executing Voice Commands' + val);
-    this._ngZone.run(() => {
-      this.chatmessage = val;
-      this.queryBot();
-    });
+    if(val.length > 0) {
+      console.log('executing Voice Commands' + val);
+      this._ngZone.run(() => {
+        this.chatmessage = val;
+        this.queryBot();
+      });
+    }
   }
   initAnnyang() {
     // test what current speech model is
@@ -132,7 +134,7 @@ export class BotComponent implements OnInit {
     }
   }
   ngOnInit() {
-    this.chatmessage = 'show me facebook reach last 10 days';
+    this.chatmessage = 'scatterplot';
     this.queryBot();
     // Let's define our first command. First the text we expect, and then the function it should call
     /*

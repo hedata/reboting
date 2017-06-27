@@ -221,9 +221,9 @@ offset_slider = Slider(start=-5, end=5, value=0, step=.1,
                        title="Offset", callback=callback)
 callback.args["offset"] = offset_slider
 
-layout = row(
-    plot,
+layout = column(
     widgetbox(amp_slider, freq_slider, phase_slider, offset_slider),
+    plot,
     sizing_mode = 'scale_width'
 )
 
@@ -231,5 +231,91 @@ show(layout)
 `;
 params=[];
 intentname="interactive_test";
+insertIt(code,intentname,params);
+
+
+code =`import numpy as np
+import pandas as pd
+from bokeh.models import ColumnDataSource
+from bokeh.plotting import Figure, show, ColumnDataSource, output_notebook
+from bokeh.layouts import row,column, widgetbox
+from bokeh.models.widgets import Select,TextInput
+from bokeh.models import CustomJS
+
+try:
+    # Define the data to be used
+    df = pd.read_csv(url)
+    output_notebook(hide_banner=True)
+    #remove special chars of column names
+    df.columns=df.columns.str.replace('#','')
+    df.columns=df.columns.str.replace('.','')
+    df.columns=df.columns.str.replace(':','')
+    df.columns=df.columns.str.replace('"','')
+    df.columns=df.columns.str.replace(' ','')
+    numeric_columns = list(df.select_dtypes(include=['int64','float64']).columns)
+    df = df[numeric_columns]
+    #add2 dummy columns where we put our data that will be shown in so we change around and nothing will be killed
+    #and can plot with x and y
+    df.insert(0, 'x', df[numeric_columns[0]] )
+    df.insert(0, 'y', df[numeric_columns[1]] )
+    
+    source = ColumnDataSource(data=df)
+    #x and y are probably copied over which sucks and is a huge BUG!!
+    if len(numeric_columns)>1:
+        codex="""
+                var data = source.data;
+                data['x'] = data[cb_obj.value]
+                source.trigger('change');
+            """
+        
+        codey="""
+                var data = source.data;
+                data['y'] = data[cb_obj.value]
+                source.trigger('change');
+            """
+
+        callbackx = CustomJS(args=dict(source=source), code=codex)
+        callbacky = CustomJS(args=dict(source=source), code=codey)
+
+        # create a new plot 
+        plot = Figure()
+
+        # Make a line and connect to data source
+        plot.scatter(x='x'
+                  , y='y'
+                  , line_color="#F46D43"
+                  , line_width=6
+                  , line_alpha=0.6
+                  , source=source)
+
+
+        # Add list boxes for selecting which columns to plot on the x and y axis
+        xaxis_select = Select(title="X axis:", value=numeric_columns[0],
+                                   options=numeric_columns, callback=callbackx)
+
+        yaxis_select = Select(title="Y axis:", value=numeric_columns[1],
+                                   options=numeric_columns, callback=callbacky)
+
+
+
+        # Layout widgets next to the plot                     
+        controls = column(xaxis_select,yaxis_select)
+        layout = column(
+            controls,
+            plot,
+            sizing_mode = 'scale_width'
+        )
+        show(layout)
+    else: 
+        print("sorry not enough columns to make a scatterplot")
+except Exception:
+    print("ups no csv file found under the url you provided")
+`;
+params=[{
+  name: 'url',
+  value: 'https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv/datasets/iris.csv',
+  type: 'string'
+}];
+intentname="scatterplot";
 insertIt(code,intentname,params);
 

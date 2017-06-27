@@ -9,7 +9,7 @@ import 'rxjs/Rx';
 export class DataService {
   headers = new Headers({'Content-Type': 'application/json'});
   options = new RequestOptions({ headers: this.headers });
-  userName = 'Dirk Data';
+  userName = '123190u01uasd';
   /*
       Shared Service
    */

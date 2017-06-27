@@ -24,6 +24,8 @@ services:
       - ./db:/data/db
   dabi:
     image: hedata/dabi:v001
+    ports:
+     - "8888:8888"
     volumes:
       - ./uploaded_data:/home/jovyan
     command: start-notebook.sh --NotebookApp.token='' --NotebookApp.allow_origin="*" --NotebookApp.disable_check_xsrf=True
