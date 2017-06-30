@@ -8,7 +8,7 @@ import annyang from 'annyang';
   styleUrls: ['./bot.component.css']
 })
 export class BotComponent implements OnInit {
-  public configModel: any = {recording: false, synthesis: true, autorecord: false};
+  public configModel: any = {recording: false, synthesis: true, autorecord: false, quickreplies: true};
   public quickreplies = [];
   botChat = [];
   msg = new SpeechSynthesisUtterance();
@@ -174,7 +174,6 @@ export class BotComponent implements OnInit {
     console.log('enter: ' + query);
     if (query !== '') {
       this.botChat = [];
-      this.quickreplies = [];
       this.botChat.push({you:  query});
       this.dataService.postAction('query',{query: query}).subscribe(data => {
         console.log(data);

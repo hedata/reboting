@@ -3,6 +3,8 @@
 }
 .input_container {
   height: 60px;
+  padding-left: 6px;
+  padding-right: 6px;
 }
 .chat_input {
   margin-top:6px;

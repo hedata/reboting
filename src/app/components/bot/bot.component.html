@@ -18,6 +18,7 @@
          - enable / recording
          - start recording enabled disabled
          - enable / disable aut listening
+         - enable / disable quick replies
       -->
       <span class="input-group-btn">
           <button *ngIf="!configModel.autorecord" class="btn btn-success"
@@ -43,10 +44,17 @@
                 btnCheckbox>
               <i class="fa fa-assistive-listening-systems" aria-hidden="true"></i>
           </button>
+          <button class="btn btn-success"
+                   type="button"
+                   title="Show / Hide Quick Replies"
+                   [(ngModel)]="configModel.quickreplies"
+                   btnCheckbox>
+                <i class="fa fa-info" aria-hidden="true"></i>
+          </button>
       </span>
     </div>
   </div>
-  <div *ngIf="quickreplies.length>0" class="quickreplies">
+  <div *ngIf="quickreplies.length>0 && configModel.quickreplies" class="quickreplies">
       <div *ngFor="let reply of quickreplies" class="quickreply">
         <button class="btn btn-info btn-lg" style="margin:6px"
                 type="button"
