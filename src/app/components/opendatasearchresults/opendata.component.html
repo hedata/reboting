@@ -5,7 +5,12 @@
     {{opendata.name}} - {{opendata.description}}
     <div *ngFor="let dist of opendata.distribution">
       <div *ngIf="dist.fileFormat==='text/csv'">
-        <a href="{{dist.contentURL}}">Download CSV</a>
+        <button class="btn btn-info" style="margin:auto"
+                type="button"
+                (click)="onExploreUrl(dist.contentURL)">
+          Explore Data
+        </button>
+        <a href={{dist.contentURL}} target="_blank">Download</a>
       </div>
     </div>
     <hr>

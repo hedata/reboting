@@ -319,3 +319,33 @@ params=[{
 intentname="scatterplot";
 insertIt(code,intentname,params);
 
+
+code =`import numpy as np
+import pandas as pd
+from IPython.display import Image, display
+from IPython.core.display import HTML
+try:
+    # Define the data to be used
+    df = pd.read_csv(url)
+    #remove special chars of column names
+    df.columns=df.columns.str.replace('#','')
+    df.columns=df.columns.str.replace('.','')
+    df.columns=df.columns.str.replace(':','')
+    df.columns=df.columns.str.replace('"','')
+    df.columns=df.columns.str.replace(' ','')
+    pd.options.display.float_format = '{:,.2f}'.format
+    display(HTML('<h1>First Lines of the Dataset</h1>'))
+    display(df.head())   
+    display(HTML('<h1>Some Indicators</h1>'))
+    display(df.describe(include='all'))
+except Exception:
+    print("ups no csv file found under the url you provided")
+`;
+params=[{
+  name: 'url',
+  value: 'https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv/datasets/iris.csv',
+  type: 'string'
+}];
+intentname="analyze_csv";
+insertIt(code,intentname,params);
+

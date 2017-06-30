@@ -90,8 +90,9 @@ externalCalls = function(context) {
     } else {
       addExecutionScripts(context);
     }
+    // TODO make this happen
   } else if (context.responseObj.bot_response.result.action
-            && context.responseObj.bot_response.result.action === 'analyze_csv'
+            && context.responseObj.bot_response.result.action === 'analyze_csv_NOW'
             && !context.responseObj.bot_response.result.actionIncomplete) {
     var url = context.responseObj.bot_response.result.parameters.url;
     console.log('requesting url: '+url);

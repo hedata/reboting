@@ -34,4 +34,11 @@ export class OpenDataComponent {
       });
   }
 
+  onExploreUrl(url) {
+    this.dataService.emitChange({
+      message: 'directbotrequest',
+      data: 'analyze csv from url ' + url.replace(/^http:\/\//i, 'https://')
+    });
+  }
+
 }
