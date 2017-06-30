@@ -27,7 +27,7 @@ declare var $: any ;
 @Component({
   selector: 'app-visual',
   templateUrl: './visual.component.html',
-  styleUrls: ['./visual.component.css']
+  styleUrls: ['./visual.component.less', '../../../../node_modules/jupyterlab/lib/default-theme/index.css' ]
 })
 export class VisualComponent implements OnInit {
   @Input()
