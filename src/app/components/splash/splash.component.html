@@ -1,2 +1,9 @@
-<div [class.hidden]="showComponent!=='splash'" class="landing">
+<div [class.hidden]="showComponent!=='splash'" class="landing landing_fullscreen">
+  <div class="landing_center">
+    <button class="btn btn-info btn-lg" style="margin:auto"
+            type="button"
+            (click)="onMainButtonClicked()">
+         Show me what you got!
+    </button>
+  </div>
 </div>

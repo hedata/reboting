@@ -59,6 +59,22 @@ export class BotComponent implements OnInit {
     } catch (err) {
       console.log(err);
     }
+    /*
+      Listening to direct requests
+     */
+    dataService.changeEmitted$.subscribe(
+      data => {
+        console.log('Bot Component Reacting to change');
+        // which change was it?
+        switch (data.message) {
+          case 'directbotrequest':
+            this.chatmessage = data.data;
+            this.queryBot();
+            break;
+          default:
+            console.log('not for bot component');
+        }
+      });
   }
   onQuickReply(reply) {
     this.chatmessage = reply;
@@ -134,8 +150,8 @@ export class BotComponent implements OnInit {
     }
   }
   ngOnInit() {
-    //this.chatmessage = 'scatterplot';
-    //this.queryBot();
+    // this.chatmessage = 'scatterplot';
+    // this.queryBot();
     // Let's define our first command. First the text we expect, and then the function it should call
     /*
     // temporary action for testing finding a visual - hardcoded ! 591584e35a2b8200abacd959

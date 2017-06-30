@@ -14,6 +14,13 @@ export class SplashComponent implements OnInit {
     console.log('Init Splash');
   }
   constructor(
+    private dataService: DataService
   ) {
+  }
+  onMainButtonClicked() {
+    this.dataService.emitChange({
+      message: 'directbotrequest',
+      data: 'show me what you got'
+    });
   }
 }
