@@ -12,13 +12,15 @@ import { BotComponent } from './components/bot/bot.component';
 import {VisualComponent} from './components/visual/visual.component';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import {OpenDataComponent} from './components/opendatasearchresults/opendata.component';
+import {SplashComponent} from './components/splash/splash.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     BotComponent,
     VisualComponent,
-    OpenDataComponent
+    OpenDataComponent,
+    SplashComponent
   ],
   imports: [
     BrowserModule,

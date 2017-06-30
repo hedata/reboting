@@ -14,7 +14,7 @@ import {DataService} from './services/data.service';
 
 
 export class AppComponent {
-  public showComponent: String = 'opendata';
+  public showComponent: String = 'splash';
   constructor(private dataService: DataService) {
     dataService.changeEmitted$.subscribe(
       data => {
