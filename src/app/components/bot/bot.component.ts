@@ -151,8 +151,8 @@ export class BotComponent implements OnInit {
     }
   }
   ngOnInit() {
-    // this.chatmessage = 'scatterplot';
-    // this.queryBot();
+     this.chatmessage = 'show me what you got';
+     this.queryBot();
     // Let's define our first command. First the text we expect, and then the function it should call
     /*
     // temporary action for testing finding a visual - hardcoded ! 591584e35a2b8200abacd959
