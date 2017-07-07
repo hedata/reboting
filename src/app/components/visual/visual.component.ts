@@ -131,7 +131,7 @@ export class VisualComponent implements OnInit {
     this._ngZone.run(() => {
       this.loading = true;
       $('#' + this.visual_id).empty();
-      console.log('after view Checked');
+       console.log('after view Checked');
       // set rendermine
       const rendermime = new RenderMime({ items: RenderMime.getDefaultItems() });
       // console.log(rendermime);
@@ -169,6 +169,7 @@ export class VisualComponent implements OnInit {
               result => {
                 console.log(result);
                 this.loading = false;
+                // $('#' + this.visual_id).addClass('vertical_center_visual');
               },
               error => console.log(error)
             );

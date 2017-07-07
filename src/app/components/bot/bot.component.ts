@@ -8,8 +8,8 @@ import annyang from 'annyang';
   styleUrls: ['./bot.component.css']
 })
 export class BotComponent implements OnInit {
-  public configModel: any = {recording: false, synthesis: true, autorecord: false, quickreplies: true};
-  public quickreplies = [];
+  public configModel: any = {recording: false, synthesis: true, autorecord: false, quickreplies: false};
+  public quickreplies = ['Show me what you got'];
   botChat = [];
   msg = new SpeechSynthesisUtterance();
   showchatlog = false;
@@ -77,6 +77,7 @@ export class BotComponent implements OnInit {
       });
   }
   onQuickReply(reply) {
+    this.configModel.quickreplies = false;
     this.chatmessage = reply;
     this.queryBot();
   }
@@ -185,6 +186,7 @@ export class BotComponent implements OnInit {
           messages.forEach(function(element) {
             if (element.type === 2) {
               that.quickreplies = element.replies;
+              that.quickreplies.push('Show me what you got');
             }
           });
         }

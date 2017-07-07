@@ -1,10 +1,55 @@
 <!--<h3 *ngIf="!(uploadState | async)">Bot waiting...</h3>-->
 <div style="background-color: transparent
-    ;position:absolute
-    ;top:0px;right:0px
-    ;z-index:2000
-    ;max-width: 500px;width:100%;box-shadow: 0 0 0 0;
-    padding:0px;">
+    ;position:fixed
+    ;bottom:0px
+    ;z-index:2000;
+     left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto
+    ;max-width: 500px;
+    ;box-shadow: 0 0 0 0
+    ;padding:0px;">
+  <div *ngIf="configModel.quickreplies">
+    <!-- config buttons -->
+    <div class="list-group-item reboting_list">
+      <button class="btn btn-success"
+              type="button"
+              style="margin:6px;width:100%"
+              [(ngModel)]="configModel.synthesis"
+              title="Speech Output"
+              btnCheckbox>
+        <i class="fa fa-comment-o" style="margin-right:6px" aria-hidden="true"></i>Enable/Disable Voice Synthesis
+      </button>
+    </div>
+    <div class = "list-group-item reboting_list">
+      <button class="btn btn-success"
+              style="margin:6px;width:100%"
+              type="button"
+              title="Listen all the time to: Okay Ben"
+              [(ngModel)]="configModel.autorecord"
+              (click)="onClickListen()"
+              btnCheckbox>
+        <i class="fa fa-assistive-listening-systems" style="margin-right:6px" aria-hidden="true"></i>Enable/Disable Autorecord
+      </button>
+    </div>
+
+    <div *ngFor="let reply of quickreplies" class="list-group-item reboting_list">
+      <button class="btn btn-info" style="margin:6px;width:100%"
+              type="button"
+              (click)="onQuickReply(reply)">
+        {{reply}}
+      </button>
+    </div>
+
+  </div>
+
+  <div *ngIf="showchatlog">
+    <div *ngFor="let message of botChat" class="list-group-item">
+      <b *ngIf="message.you">You: </b> {{message?.you}}
+      <b *ngIf="message.bot_response">Ben: </b> {{ message?.bot_response?.result?.fulfillment?.speech }}
+    </div>
+  </div>
   <div class="input_container">
     <div class="input-group input-group-lg chat_input">
       <input
@@ -29,46 +74,19 @@
                   btnCheckbox>
             <i class="fa fa-microphone" aria-hidden="true"></i>
           </button>
-          <button class="btn btn-success"
-                  type="button"
-                  [(ngModel)]="configModel.synthesis"
-                  title="Speech Output"
-                  btnCheckbox>
-              <i class="fa fa-comment-o" aria-hidden="true"></i>
-          </button>
-          <button class="btn btn-success"
-                type="button"
-                title="Listen all the time to: Okay Ben"
-                [(ngModel)]="configModel.autorecord"
-                  (click)="onClickListen()"
-                btnCheckbox>
-              <i class="fa fa-assistive-listening-systems" aria-hidden="true"></i>
-          </button>
-          <button class="btn btn-success"
-                   type="button"
-                   title="Show / Hide Quick Replies"
-                   [(ngModel)]="configModel.quickreplies"
-                   btnCheckbox>
-                <i class="fa fa-info" aria-hidden="true"></i>
-          </button>
+         <button class="btn btn-success"
+                 type="button"
+                 title="Show / Hide Quick Replies"
+                 [(ngModel)]="configModel.quickreplies"
+                 btnCheckbox>
+                <i class="fa fa-plus" aria-hidden="true"></i> {{quickreplies.length}}
+        </button>
       </span>
     </div>
+
   </div>
-  <div *ngIf="quickreplies.length>0 && configModel.quickreplies" class="quickreplies">
-      <div *ngFor="let reply of quickreplies" class="quickreply">
-        <button class="btn btn-info btn-lg" style="margin:6px"
-                type="button"
-                (click)="onQuickReply(reply)">
-          {{reply}}
-        </button>
-      </div>
-  </div>
-  <div *ngIf="showchatlog">
-    <div *ngFor="let message of botChat" class="list-group-item">
-       <b *ngIf="message.you">You: </b> {{message?.you}}
-       <b *ngIf="message.bot_response">Ben: </b> {{ message?.bot_response?.result?.fulfillment?.speech }}
-    </div>
-  </div>
+
+
 </div>
 
 

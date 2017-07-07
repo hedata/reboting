@@ -5,15 +5,17 @@
   height: 60px;
   padding-left: 6px;
   padding-right: 6px;
+  margin:auto;
 }
 .chat_input {
   margin-top:6px;
-  margin-botton:6px;
+  margin-bottom:6px;
 }
 .btn-success.active {
   color: black;
 }
 
+/*
 .quickreplies {
   position:fixed;
   bottom: 0;
@@ -25,4 +27,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+*/
+
+.reboting_list {
+  padding: 0px;
+  background-color: transparent;
+  border: 0px solid transparent;
+  display: flex;
 }

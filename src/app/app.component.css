@@ -1,0 +1,17 @@
+.landing_fullscreen {
+  display: table;
+  height: 100%;
+  padding-bottom: 0;
+  padding-top: 0;
+  table-layout: fixed;
+  width: 100%;
+  #text-align: center;
+}
+
+.landing {
+  background-image: url(../assets/background_splash.jpg);
+  height: 100%;
+  background-size: cover;
+  background-position: 50% 50%;
+  background-repeat: repeat;
+}

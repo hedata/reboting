@@ -2,24 +2,6 @@
   display: none;
 }
 
-.landing {
-  background-image: url(../../../assets/background_splash.jpg);
-  height: calc(100% - 59px);
-  background-size: cover;
-  background-position: 50% 50%;
-  background-repeat: no-repeat;
-}
-
-.landing_fullscreen {
-  display: table;
-  height: calc(100% - 59px);
-  padding-bottom: 0;
-  padding-top: 0;
-  table-layout: fixed;
-  width: 100%;
-  text-align: center;
-}
-
 .landing_center {
   display: table-cell;
   float: none;
