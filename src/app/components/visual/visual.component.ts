@@ -131,7 +131,7 @@ export class VisualComponent implements OnInit {
     this._ngZone.run(() => {
       this.loading = true;
       $('#' + this.visual_id).empty();
-       console.log('after view Checked');
+      console.log('emptied visual: '+this.visual_id);
       // set rendermine
       const rendermime = new RenderMime({ items: RenderMime.getDefaultItems() });
       // console.log(rendermime);
@@ -142,7 +142,7 @@ export class VisualComponent implements OnInit {
         kernelName: 'python',
         path: 'x.ipynb'
       };
-      console.log('Starting a kernel');
+      console.log('Starting a kernel for visual: '+this.visual_id);
       Kernel.getSpecs().then(kernelSpecs => {
         console.log('got kernel specs');
         console.log(kernelSpecs);
@@ -155,7 +155,7 @@ export class VisualComponent implements OnInit {
           // create the widget // run in ngzone
           this.widget = new OutputAreaWidget({ rendermime, model });
           this.widget.execute(this.code_string, kernel).then(reply => {
-            console.log('got reply from kernel: ' + reply.content.status);
+            console.log('got reply from kernel: ' + reply.content.status + ' for visual: ' + this.visual_id);
             // append widget to notebook
             $('#' + this.visual_id).append(this.widget.node);
             // visual is created time for saving it
