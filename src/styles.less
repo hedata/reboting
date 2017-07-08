@@ -68,10 +68,32 @@ html, body{
 @rendered_html_border_color : black;
 @body-bg : white;
 
+.jp-RenderedHTML::-webkit-scrollbar-track
+{
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  border-radius: 1px;
+  background-color: #F5F5F5;
+}
+
+.jp-RenderedHTML::-webkit-scrollbar
+{
+  width: 1px;
+  height: 1px;
+  background-color: transparent;
+}
+
+.jp-RenderedHTML::-webkit-scrollbar-thumb
+{
+  border-radius: 1px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+  background-color: #F5F5F5;
+}
+
 //from https://github.com/jupyter/notebook/blob/master/notebook/static/notebook/less/renderedhtml.less
 .jp-RenderedHTML {
   background: white;
   overflow-x:auto;
+
   color: @text-color;
   em {font-style: italic;}
   strong {font-weight: bold;}

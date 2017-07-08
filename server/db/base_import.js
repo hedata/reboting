@@ -195,7 +195,6 @@ output_notebook(hide_banner=True)
 source = ColumnDataSource(data=dict(x=x, y=y))
 
 plot = figure(y_range=(-10, 10))
-plot.sizing_mode = 'scale_width'
 
 plot.line('x', 'y', source=source, line_width=3, line_alpha=0.6)
 
@@ -232,7 +231,7 @@ callback.args["offset"] = offset_slider
 layout = column(
     widgetbox(amp_slider, freq_slider, phase_slider, offset_slider),
     plot,
-    sizing_mode = 'scale_width'
+    responsive = True
 )
 
 show(layout)
