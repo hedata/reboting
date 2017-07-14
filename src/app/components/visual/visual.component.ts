@@ -1,10 +1,10 @@
 'use strict';
-import {Component, OnInit, ViewChild, ElementRef, Input, NgZone} from '@angular/core';
+import {Component, OnInit, Input, NgZone} from '@angular/core';
 // Polyfill for ES6 Promises
 import 'es6-promise';
 
 import {
-  Session, utils
+  Session
 } from '@jupyterlab/services';
 import {
   OutputAreaModel, OutputAreaWidget
@@ -15,7 +15,7 @@ import {
 } from 'jupyterlab/lib/rendermime';
 
 import {
-  KernelMessage, Kernel
+  Kernel
 } from '@jupyterlab/services';
 
 
@@ -131,7 +131,7 @@ export class VisualComponent implements OnInit {
     this._ngZone.run(() => {
       this.loading = true;
       $('#' + this.visual_id).empty();
-      console.log('emptied visual: '+this.visual_id);
+      console.log('emptied visual: ' + this.visual_id);
       // set rendermine
       const rendermime = new RenderMime({ items: RenderMime.getDefaultItems() });
       // console.log(rendermime);
@@ -142,7 +142,7 @@ export class VisualComponent implements OnInit {
         kernelName: 'python',
         path: 'x.ipynb'
       };
-      console.log('Starting a kernel for visual: '+this.visual_id);
+      console.log('Starting a kernel for visual: ' + this.visual_id);
       Kernel.getSpecs().then(kernelSpecs => {
         console.log('got kernel specs');
         console.log(kernelSpecs);

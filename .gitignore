@@ -50,3 +50,5 @@ uploaded_data/.ipython/
 uploaded_data/.jupyter/
 uploaded_data/.local/
 uploaded_data/.plotly/
+uploaded_data/.cache/pip/
+

@@ -28,4 +28,4 @@ services:
      - "8888:8888"
     volumes:
       - ./uploaded_data:/home/jovyan
-    command: start-notebook.sh --NotebookApp.token='' --NotebookApp.allow_origin="*" --NotebookApp.disable_check_xsrf=True
+    command: start.sh jupyter lab --NotebookApp.token='' --NotebookApp.allow_origin="*" --NotebookApp.disable_check_xsrf=True
