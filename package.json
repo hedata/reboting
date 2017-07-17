@@ -28,6 +28,7 @@
     "@ngrx/core": "^1.2.0",
     "annyang": "^2.6.0",
     "apiai": "^4.0.2",
+    "auth0-js": "^8.8.0",
     "core-js": "^2.4.1",
     "express": "^4.15.3",
     "jupyterlab": "^0.17.5",

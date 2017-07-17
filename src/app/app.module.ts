@@ -13,6 +13,7 @@ import {VisualComponent} from './components/visual/visual.component';
 import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import {OpenDataComponent} from './components/opendatasearchresults/opendata.component';
 import {SplashComponent} from './components/splash/splash.component';
+import {AuthService} from './services/auth.service';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import {SplashComponent} from './components/splash/splash.component';
   ],
   providers: [
     DataService,
+    AuthService,
   ],
   bootstrap: [AppComponent]
 })
