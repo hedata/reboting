@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import {Component, NgZone, OnInit} from '@angular/core';
 import {DataService} from './services/data.service';
-import {AuthService} from "./services/auth.service";
+import {AuthService} from './services/auth.service';
+
+declare const FB: any ;
 
 @Component({
   selector: 'app-root',
@@ -14,19 +16,16 @@ import {AuthService} from "./services/auth.service";
  */
 
 
-export class AppComponent {
+export class AppComponent implements OnInit {
   public showComponent: String = 'splash';
   constructor(private dataService: DataService,
-              private authService: AuthService) {
+              private authService: AuthService,
+              private _ngZone: NgZone) {
     console.log('App Component constructor');
-    this.dataService.setAuthService(this.authService);
-    if(!this.authService.isAuthenticated()) {
-      this.authService.handleAuthentication();
-    }
     dataService.changeEmitted$.subscribe(
       data => {
         console.log('App reacting to change');
-        console.log(data);
+        // console.log(data);
         // which change was it?
         switch (data.message) {
           case 'botanswer':
@@ -42,10 +41,22 @@ export class AppComponent {
             this.showComponent = 'visual';
             break;
           default:
-            console.log('error');
-            console.log(data);
+            console.log('not me');
+            // console.log(data);
         }
       });
+  }
+  ngOnInit(): void {
+    FB.getLoginStatus((response) => {
+        console.log('response from login status!');
+        console.log(response);
+        if (response.status === 'connected') {
+          this.dataService.emitChange({
+            message: 'login',
+            data: response
+          });
+        }
+    });
   }
 
 }
