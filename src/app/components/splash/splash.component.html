@@ -1,11 +1,18 @@
 <div [class.hidden]="showComponent!=='splash'">
-  <!--
-  <div class="landing_center">
+  <div class="login_center" *ngIf="showLogin">
+    <h1>Hello Friend</h1>
     <button class="btn btn-info btn-lg" style="margin:auto"
             type="button"
             (click)="onMainButtonClicked()">
-         Show me what you got!
+         Login
     </button>
   </div>
-  -->
+  <div class="login_center" *ngIf="!showLogin">
+    <h1>Hello Friend</h1>
+    <button class="btn btn-info btn-lg" style="margin:auto"
+            type="button"
+            (click)="onLogoutButtonClicked()">
+      Logout
+    </button>
+  </div>
 </div>

@@ -2,12 +2,13 @@
   display: none;
 }
 
-.landing_center {
-  display: table-cell;
-  float: none;
-  padding-bottom: 0;
-  padding-top: 0;
-  position: relative;
-  vertical-align: middle;
-  width: 100%;
+
+
+.login_center {
+  position: fixed; /* or absolute */
+  top: 50%;
+  left: 50%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
+
 }

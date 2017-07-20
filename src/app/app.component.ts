@@ -19,9 +19,9 @@ export class AppComponent {
   constructor(private dataService: DataService,
               private authService: AuthService) {
     console.log('App Component constructor');
-    this.authService.handleAuthentication();
+    this.dataService.setAuthService(this.authService);
     if(!this.authService.isAuthenticated()) {
-      this.authService.login();
+      this.authService.handleAuthentication();
     }
     dataService.changeEmitted$.subscribe(
       data => {

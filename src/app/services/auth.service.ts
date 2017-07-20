@@ -28,6 +28,7 @@ export class AuthService {
 
   // ...
   public handleAuthentication(): void {
+    console.log('handling authentication');
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         window.location.hash = '';
@@ -60,7 +61,9 @@ export class AuthService {
     // Check whether the current time is past the
     // access token's expiry time
     const expiresAt = JSON.parse(localStorage.getItem('expires_at'));
-    return new Date().getTime() < expiresAt;
+    const isAuth = new Date().getTime() < expiresAt;
+    console.log('user is authenticated:' + isAuth);
+    return isAuth;
   }
 
 }
