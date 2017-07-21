@@ -1,4 +1,4 @@
-import {Component, NgZone, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, NgZone, OnInit} from '@angular/core';
 import { DataService } from '../../services/data.service';
 import annyang from 'annyang';
 
@@ -13,6 +13,7 @@ export class BotComponent implements OnInit {
   botChat = [];
   msg = new SpeechSynthesisUtterance();
   showchatlog = false;
+  show = false;
   voices;
   private commands_listen = {
     'okay then*val': (val) => {
@@ -33,7 +34,8 @@ export class BotComponent implements OnInit {
   chatmessage: String = '' ;
   constructor(
     private dataService: DataService,
-    private _ngZone: NgZone
+    private _ngZone: NgZone,
+    private ref: ChangeDetectorRef
   ) {
     /*
       setting base synthesis options
@@ -43,17 +45,16 @@ export class BotComponent implements OnInit {
       this.msg.rate = 0.8;							// 0.1 to 10
       this.msg.pitch = 0;							// 0 to 2
       this.msg.lang = 'en-US';
-      const that = this;
-      window.speechSynthesis.onvoiceschanged = function () {
-        that.voices = speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => {
+        this.voices = speechSynthesis.getVoices();
         // console.log(that.voices);
-        const index = that.findWithAttr(that.voices, 'name' , 'Google UK English Male' );
+        const index = this.findWithAttr(this.voices, 'name' , 'Google UK English Male' );
         if (index !== -1) {
           console.log('Google UK English Male');
-          that.msg.voice = that.voices[index];
+          this.msg.voice = this.voices[index];
         } else {
           console.log('default voice');
-          that.msg.voice = that.voices[0];
+          this.msg.voice = this.voices[0];
         }
       };
     } catch (err) {
@@ -64,12 +65,20 @@ export class BotComponent implements OnInit {
      */
     dataService.changeEmitted$.subscribe(
       data => {
-        console.log('Bot Component Reacting to change');
         // which change was it?
         switch (data.message) {
           case 'directbotrequest':
+            console.log('Bot Component Reacting to change');
             this.chatmessage = data.data;
             this.queryBot();
+            break;
+          case 'login':
+            this._ngZone.run(() => {
+              console.log('Bot Component Reacting to login');
+              this.show = true;
+              this.chatmessage = 'show me what you got';
+              this.queryBot();
+            });
             break;
           default:
             console.log('not for bot component');
@@ -151,8 +160,6 @@ export class BotComponent implements OnInit {
     }
   }
   ngOnInit() {
-     this.chatmessage = 'show me what you got';
-     this.queryBot();
     // Let's define our first command. First the text we expect, and then the function it should call
     /*
     // temporary action for testing finding a visual - hardcoded ! 591584e35a2b8200abacd959
@@ -171,6 +178,7 @@ export class BotComponent implements OnInit {
   }
   queryBot() {
     this.showchatlog = true;
+    // mark this for cange detection
     const query = this.chatmessage;
     console.log('enter: ' + query);
     if (query !== '') {
@@ -182,11 +190,10 @@ export class BotComponent implements OnInit {
         // add quick replies
         if (data.bot_response.result.fulfillment) {
           const messages = data.bot_response.result.fulfillment.messages;
-          const that = this;
-          messages.forEach(function(element) {
+          messages.forEach((element) => {
             if (element.type === 2) {
-              that.quickreplies = element.replies;
-              that.quickreplies.push('Show me what you got');
+              this.quickreplies = element.replies;
+              this.quickreplies.push('Show me what you got');
             }
           });
         }
@@ -203,11 +210,10 @@ export class BotComponent implements OnInit {
           this.msg.text = data.bot_response.result.fulfillment.speech;
           speechSynthesis.speak(this.msg);
         }
-        const that = this;
-        setTimeout(function(){
+        setTimeout(() => {
           console.log('showing chatlog again');
-          that.showchatlog = false;
-        }, 3000 );
+          this.showchatlog = false;
+        }, 5000 );
       });
     }
     /*

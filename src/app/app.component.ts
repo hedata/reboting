@@ -20,8 +20,11 @@ export class AppComponent implements OnInit {
   public showComponent: String = 'splash';
   constructor(private dataService: DataService,
               private authService: AuthService,
-              private _ngZone: NgZone) {
+             ) {
     console.log('App Component constructor');
+    this.authService.setDataService(dataService);
+    this.authService.checkAuthStatus();
+    this.dataService.setAuthService(authService);
     dataService.changeEmitted$.subscribe(
       data => {
         console.log('App reacting to change');
@@ -47,16 +50,7 @@ export class AppComponent implements OnInit {
       });
   }
   ngOnInit(): void {
-    FB.getLoginStatus((response) => {
-        console.log('response from login status!');
-        console.log(response);
-        if (response.status === 'connected') {
-          this.dataService.emitChange({
-            message: 'login',
-            data: response
-          });
-        }
-    });
+
   }
 
 }

@@ -16,20 +16,20 @@ export class OpenDataComponent {
   ) {
     dataService.changeEmitted$.subscribe(
       data => {
-        console.log('Visual Component reacting to change');
         // which change was it?
         switch (data.message) {
           case 'botanswer':
+            console.log('Visual Component reacting to change');
             const response = data.data;
-            console.log('opendata reaction');
             if (response.opendata_search_results && response.opendata_search_results.results) {
+              console.log('opendata reaction');
               this.searchResults = response.opendata_search_results.results;
               console.log(this.searchResults);
             }
             break;
           default:
-            console.log('not me');
-            console.log(data);
+            // console.log('not me');
+            // console.log(data);
         }
       });
   }

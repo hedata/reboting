@@ -101,9 +101,6 @@ export class VisualComponent implements OnInit {
             console.log(data.data);
             this.showExistingVisual(data.data);
             break;
-          default:
-            console.log('error');
-            console.log(data);
         }
       });
   }
