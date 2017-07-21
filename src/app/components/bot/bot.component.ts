@@ -225,7 +225,7 @@ export class BotComponent implements OnInit {
         setTimeout(() => {
           console.log('showing chatlog again');
           this.showchatlog = false;
-        }, 5000 );
+        }, 7000 );
       });
     }
     /*

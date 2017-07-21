@@ -9,14 +9,15 @@
   top: 50%;
   left: 0;
   width:100%;
-  height:140px;
   /* bring your own prefixes */
   transform: translate(0, -50%);
   background-color: rgba(0,0,0,0.2)
 }
 
 .middle_center {
-  position: fixed;
+  position: relative;
   left: 50%;
+  width:200px;
   transform: translate(-50%,0);
+  margin-bottom: 20px;
 }

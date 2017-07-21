@@ -2,13 +2,14 @@
  * Created by hedata on 31.03.17.
  */
 var apiai = require('apiai');
-var app = apiai("f610e349415a4c64a579812f53a5679f");
+var app = apiai("ebcf0040b9324ebf84475422b113d202");
 var mongoose = require('mongoose');
 var DataSources = mongoose.model('DataSources');
 var Logs = mongoose.model('Logs');
 var Scripts = mongoose.model('Scripts');
 var Visuals = mongoose.model('Visuals');
 var request = require('request');
+var async = require('async');
 
 /*
  var context = {
@@ -74,24 +75,55 @@ botEvent = function(context) {
   hardcoded actions that need an external call
  */
 externalCalls = function(context) {
-  if(context.responseObj.bot_response.result.action && context.responseObj.bot_response.result.action === 'search_opendata'){
-    if(!context.responseObj.bot_response.result.actionIncomplete) {
-      var keywords = context.responseObj.bot_response.result.parameters.keywords;
-      console.log("searching for: "+keywords);
-      request('http://data.wu.ac.at/portalwatch/api/v1/search/datasets?limit=50&q='+keywords, function (error, response, body) {
-        if(error) {
-          console.log(error);
-          addExecutionScripts(context);
-        } else {
-          context.responseObj.opendata_search_results = JSON.parse(body);
-          addExecutionScripts(context);
-        }
-      });
-    } else {
-      addExecutionScripts(context);
+  // making it a parallel function and just returning when everything finished
+  console.log("created new task");
+  var calls = [];
+  //search in opendata wu portal
+  calls.push(function(callback){
+    console.log("starting with searching in opendata");
+    if(context.responseObj.bot_response.result.action && context.responseObj.bot_response.result.action === 'search_opendata'){
+      if(!context.responseObj.bot_response.result.actionIncomplete) {
+        var topics = context.responseObj.bot_response.result.parameters.topics;
+        var keywords = topics.join(" ");
+        console.log("searching for: "+keywords);
+        request('http://data.wu.ac.at/portalwatch/api/v1/search/datasets?limit=50&q='+keywords, function (error, response, body) {
+          if(error) {
+            console.log(error);
+            callback(null,"returning from search opendata error");
+          } else {
+            context.responseObj.opendata_search_results = JSON.parse(body);
+            callback(null,"returning from search opendata all good");
+          }
+        });
+      } else {
+        callback(null,"returning from search opendata error");
+      }
     }
-    // TODO make this happen
-  } else if (context.responseObj.bot_response.result.action
+  });
+  //search in 23degree api
+
+  //add execution scripts
+  calls.push(function(callback) {
+    addExecutionScripts(context,callback);
+  });
+  calls.push(function(callback){
+    callback(null,"returning from execution scripts");
+  });
+  console.log("starting async with calls: "+calls.length);
+  async.parallel(calls, function(err, result) {
+    /* this code will run after all calls finished the job or
+     when any of the calls passes an error */
+    if (err) {
+      console.log(err);
+      returnJsonResponse(context);
+    } else {
+      returnJsonResponse(context);
+    }
+  });
+
+
+
+  /*else if (context.responseObj.bot_response.result.action
             && context.responseObj.bot_response.result.action === 'analyze_csv_NOW'
             && !context.responseObj.bot_response.result.actionIncomplete) {
     var url = context.responseObj.bot_response.result.parameters.url;
@@ -145,29 +177,26 @@ externalCalls = function(context) {
         }
       }
     });
-  } else {
-    addExecutionScripts(context)
-  }
-
+  }*/
 };
 
-addExecutionScripts = function(context) {
+addExecutionScripts = function(context,callback) {
   if(context.responseObj.bot_response.result.action){
     if(!context.responseObj.bot_response.result.actionIncomplete) {
       console.log("searching for action: "+context.responseObj.bot_response.result.action);
       Scripts.findOne({action_name : context.responseObj.bot_response.result.action},function(err,obj) {
         if(obj) {
           context.responseObj.script = obj;
-          returnJsonResponse(context)
+          callback(null,"returning from execution script all good");
         } else {
-          returnJsonResponse(context)
+          callback(null,"nothing to add from exection script");
         }
       });
     }else {
-      returnJsonResponse(context)
+      callback(null,"nothing to add from exection script");
     }
   } else {
-    returnJsonResponse(context);
+    callback(null,"nothing to add from exection script");
   }
 };
 

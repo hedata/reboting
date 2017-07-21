@@ -94,7 +94,7 @@ export class AuthService {
       });
     } else {
       console.log('OHOH facebook not loaded trying again');
-      setTimeout(() => { this.checkAuthStatus(); }, 200);
+      setTimeout(() => { this.checkAuthStatus(); }, 1000);
     }
   }
 
