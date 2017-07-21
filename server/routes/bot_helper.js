@@ -84,9 +84,23 @@ externalCalls = function(context) {
     if(context.responseObj.bot_response.result.action && context.responseObj.bot_response.result.action === 'search_opendata'){
       if(!context.responseObj.bot_response.result.actionIncomplete) {
         var topics = context.responseObj.bot_response.result.parameters.topics;
-        var keywords = topics.join(" ");
-        console.log("searching for: "+keywords);
-        request('http://data.wu.ac.at/portalwatch/api/v1/search/datasets?limit=50&q='+keywords, function (error, response, body) {
+        var geolocation = context.responseObj.bot_response.result.parameters.geolocation;
+        var requesturi ="http://data.wu.ac.at/odgraph/locationsearch?";
+        if(topics.length>0) {
+          requesturi = requesturi+"q="+topics.join(" ");
+        }
+        if(geolocation!=="") {
+          if(geolocation.lastIndexOf("http",0)=== 0) {
+            //we have a uri
+            if(topics.length>0) {
+              requesturi = requesturi+"&l="+geolocation;
+            } else {
+              requesturi = requesturi+"l="+geolocation;
+            }
+          }
+        }
+        console.log("searching for: "+requesturi);
+        request(requesturi, function (error, response, body) {
           if(error) {
             console.log(error);
             callback(null,"returning from search opendata error");

@@ -331,22 +331,22 @@ code =`import numpy as np
 import pandas as pd
 from IPython.display import Image, display
 from IPython.core.display import HTML
-try:
-    # Define the data to be used
-    df = pd.read_csv(url)
-    #remove special chars of column names
-    df.columns=df.columns.str.replace('#','')
-    df.columns=df.columns.str.replace('.','')
-    df.columns=df.columns.str.replace(':','')
-    df.columns=df.columns.str.replace('"','')
-    df.columns=df.columns.str.replace(' ','')
-    pd.options.display.float_format = '{:,.2f}'.format
-    display(HTML('<h1>First Lines of the Dataset</h1>'))
-    display(df.head())   
-    display(HTML('<h1>Some Indicators</h1>'))
-    display(df.describe(include='all'))
-except Exception:
-    print("ups no csv file found under the url you provided")
+# Define the data to be used
+display(HTML('<b>'+url+'</b>'))
+df = pd.read_csv(url,sep=';')
+#remove special chars of column names
+df.columns=df.columns.str.replace('#','')
+df.columns=df.columns.str.replace('.','')
+df.columns=df.columns.str.replace(':','')
+df.columns=df.columns.str.replace('"','')
+df.columns=df.columns.str.replace(' ','')
+pd.options.display.float_format = '{:,.2f}'.format
+display(HTML('<h1>First Lines of the Dataset</h1>'))
+display(df.head())   
+display(HTML('<h1>Some Indicators</h1>'))
+display(df.describe(include='all'))
+#except Exception:
+#    print("ups no csv file found under the url you provided")
 `;
 params=[{
   name: 'url',

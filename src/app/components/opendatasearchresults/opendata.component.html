@@ -1,21 +1,16 @@
 <div [class.hidden]="showComponent!=='opendata'" class="centered">
-  <div style="background-color: white;">
-    <h4>found: {{searchResults.length}}</h4>
-    <div *ngFor="let opendata of searchResults">
-      <div *ngIf="opendata.distribution.length>0">
-        {{opendata.name}} - {{opendata.description}}
-        <div *ngFor="let dist of opendata.distribution">
-          <div *ngIf="dist.fileFormat==='text/csv'">
-            <button class="btn btn-info" style="margin:auto"
+  <div>
+    <h3>found: {{searchResults.total}}</h3>
+    <div *ngFor="let opendata of searchResults.results"
+         style="background-color: white;margin-top:6px;margin-bottom:6px;padding:6px;">
+        <h4>{{opendata.dataset.dataset_name}}</h4>
+        {{opendata.dataset.dataset_description}} - {{opendata.dataset.publisher}}<br>
+        <button class="btn btn-info" style="margin:auto"
                     type="button"
-                    (click)="onExploreUrl(dist.contentURL)">
+                    (click)="onExploreUrl(opendata.url)">
               Explore Data
-            </button>
-            <a href={{dist.contentURL}} target="_blank">Download</a>
-          </div>
-        </div>
-        <hr>
-      </div>
+        </button>
+        <a href={{opendata.url}} target="_blank">Download</a>
     </div>
   </div>
 </div>

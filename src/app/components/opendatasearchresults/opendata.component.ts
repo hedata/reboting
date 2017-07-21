@@ -21,9 +21,9 @@ export class OpenDataComponent {
           case 'botanswer':
             console.log('Visual Component reacting to change');
             const response = data.data;
-            if (response.opendata_search_results && response.opendata_search_results.results) {
+            if (response.opendata_search_results && response.opendata_search_results) {
               console.log('opendata reaction');
-              this.searchResults = response.opendata_search_results.results;
+              this.searchResults = response.opendata_search_results;
               console.log(this.searchResults);
             }
             break;
@@ -35,9 +35,10 @@ export class OpenDataComponent {
   }
 
   onExploreUrl(url) {
+    // url.replace(/^http:\/\//i, 'https://')
     this.dataService.emitChange({
       message: 'directbotrequest',
-      data: 'analyze csv from url ' + url.replace(/^http:\/\//i, 'https://')
+      data: 'analyze csv from url ' + url
     });
   }
 
