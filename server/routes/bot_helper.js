@@ -98,6 +98,8 @@ externalCalls = function(context) {
       } else {
         callback(null,"returning from search opendata error");
       }
+    } else {
+      callback(null,"returning from search opendata error");
     }
   });
   //search in 23degree api
@@ -106,13 +108,11 @@ externalCalls = function(context) {
   calls.push(function(callback) {
     addExecutionScripts(context,callback);
   });
-  calls.push(function(callback){
-    callback(null,"returning from execution scripts");
-  });
   console.log("starting async with calls: "+calls.length);
   async.parallel(calls, function(err, result) {
     /* this code will run after all calls finished the job or
      when any of the calls passes an error */
+    console.log("in the callback of the async parallel call")
     if (err) {
       console.log(err);
       returnJsonResponse(context);
