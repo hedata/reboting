@@ -10,21 +10,22 @@
     ;max-width: 500px;
     ;box-shadow: 0 0 0 0
     ;padding:0px;">
-  <div *ngIf="configModel.quickreplies">
+  <div *ngIf="configModel.userprofile">
     <!-- config buttons -->
-    <div class="list-group-item reboting_list">
-      <button class="btn btn-success"
-              type="button"
-              style="margin:6px;width:100%"
-              [(ngModel)]="configModel.synthesis"
-              title="Speech Output"
-              btnCheckbox>
-        <i class="fa fa-comment-o" style="margin-right:6px" aria-hidden="true"></i>Enable/Disable Voice Synthesis
-      </button>
+    <div class="list-group-item reboting_list ">
+        <button class="btn btn-success"
+                type="button"
+                style="float:right"
+                [(ngModel)]="configModel.synthesis"
+                title="Speech Output"
+                btnCheckbox>
+          <i class="fa fa-comment-o" style="margin-right:6px" aria-hidden="true"></i>Enable/Disable Voice Synthesis
+        </button>
+        <div class="clearfix"></div>
     </div>
     <div class = "list-group-item reboting_list">
       <button class="btn btn-success"
-              style="margin:6px;width:100%"
+              style="float:right;"
               type="button"
               title="Listen all the time to: Okay Ben"
               [(ngModel)]="configModel.autorecord"
@@ -32,22 +33,38 @@
               btnCheckbox>
         <i class="fa fa-assistive-listening-systems" style="margin-right:6px" aria-hidden="true"></i>Enable/Disable Autorecord
       </button>
+      <div class="clearfix"></div>
     </div>
-
+    <div class = "list-group-item reboting_list">
+      <button class="btn btn-success"
+              style="float:right;"
+              type="button"
+              title="Logout"
+              (click)="onClicLogout()"
+              >
+        <i class="fa fa-sign-out" style="margin-right:6px" aria-hidden="true"></i>Logout
+      </button>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+  <div *ngIf="configModel.quickreplies">
     <div *ngFor="let reply of quickreplies" class="list-group-item reboting_list">
-      <button class="btn btn-info" style="margin:6px;width:100%"
+      <button class="btn btn-info" style="float:right"
               type="button"
               (click)="onQuickReply(reply)">
         {{reply}}
       </button>
+      <div class="clearfix"></div>
     </div>
 
   </div>
 
   <div *ngIf="showchatlog">
     <div *ngFor="let message of botChat" class="list-group-item">
-      <b *ngIf="message.you">You: </b> {{message?.you}}
-      <b *ngIf="message.bot_response">Ben: </b> {{ message?.bot_response?.result?.fulfillment?.speech }}
+      <div *ngIf="message.you" >
+        <img src="{{userData.profile_pic}}" width="35px" alt="Profile Image"/> {{message?.you}}
+      </div>
+      <div *ngIf="message.bot_response"><b>Ben</b> {{ message?.bot_response?.result?.fulfillment?.speech }}</div>
     </div>
   </div>
   <div class="input_container">
@@ -80,6 +97,14 @@
                  btnCheckbox>
                 <i class="fa fa-plus" aria-hidden="true"></i> {{quickreplies.length}}
         </button>
+        <button class="btn btn-success"
+                type="button"
+                style="padding:5px"
+                [(ngModel)]="configModel.userprofile"
+                btnCheckbox>
+          <img src="{{userData.profile_pic}}" width="35px" alt="Profile Image"/>
+        </button>
+
       </span>
     </div>
 

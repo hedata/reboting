@@ -28,6 +28,9 @@ export class AuthService {
       }
     },{scope: 'email,public_profile,read_insights,pages_show_list'});
   }
+  public getUserData(): any {
+    return this.userData;
+  }
   private setUserData(): void {
     // we are logged in so lets have fun
     FB.api('/me?fields=email,first_name,last_name,name', (userData) => {

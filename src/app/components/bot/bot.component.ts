@@ -1,6 +1,7 @@
-import {ChangeDetectorRef, Component, NgZone, OnInit} from '@angular/core';
+import { Component, NgZone, OnInit} from '@angular/core';
 import { DataService } from '../../services/data.service';
 import annyang from 'annyang';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
   selector: 'app-bot',
@@ -10,6 +11,7 @@ import annyang from 'annyang';
 export class BotComponent implements OnInit {
   public configModel: any = {recording: false, synthesis: true, autorecord: false, quickreplies: false, userprofile: false};
   public quickreplies = ['Show me what you got'];
+  userData: any = {};
   botChat = [];
   msg = new SpeechSynthesisUtterance();
   showchatlog = false;
@@ -34,8 +36,8 @@ export class BotComponent implements OnInit {
   chatmessage: String = '' ;
   constructor(
     private dataService: DataService,
-    private _ngZone: NgZone,
-    private ref: ChangeDetectorRef
+    private authService: AuthService,
+    private _ngZone: NgZone
   ) {
     /*
       setting base synthesis options
@@ -75,6 +77,7 @@ export class BotComponent implements OnInit {
           case 'login':
             this._ngZone.run(() => {
               console.log('Bot Component Reacting to login');
+              this.userData = data.data;
               this.show = true;
               this.chatmessage = 'show me what you got';
               this.queryBot();
@@ -97,6 +100,9 @@ export class BotComponent implements OnInit {
   onClickListen() {
     console.log('clickonListen');
     this.initAnnyang();
+  }
+  onClicLogout() {
+    this.authService.logout();
   }
   sendCommand(val) {
     if(val.length > 0) {
