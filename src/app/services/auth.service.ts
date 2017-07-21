@@ -72,18 +72,23 @@ export class AuthService {
   }
 
   public checkAuthStatus(): void {
-    FB.getLoginStatus((response) => {
-      console.log('response from login status!');
-      console.log(response);
-      if (response.status === 'connected') {
-        this.setUserData();
-      } else {
-        this.dataService.emitChange({
-          message: 'notloggedin',
-          data: {}
-        });
-      }
-    });
+    if(typeof FB !== 'undefined') {
+      FB.getLoginStatus((response) => {
+        console.log('response from login status!');
+        console.log(response);
+        if (response.status === 'connected') {
+          this.setUserData();
+        } else {
+          this.dataService.emitChange({
+            message: 'notloggedin',
+            data: {}
+          });
+        }
+      });
+    } else {
+      console.log('OHOH facebook not loaded trying again');
+      setTimeout(() => { this.checkAuthStatus(); }, 200);
+    }
   }
 
 }

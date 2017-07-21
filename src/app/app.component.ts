@@ -23,8 +23,8 @@ export class AppComponent implements OnInit {
              ) {
     console.log('App Component constructor');
     this.authService.setDataService(dataService);
-    this.authService.checkAuthStatus();
     this.dataService.setAuthService(authService);
+    this.authService.checkAuthStatus();
     dataService.changeEmitted$.subscribe(
       data => {
         console.log('App reacting to change');
