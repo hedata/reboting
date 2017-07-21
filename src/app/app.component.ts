@@ -20,6 +20,7 @@ export class AppComponent implements OnInit {
   public showComponent: String = 'splash';
   constructor(private dataService: DataService,
               private authService: AuthService,
+              private _ngZone : NgZone
              ) {
     console.log('App Component constructor');
     this.authService.setDataService(dataService);
@@ -42,6 +43,12 @@ export class AppComponent implements OnInit {
             break;
           case 'show_visual':
             this.showComponent = 'visual';
+            break;
+          case 'notloggedin':
+            this._ngZone.run(() => {
+              console.log('Not Logged in Anymore Splash');
+              this.showComponent = 'splash';
+            });
             break;
           default:
             console.log('not me');

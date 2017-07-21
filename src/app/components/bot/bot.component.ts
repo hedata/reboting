@@ -83,6 +83,12 @@ export class BotComponent implements OnInit {
               this.queryBot();
             });
             break;
+          case 'notloggedin':
+            this._ngZone.run(() => {
+              console.log('Not Logged in Anymore Splash');
+              this.show = false;
+            });
+            break;
           default:
             console.log('not for bot component');
         }

@@ -71,6 +71,10 @@ export class AuthService {
   public logout(): void {
     FB.logout((response) => {
       console.log(response);
+      this.dataService.emitChange({
+        message: 'notloggedin',
+        data: {}
+      });
     });
   }
 

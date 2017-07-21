@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, NgZone, OnInit} from '@angular/core';
 import { DataService } from '../../services/data.service';
 import {AuthService} from '../../services/auth.service';
 
@@ -18,19 +18,25 @@ export class SplashComponent implements OnInit {
   }
   constructor(
     private dataService: DataService,
-    private authService: AuthService
+    private authService: AuthService,
+    private _zone: NgZone
   ) {
     dataService.changeEmitted$.subscribe(
       data => {
         // which change was it?
         switch (data.message) {
           case 'login':
-            console.log('login is here');
-            this.showLogin = false;
+            this._zone.run(() => {
+              console.log('login is here');
+              this.showLogin = false;
+            });
             break;
           case 'notloggedin':
             console.log('SPLASH: not logged in ');
-            this.showLogin = true;
+            this._zone.run(() => {
+              console.log('login is here');
+              this.showLogin = true;
+            });
             break;
         }
       }
