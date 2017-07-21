@@ -8,7 +8,7 @@ import annyang from 'annyang';
   styleUrls: ['./bot.component.css']
 })
 export class BotComponent implements OnInit {
-  public configModel: any = {recording: false, synthesis: true, autorecord: false, quickreplies: false};
+  public configModel: any = {recording: false, synthesis: true, autorecord: false, quickreplies: false, userprofile: false};
   public quickreplies = ['Show me what you got'];
   botChat = [];
   msg = new SpeechSynthesisUtterance();
@@ -115,7 +115,7 @@ export class BotComponent implements OnInit {
         annyang.removeCommands();
         annyang.removeCallback();
         annyang.addCommands(this.commands_listen);
-        annyang.addCallback('error', function (err)
+        annyang.addCallback('error', (err) =>
         {
           console.log('error in annyang');
           console.log(err);
@@ -137,11 +137,11 @@ export class BotComponent implements OnInit {
           annyang.removeCommands();
           annyang.removeCallback();
           const that = this;
-          annyang.addCallback('end', function(){
+          annyang.addCallback('end', () => {
             console.log('setting recording back to non record');
             that.configModel.recording = false;
           });
-          annyang.addCallback('error', function(){
+          annyang.addCallback('error', () => {
             console.log('setting recording back to non record cause of error');
             that.configModel.recording = false;
           });

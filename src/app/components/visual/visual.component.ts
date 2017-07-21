@@ -65,40 +65,39 @@ export class VisualComponent implements OnInit {
               const script = response.script;
               const params = data.data.bot_response.result.parameters;
               this.code_string = '';
-              const that = this;
               // for all parameters of the script if the bot response has values for the params
               // otherwise take values defined in code
-              script.params.forEach(function(element) {
+              script.params.forEach((element) => {
                 // element has : name, value, type
                 console.log(element);
                 // test if the params have our object and the value of it != ""
                 if (params.hasOwnProperty(element.name) && params[element.name] !== '' ) {
                   const tmp = element;
                   tmp.value = params[tmp.name];
-                  that.currentParams.push(tmp);
+                  this.currentParams.push(tmp);
                   // type
                   if (element.type === 'int') {
-                    that.code_string = that.code_string + '' + element.name + ' =' + params[element.name] + ';';
+                    this.code_string = this.code_string + '' + element.name + ' =' + params[element.name] + ';';
                   } else {
-                    that.code_string = that.code_string + '' + element.name + ' =\'' + params[element.name] + '\';';
+                    this.code_string = this.code_string + '' + element.name + ' =\'' + params[element.name] + '\';';
                   }
                 } else {
-                  that.currentParams.push(element);
+                  this.currentParams.push(element);
                   // for now this code just works for strings - need to check for escape chars and shit
                   if (element.type === 'int') {
-                    that.code_string = that.code_string + '' + element.name + ' =' + element.value + ';';
+                    this.code_string = this.code_string + '' + element.name + ' =' + element.value + ';';
                   } else {
-                    that.code_string = that.code_string + '' + element.name + ' =\'' + element.value + '\';';
+                    this.code_string = this.code_string + '' + element.name + ' =\'' + element.value + '\';';
                   }
                 }
               });
-              console.log(response.script);
+              // console.log(response.script);
               this.code_string = this.code_string + response.script.code;
               this.createVisual(); }
             break;
           case 'show_visual':
             console.log('show visual in Visual Component');
-            console.log(data.data);
+            // console.log(data.data);
             this.showExistingVisual(data.data);
             break;
         }
@@ -108,7 +107,8 @@ export class VisualComponent implements OnInit {
     console.log('show existing visual');
     // console.log(data);
     this.loading = true;
-    $('#' + this.visual_id).empty();
+    const visual_element =  $('#' + this.visual_id)
+    visual_element.empty();
     // set rendermine
     const rendermime = new RenderMime({ items: RenderMime.getDefaultItems() });
     // console.log(rendermime);
@@ -121,7 +121,7 @@ export class VisualComponent implements OnInit {
     };
     this.widget = new OutputAreaWidget({ rendermime, model });
     this.widget.model.fromJSON(data.visual.model);
-    $('#' + this.visual_id).append(this.widget.node);
+    visual_element.append(this.widget.node);
     this.loading = false;
   }
   createVisual() {
