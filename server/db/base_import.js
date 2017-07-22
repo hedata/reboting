@@ -251,7 +251,7 @@ from bokeh.models import CustomJS
 
 try:
     # Define the data to be used
-    df = pd.read_csv(url)
+    df = pd.read_csv(url,sep=None, engine='python')
     output_notebook(hide_banner=True)
     #remove special chars of column names
     df.columns=df.columns.str.replace('#','')
@@ -332,8 +332,8 @@ import pandas as pd
 from IPython.display import Image, display
 from IPython.core.display import HTML
 # Define the data to be used
-display(HTML('<b>'+url+'</b>'))
-df = pd.read_csv(url,sep=';')
+#display(HTML('<b>'+url+'</b>'))
+df = pd.read_csv(url,sep=None, engine='python')
 #remove special chars of column names
 df.columns=df.columns.str.replace('#','')
 df.columns=df.columns.str.replace('.','')
