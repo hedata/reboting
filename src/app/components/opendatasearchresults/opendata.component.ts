@@ -41,5 +41,11 @@ export class OpenDataComponent {
       data: 'analyze csv from url ' + url
     });
   }
+  onScatterUrl(url) {
+    this.dataService.emitChange({
+      message: 'directbotrequest',
+      data: 'scatterplot ' + url
+    });
+  }
 
 }
