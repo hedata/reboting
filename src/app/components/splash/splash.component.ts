@@ -21,20 +21,20 @@ export class SplashComponent implements OnInit {
     private authService: AuthService,
     private _zone: NgZone
   ) {
+    console.log('constructor Splash');
     dataService.changeEmitted$.subscribe(
       data => {
         // which change was it?
         switch (data.message) {
           case 'login':
             this._zone.run(() => {
-              console.log('login is here');
+              console.log('Splash: login is here');
               this.showLogin = false;
             });
             break;
           case 'notloggedin':
-            console.log('SPLASH: not logged in ');
             this._zone.run(() => {
-              console.log('login is here');
+              console.log('Splash: not logged in ');
               this.showLogin = true;
             });
             break;

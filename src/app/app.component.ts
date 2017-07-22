@@ -20,44 +20,40 @@ export class AppComponent implements OnInit {
   public showComponent: String = 'splash';
   constructor(private dataService: DataService,
               private authService: AuthService,
-              private _ngZone : NgZone
+              private _ngZone: NgZone
              ) {
     console.log('App Component constructor');
-    this.authService.setDataService(dataService);
-    this.dataService.setAuthService(authService);
-    this.authService.checkAuthStatus();
     dataService.changeEmitted$.subscribe(
       data => {
-        console.log('App reacting to change');
-        // console.log(data);
-        // which change was it?
         switch (data.message) {
           case 'botanswer':
             const response = data.data;
             if (response.script) {
+              console.log('App show visual');
               this.showComponent = 'visual';
             }
             if(response.opendata_search_results) {
+              console.log('App show opendata');
               this.showComponent = 'opendata';
             }
             break;
           case 'show_visual':
+            console.log('App show visual');
             this.showComponent = 'visual';
             break;
           case 'notloggedin':
             this._ngZone.run(() => {
-              console.log('Not Logged in Anymore Splash');
+              console.log('App not logged in');
               this.showComponent = 'splash';
             });
             break;
-          default:
-            console.log('not me');
-            // console.log(data);
         }
       });
   }
   ngOnInit(): void {
-
+    this.authService.setDataService(this.dataService);
+    this.dataService.setAuthService(this.authService);
+    this.authService.checkAuthStatus();
   }
 
 }

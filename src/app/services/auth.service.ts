@@ -44,14 +44,14 @@ export class AuthService {
     // we are logged in so lets have fun
     FB.api('/me?fields=email,first_name,last_name,name', (userData) => {
       console.log('got user data from facebook');
-      console.log(userData);
+      // console.log(userData);
       this.userData.email = userData.email;
       this.userData.name = userData.name;
       this.userData.id = userData.id;
       // get the profile pic
       FB.api('me/picture', (picture) => {
-        console.log('/picture');
-        console.log(picture);
+        console.log('got picture from facebook');
+        // console.log(picture);
         this.userData.profile_pic = picture.data.url;
         console.log(this.userData);
         this.dataService.emitChange({
@@ -101,7 +101,11 @@ export class AuthService {
         console.log('response from login status!');
         console.log(response);
         if (response.status === 'connected') {
-          this.setUserData();
+          this.dataService.emitChange({
+            message: 'notloggedin',
+            data: {}
+          });
+          // this.setUserData();
         } else {
           this.dataService.emitChange({
             message: 'notloggedin',

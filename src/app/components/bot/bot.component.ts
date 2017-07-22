@@ -39,6 +39,7 @@ export class BotComponent implements OnInit {
     private authService: AuthService,
     private _ngZone: NgZone
   ) {
+    console.log('in the constructor of bot component');
     /*
       setting base synthesis options
      */
@@ -70,13 +71,13 @@ export class BotComponent implements OnInit {
         // which change was it?
         switch (data.message) {
           case 'directbotrequest':
-            console.log('Bot Component Reacting to change');
+            console.log('Bot Component direct bot request');
             this.chatmessage = data.data;
             this.queryBot();
             break;
           case 'login':
             this._ngZone.run(() => {
-              console.log('Bot Component Reacting to login');
+              console.log('Bot Component Login');
               this.userData = data.data;
               this.show = true;
               this.chatmessage = 'show me what you got';
@@ -85,12 +86,10 @@ export class BotComponent implements OnInit {
             break;
           case 'notloggedin':
             this._ngZone.run(() => {
-              console.log('Not Logged in Anymore Splash');
+              console.log('Bot Component not logged in');
               this.show = false;
             });
             break;
-          default:
-            console.log('not for bot component');
         }
       });
   }

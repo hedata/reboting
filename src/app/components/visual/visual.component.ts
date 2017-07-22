@@ -55,10 +55,9 @@ export class VisualComponent implements OnInit {
         // which change was it?
         switch (data.message) {
           case 'botanswer':
-            console.log('Visual Component reacting to change botanswer');
             const response = data.data;
             if (response.script) {
-              console.log('BOTANSWER in the visual');
+              console.log('Visual Component script to show');
               console.log(data.data);
               this.currentParams = [];
               this.currentScript = response.script;
