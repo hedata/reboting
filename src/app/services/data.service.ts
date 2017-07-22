@@ -10,7 +10,6 @@ import {AuthService} from './auth.service';
 export class DataService {
   headers = new Headers({'Content-Type': 'application/json'});
   options = new RequestOptions({ headers: this.headers });
-  userName = '123190u01uasd';
   /*
       Shared Service
    */
@@ -30,12 +29,9 @@ export class DataService {
     console.log('in the constructor of the DataService');
   }
 
-  postAction(type: string, payload: any, userName?: string): Observable<any> {
-    if (userName) {
-      this.userName = userName ;
-    }
+  postAction(type: string, payload: any): Observable<any> {
     return this.http.post(`${BASE_URL}/rb/actions`,
-      {userName: this.userName, type: type, payload: payload}
+      {userid: this.authService.getUserData().id, type: type, payload: payload}
       , this.options).map( res => res.json());
   }
   setAuthService(auth: AuthService) {

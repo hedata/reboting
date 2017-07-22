@@ -44,11 +44,11 @@ module.exports.takeAction = function(req, res) {
     request: req,
     response: res,
     botparams: {
-        session_id : req.body.userName
+        session_id : req.body.userid
     },
     responseObj : {}
    };
-  console.log("action type: "+req.body.type+" for very unsecure user: "+req.body.userName);
+  console.log("action type: "+req.body.type+" for very user: "+req.body.userid);
   switch(req.body.type) {
     case 'csvupload':
         ctrlBot.fulfillFacebookDataupload(context);
