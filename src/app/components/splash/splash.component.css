@@ -15,9 +15,9 @@
 }
 
 .middle_center {
-  position: relative;
-  left: 50%;
-  width:200px;
-  transform: translate(-50%,0);
+  display:flex;
+  justify-content: center;
+  margin-left:20px;
+  margin-right:20px;
   margin-bottom: 20px;
 }

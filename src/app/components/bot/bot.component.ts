@@ -14,6 +14,7 @@ export class BotComponent implements OnInit {
   userData: any = {};
   botChat = [];
   msg = new SpeechSynthesisUtterance();
+  showChatLogTime: any;
   showchatlog = false;
   show = false;
   voices;
@@ -107,6 +108,7 @@ export class BotComponent implements OnInit {
     this.initAnnyang();
   }
   onClicLogout() {
+    this.configModel.userprofile = false;
     this.authService.logout();
   }
   sendCommand(val) {
@@ -221,9 +223,14 @@ export class BotComponent implements OnInit {
           this.msg.text = data.bot_response.result.fulfillment.speech;
           speechSynthesis.speak(this.msg);
         }
+        // show chatlogtimer
+        this.showChatLogTime = new Date().getTime() / 1000;
         setTimeout(() => {
-          console.log('showing chatlog again');
-          this.showchatlog = false;
+          // have 7,5 seconds expired since last time the chatlogtime was set?
+          if ((new Date().getTime() / 1000) - this.showChatLogTime > 6 ) {
+            console.log('hiding chatlog again');
+            this.showchatlog = false;
+          }
         }, 7000 );
       });
     }
