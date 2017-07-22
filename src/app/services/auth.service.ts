@@ -26,7 +26,16 @@ export class AuthService {
       } else {
         // The person is not logged into this app or we are unable to tell.
       }
+    },{scope: 'email,public_profile'});
+    /*
+    Login with more priviliges
+     if (response.status === 'connected') {
+       this.setUserData();
+      } else {
+        // The person is not logged into this app or we are unable to tell.
+      }
     },{scope: 'email,public_profile,read_insights,pages_show_list'});
+     */
   }
   public getUserData(): any {
     return this.userData;
@@ -80,6 +89,14 @@ export class AuthService {
 
   public checkAuthStatus(): void {
     if(typeof FB !== 'undefined') {
+      FB.init({
+          appId            : environment.fbappid,
+          autoLogAppEvents : true,
+          xfbml            : true,
+          cookie: true,
+          version          : 'v2.10'
+      });
+      FB.AppEvents.logPageView();
       FB.getLoginStatus((response) => {
         console.log('response from login status!');
         console.log(response);

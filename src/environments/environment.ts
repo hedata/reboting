@@ -5,5 +5,5 @@
 
 export const environment = {
   production: false,
-  auth0_redirectur_uri : 'http://localhost:2323'
+  fbappid: '1503645156325623'
 };
