@@ -101,11 +101,7 @@ export class AuthService {
         console.log('response from login status!');
         console.log(response);
         if (response.status === 'connected') {
-          this.dataService.emitChange({
-            message: 'notloggedin',
-            data: {}
-          });
-          // this.setUserData();
+          this.setUserData();
         } else {
           this.dataService.emitChange({
             message: 'notloggedin',
