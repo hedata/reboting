@@ -104,9 +104,11 @@ externalCalls = function(context) {
           if(error) {
             console.log(error);
             callback(null,"returning from search opendata error");
-          } else {
+          } else if(response.statusCode === 200) {
             context.responseObj.opendata_search_results = JSON.parse(body);
             callback(null,"returning from search opendata all good");
+          } else {
+            callback(null,"api seems to be down");
           }
         });
       } else {
