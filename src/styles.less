@@ -264,6 +264,10 @@ Loading spinner
     Button Styling
  */
 
+//remove round egdes
+.input-group .form-control, .input-group-addon, .input-group-btn, .input-group-lg>.input-group-btn>.btn {
+  border-radius:0px;
+}
 
 
 .btn {
@@ -293,8 +297,7 @@ Loading spinner
 .btn.focus,
 .btn:active.focus,
 .btn.active.focus {
-  outline: 5px auto -webkit-focus-ring-color;
-  outline-offset: -2px;
+  outline: none;
 }
 .btn:hover,
 .btn:focus,
@@ -304,7 +307,7 @@ Loading spinner
 }
 .btn:active,
 .btn.active {
-  outline: 0;
+  outline: none;
   background-image: none;
   -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
   box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
