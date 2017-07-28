@@ -99,6 +99,8 @@ externalCalls = function(context) {
             }
           }
         }
+        //add limit param
+        requesturi = requesturi+"&limit=50";
         console.log("searching for: "+requesturi);
         request(requesturi, function (error, response, body) {
           if(error) {

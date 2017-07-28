@@ -1,10 +1,11 @@
 <div [class.hidden]="showComponent!=='opendata'" class="centered">
-  <div>
+  <div style="padding-bottom: 96px">
     <h3>found: {{searchResults.total}}</h3>
     <div *ngFor="let opendata of searchResults.results"
          style="background-color: white;margin-top:6px;margin-bottom:6px;padding:6px;">
-        <h4>{{opendata.dataset.dataset_name}}</h4>
-        {{opendata.dataset.dataset_description}} - {{opendata.dataset.publisher}}<br>
+        <h4>{{opendata.dataset?.dataset_name}}</h4>
+        {{opendata.dataset?.dataset_description}}<br>
+        {{opendata.dataset?.publisher}} - {{opendata.portal}} - Zeilen: {{opendata.row_no}}<br>
         <button class="btn btn-info" style="margin:auto"
                     type="button"
                     (click)="onExploreUrl(opendata.url)">
@@ -15,7 +16,7 @@
               (click)="onScatterUrl(opendata.url)">
         ScatterPlot
       </button>
-        <a href={{opendata.url}} target="_blank">Download</a>
+      <a href="{{opendata.url}}" target="_blank" class="btn btn-info" role="button">Download</a>
     </div>
   </div>
 </div>
