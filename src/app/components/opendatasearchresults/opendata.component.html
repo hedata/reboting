@@ -1,6 +1,8 @@
 <div [class.hidden]="showComponent!=='opendata'" class="centered">
   <div style="padding-bottom: 96px">
-    <h3>found: {{searchResults.total}}</h3>
+    <div style="background:white">
+      <h3>Results: {{searchResults.total}}</h3>
+    </div>
     <div *ngFor="let opendata of searchResults.results"
          style="background-color: white;margin-top:6px;margin-bottom:6px;padding:6px;">
         <h4>{{opendata.dataset?.dataset_name}}</h4>
