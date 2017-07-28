@@ -52,3 +52,6 @@ uploaded_data/.local/
 uploaded_data/.plotly/
 uploaded_data/.cache/pip/
 uploaded_data/neuralnet/
+uploaded_data/.bash_history
+uploaded_data/.keras/
+
