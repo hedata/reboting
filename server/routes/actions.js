@@ -59,6 +59,9 @@ module.exports.takeAction = function(req, res) {
         break;
     case 'query':
         context.botparams.query = req.body.payload.query;
+        if(req.body.payload.context) {
+          context.botparams.context = req.body.payload.context;
+        }
         context.responseObj = {
           action:{
             status: "ok",

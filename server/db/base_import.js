@@ -452,3 +452,15 @@ intentname="periodic_table";
 insertIt(code,intentname,params);
 
 
+
+code =`print(url)
+`;
+params=[{
+  name: 'url',
+  value: 'http://www.wien.gv.at/politik/wahlen/ogd/nr131_99999999_9999_spr.csv',
+  type: 'string'
+}];
+intentname="map";
+insertIt(code,intentname,params);
+
+

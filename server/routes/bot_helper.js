@@ -43,9 +43,21 @@ module.exports.botEvent = function(context) {
 };
 
 askBot = function(context) {
-  var request = app.textRequest(context.botparams.query, {
-    sessionId: context.botparams.session_id
-  });
+  var request;
+  if(context.botparams.context) {
+    //add context to responseobj
+    context.responseObj.bot_context=context.botparams.context;
+    console.log("Querying with context");
+    console.log(context.botparams);
+    request = app.textRequest(context.botparams.query, {
+      sessionId: context.botparams.session_id,
+      contexts: context.botparams.context
+    });
+  } else {
+    request = app.textRequest(context.botparams.query, {
+      sessionId: context.botparams.session_id
+    });
+  }
   request.on('response', function(response) {
     context.responseObj.bot_response = response;
     console.log(response);

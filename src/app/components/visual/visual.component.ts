@@ -63,6 +63,11 @@ export class VisualComponent implements OnInit {
               this.currentScript = response.script;
               const script = response.script;
               const params = data.data.bot_response.result.parameters;
+              let context = null;
+              if (data.data.bot_context) {
+                // TODO for now this only works with the first context
+                context = data.data.bot_context[0].parameters;
+              }
               this.code_string = '';
               // for all parameters of the script if the bot response has values for the params
               // otherwise take values defined in code
@@ -80,6 +85,17 @@ export class VisualComponent implements OnInit {
                   } else {
                     this.code_string = this.code_string + '' + element.name + ' =\'' + params[element.name] + '\';';
                   }
+                } else if (context && context.hasOwnProperty(element.name) && context[element.name] !== '' ) {
+                  // check if the context has something for us
+                  const tmp = element;
+                  tmp.value = context[tmp.name];
+                  this.currentParams.push(tmp);
+                  // type
+                  if (element.type === 'int') {
+                      this.code_string = this.code_string + '' + element.name + ' =' + context[element.name] + ';';
+                    } else {
+                      this.code_string = this.code_string + '' + element.name + ' =\'' + context[element.name] + '\';';
+                    }
                 } else {
                   this.currentParams.push(element);
                   // for now this code just works for strings - need to check for escape chars and shit

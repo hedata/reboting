@@ -48,4 +48,29 @@ export class OpenDataComponent {
     });
   }
 
+  CheckifValidForMap(searchresult: any ) {
+    if (searchresult.headers.indexOf('DISTRICT_CODE') !== -1 ) {
+      return true;
+    }
+    // we have an opendata searchresult can we map this?
+    return false;
+  }
+  onVisualizeAsMap(searchresult: any) {
+    // request it
+    this.dataService.emitChange({
+      message: 'directbotrequest',
+      data: 'map this',
+      context: [{
+                  name: 'wudatasearchresult',
+                  lifespan: 10,
+                  parameters: {
+                    url: searchresult.url,
+                    name: searchresult.dataset.dataset_name,
+                    description: searchresult.dataset.dataset_description,
+                    portal: searchresult.portal,
+                    publisher: searchresult.publisher
+                  }
+                }]
+    })
+  }
 }

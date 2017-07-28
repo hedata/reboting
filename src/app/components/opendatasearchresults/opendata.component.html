@@ -8,10 +8,15 @@
         <h4>{{opendata.dataset?.dataset_name}}</h4>
         {{opendata.dataset?.dataset_description}}<br>
         {{opendata.dataset?.publisher}} - {{opendata.portal}} - Zeilen: {{opendata.row_no}}<br>
+        <button *ngIf="CheckifValidForMap(opendata) && opendata.dataset" class="btn btn-info" style="margin:auto"
+                type="button"
+                (click)="onVisualizeAsMap(opendata)">
+          Map
+        </button>
         <button class="btn btn-info" style="margin:auto"
                     type="button"
                     (click)="onExploreUrl(opendata.url)">
-              Explore Data
+             Base Stats
         </button>
       <button class="btn btn-info" style="margin:auto"
               type="button"

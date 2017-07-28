@@ -74,7 +74,12 @@ export class BotComponent implements OnInit {
           case 'directbotrequest':
             console.log('Bot Component direct bot request');
             this.chatmessage = data.data;
-            this.queryBot();
+            // is a context there 2 ?
+            if (data.context) {
+              this.queryBot(data.context);
+            } else {
+              this.queryBot(null);
+            }
             break;
           case 'login':
             this._ngZone.run(() => {
@@ -82,7 +87,7 @@ export class BotComponent implements OnInit {
               this.userData = data.data;
               this.show = true;
               this.chatmessage = 'show me what you got';
-              this.queryBot();
+              this.queryBot(null);
             });
             break;
           case 'notloggedin':
@@ -97,7 +102,7 @@ export class BotComponent implements OnInit {
   onQuickReply(reply) {
     this.configModel.quickreplies = false;
     this.chatmessage = reply;
-    this.queryBot();
+    this.queryBot( null);
   }
   onClickRecord() {
     console.log('clickonRecord');
@@ -116,7 +121,7 @@ export class BotComponent implements OnInit {
       console.log('executing Voice Commands' + val);
       this._ngZone.run(() => {
         this.chatmessage = val;
-        this.queryBot();
+        this.queryBot(null);
       });
     }
   }
@@ -189,7 +194,7 @@ export class BotComponent implements OnInit {
     );
     */
   }
-  queryBot() {
+  queryBot(context: any ) {
     this.showchatlog = true;
     // mark this for cange detection
     const query = this.chatmessage;
@@ -197,7 +202,7 @@ export class BotComponent implements OnInit {
     if (query !== '') {
       this.botChat = [];
       this.botChat.push({you:  query});
-      this.dataService.postAction('query',{query: query}).subscribe(data => {
+      this.dataService.postAction('query',{query: query, context: context}).subscribe(data => {
         console.log(data);
         this.botChat.push(data);
         // add quick replies
@@ -231,7 +236,7 @@ export class BotComponent implements OnInit {
             console.log('hiding chatlog again');
             this.showchatlog = false;
           }
-        }, 7000 );
+        }, 6000 );
       });
     }
     /*
