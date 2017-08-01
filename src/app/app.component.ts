@@ -28,6 +28,7 @@ export class AppComponent implements OnInit {
         switch (data.message) {
           case 'botanswer':
             const response = data.data;
+            console.log(response);
             if (response.script) {
               console.log('App show visual');
               this.showComponent = 'visual';
@@ -35,6 +36,10 @@ export class AppComponent implements OnInit {
             if(response.opendata_search_results) {
               console.log('App show opendata');
               this.showComponent = 'opendata';
+            }
+            if(response.bot_response.result.action === 'create_intent') {
+              console.log('showing create intent');
+              this.showComponent = 'intent';
             }
             break;
           case 'show_visual':

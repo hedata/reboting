@@ -14,6 +14,7 @@ import { ButtonsModule } from 'ngx-bootstrap/buttons';
 import {OpenDataComponent} from './components/opendatasearchresults/opendata.component';
 import {SplashComponent} from './components/splash/splash.component';
 import {AuthService} from './services/auth.service';
+import {IntentComponent} from './components/intent/intent.component'
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import {AuthService} from './services/auth.service';
     BotComponent,
     VisualComponent,
     OpenDataComponent,
-    SplashComponent
+    SplashComponent,
+    IntentComponent
   ],
   imports: [
     BrowserModule,
