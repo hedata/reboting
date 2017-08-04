@@ -117,7 +117,7 @@ export class BotComponent implements OnInit {
     this.authService.logout();
   }
   sendCommand(val) {
-    if(val.length > 0) {
+    if (val.length > 0) {
       console.log('executing Voice Commands' + val);
       this._ngZone.run(() => {
         this.chatmessage = val;
@@ -133,8 +133,7 @@ export class BotComponent implements OnInit {
         annyang.removeCommands();
         annyang.removeCallback();
         annyang.addCommands(this.commands_listen);
-        annyang.addCallback('error', (err) =>
-        {
+        annyang.addCallback('error', (err) => {
           console.log('error in annyang');
           console.log(err);
           if (err.error === 'no-speech') {
@@ -202,7 +201,7 @@ export class BotComponent implements OnInit {
     if (query !== '') {
       this.botChat = [];
       this.botChat.push({you:  query});
-      this.dataService.postAction('query',{query: query, context: context}).subscribe(data => {
+      this.dataService.postAction('query', {query: query, context: context}).subscribe(data => {
         console.log(data);
         this.botChat.push(data);
         // add quick replies
@@ -232,7 +231,7 @@ export class BotComponent implements OnInit {
         this.showChatLogTime = new Date().getTime() / 1000;
         setTimeout(() => {
           // have 7,5 seconds expired since last time the chatlogtime was set?
-          if ((new Date().getTime() / 1000) - this.showChatLogTime > 6 ) {
+          if ((new Date().getTime() / 1000) - this.showChatLogTime > 5 ) {
             console.log('hiding chatlog again');
             this.showchatlog = false;
           }
@@ -246,8 +245,8 @@ export class BotComponent implements OnInit {
   }
 
   findWithAttr(array, attr, value) {
-    for(let i = 0; i < array.length; i += 1) {
-      if(array[i][attr] === value) {
+    for (let i = 0; i < array.length; i += 1) {
+      if (array[i][attr] === value) {
         return i;
       }
     }
