@@ -624,6 +624,8 @@ if 'DISTRICT_CODE' in df.columns:
     districtCode="DISTRICT_CODE"
 if 'SUB_DISTRICT_CODE' in df.columns:
     districtCode='SUB_DISTRICT_CODE'
+if 'LAU_CODE' in df.columns:
+    districtCode='LAU_CODE'
 df = df.drop_duplicates(subset=districtCode)
 df.columns=df.columns.str.replace('#','')
 df.columns=df.columns.str.replace('.','')
@@ -633,7 +635,7 @@ df.columns=df.columns.str.replace(' ','')
 numeric_columnlist = list(df._get_numeric_data().columns)
 #filter out empty column names
 string_columns=[item for item in list(df.columns) if item not in numeric_columnlist and item!='']
-numeric_columnlist=[item for item in numeric_columnlist if item!='' and item!='DISTRICT_CODE']
+numeric_columnlist=[item for item in numeric_columnlist if item!='' and item!='DISTRICT_CODE' and item!='SUB_DISTRICT_CODE' and item!='LAU_CODE']
 #last numeric field as entity field for know.
 valueField = random.choice(numeric_columnlist)
 entityField = string_columns[-1]
