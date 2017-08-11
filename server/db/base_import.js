@@ -242,16 +242,69 @@ insertIt(code,intentname,params);
 
 
 code =`import numpy as np
-import pandas as pd
 from bokeh.models import ColumnDataSource
 from bokeh.plotting import Figure, show, ColumnDataSource, output_notebook
 from bokeh.layouts import row,column, widgetbox
 from bokeh.models.widgets import Select,TextInput
 from bokeh.models import CustomJS
-
+import requests
+import pandas as pd
+import json
+import os
+import IPython
+import random
+import csv
+import re
+import chardet
+#data reading and preparation
+def readandcleancsv( url ):
+    r = requests.get(url)
+    filename=str(random.getrandbits(64))+".csv.tmp"
+    header =[];
+    rows=[];
+    encoding='utf-8';
+    with open(filename, "wb") as code:
+        code.write(r.content)
+    with open(filename, 'rb') as f:
+        encoding = chardet.detect(f.read())['encoding']
+    with open(filename, 'r', encoding=encoding) as csvfile:        
+        try:
+            dialect = csv.Sniffer().sniff(csvfile.read(1024*16), delimiters=';,\\t')
+        except Exception as e:
+            print("exception"+e)
+        csvfile.seek(0)
+        reader = csv.reader(csvfile, dialect)
+        #go through all lines
+        #Todo get the header
+        #Todo detect dates and get them in a fixed format
+        #Todo get Numeric Values and get them in a fixed format  
+        #empty string
+        for index, entry in enumerate(reader):
+            #test for header in first 2 lines
+            if( (index==0 or index==1) and len(header) == 0):
+                empties = 0;
+                for i in entry:
+                    if(i==""):
+                        empties+=1
+                if(empties <= 1):
+                    #print("using header at index: "+str(index))
+                    header=entry
+            else:
+                rows.append(entry)
+    #amount of rows
+    #print(len(rows))
+    #amount of columns in header
+    #print(len(header))
+    with open(filename, 'w') as csvfile:
+        writer = csv.writer(csvfile, delimiter=';')
+        writer.writerow(header);
+        for element in rows:
+            writer.writerow(element);
+    return filename
+filename = readandcleancsv( url )
 try:
     # Define the data to be used
-    df = pd.read_csv(url,sep=None, engine='python')
+    df = pd.read_csv(filename,sep=None, engine='python')
     output_notebook(hide_banner=True)
     #remove special chars of column names
     df.columns=df.columns.str.replace('#','')
@@ -317,6 +370,7 @@ try:
         print("sorry not enough columns to make a scatterplot")
 except Exception:
     print("ups no csv file found under the url you provided")
+os.remove(filename)
 `;
 params=[{
   name: 'url',
@@ -328,12 +382,66 @@ insertIt(code,intentname,params);
 
 
 code =`import numpy as np
-import pandas as pd
 from IPython.display import Image, display
 from IPython.core.display import HTML
+import requests
+import pandas as pd
+import json
+import os
+import random
+import csv
+import re
+import chardet
+#data reading and preparation
+def readandcleancsv( url ):
+    r = requests.get(url)
+    filename=str(random.getrandbits(64))+".csv.tmp"
+    header =[];
+    rows=[];
+    encoding='utf-8';
+    with open(filename, "wb") as code:
+        code.write(r.content)
+    with open(filename, 'rb') as f:
+        encoding = chardet.detect(f.read())['encoding']
+    with open(filename, 'r', encoding=encoding) as csvfile:        
+        try:
+            dialect = csv.Sniffer().sniff(csvfile.read(1024*16), delimiters=';,\\t')
+        except Exception as e:
+            print("exception"+e)
+        csvfile.seek(0)
+        reader = csv.reader(csvfile, dialect)
+        #go through all lines
+        #Todo get the header
+        #Todo detect dates and get them in a fixed format
+        #Todo get Numeric Values and get them in a fixed format  
+        #empty string
+        for index, entry in enumerate(reader):
+            #test for header in first 2 lines
+            if( (index==0 or index==1) and len(header) == 0):
+                empties = 0;
+                for i in entry:
+                    if(i==""):
+                        empties+=1
+                if(empties <= 1):
+                    #print("using header at index: "+str(index))
+                    header=entry
+            else:
+                rows.append(entry)
+    #amount of rows
+    #print(len(rows))
+    #amount of columns in header
+    #print(len(header))
+    with open(filename, 'w') as csvfile:
+        writer = csv.writer(csvfile, delimiter=';')
+        writer.writerow(header);
+        for element in rows:
+            writer.writerow(element);
+    return filename
+filename = readandcleancsv( url )
 # Define the data to be used
 #display(HTML('<b>'+url+'</b>'))
-df = pd.read_csv(url,sep=None, engine='python')
+df = pd.read_csv(filename,sep=';')
+os.remove(filename)
 #remove special chars of column names
 df.columns=df.columns.str.replace('#','')
 df.columns=df.columns.str.replace('.','')
@@ -456,22 +564,72 @@ insertIt(code,intentname,params);
 code =`import requests
 import pandas as pd
 import json
+import os
 import IPython
 import random
-#injected variables
+import csv
+import re
+import chardet
 #data reading and preparation
-r = requests.get(url)
-filename=str(random.getrandbits(64))
-with open(filename, "wb") as code:
-    code.write(r.content)
-df = pd.read_csv(filename,sep=None, engine='python', thousands='.', decimal=',')
-df = df.drop_duplicates(subset='DISTRICT_CODE')
+def readandcleancsv( url ):
+    r = requests.get(url)
+    filename=str(random.getrandbits(64))+".csv.tmp"
+    header =[];
+    rows=[];
+    encoding='utf-8';
+    with open(filename, "wb") as code:
+        code.write(r.content)
+    with open(filename, 'rb') as f:
+        encoding = chardet.detect(f.read())['encoding']
+    with open(filename, 'r', encoding=encoding) as csvfile:        
+        try:
+            dialect = csv.Sniffer().sniff(csvfile.read(1024*16), delimiters=';,\\t')
+        except Exception as e:
+            print("exception"+e)
+        csvfile.seek(0)
+        reader = csv.reader(csvfile, dialect)
+        #go through all lines
+        #Todo get the header
+        #Todo detect dates and get them in a fixed format
+        #Todo get Numeric Values and get them in a fixed format  
+        #empty string
+        for index, entry in enumerate(reader):
+            #test for header in first 2 lines
+            if( (index==0 or index==1) and len(header) == 0):
+                empties = 0;
+                for i in entry:
+                    if(i==""):
+                        empties+=1
+                if(empties <= 1):
+                    #print("using header at index: "+str(index))
+                    header=entry
+            else:
+                rows.append(entry)
+    #amount of rows
+    #print(len(rows))
+    #amount of columns in header
+    #print(len(header))
+    with open(filename, 'w') as csvfile:
+        writer = csv.writer(csvfile, delimiter=';')
+        writer.writerow(header);
+        for element in rows:
+            writer.writerow(element);
+    return filename
+filename = readandcleancsv( url )
+#print(filename)
+df = pd.read_csv(filename,sep=';', thousands='.', decimal=',')
+#test if SUB_DISTRICT_CODE exists
+districtCode =""
+if 'DISTRICT_CODE' in df.columns:
+    districtCode="DISTRICT_CODE"
+if 'SUB_DISTRICT_CODE' in df.columns:
+    districtCode='SUB_DISTRICT_CODE'
+df = df.drop_duplicates(subset=districtCode)
 df.columns=df.columns.str.replace('#','')
 df.columns=df.columns.str.replace('.','')
 df.columns=df.columns.str.replace(':','')
 df.columns=df.columns.str.replace('"','')
 df.columns=df.columns.str.replace(' ','')
-
 numeric_columnlist = list(df._get_numeric_data().columns)
 #filter out empty column names
 string_columns=[item for item in list(df.columns) if item not in numeric_columnlist and item!='']
@@ -480,10 +638,12 @@ numeric_columnlist=[item for item in numeric_columnlist if item!='' and item!='D
 valueField = random.choice(numeric_columnlist)
 entityField = string_columns[-1]
 data_dict = df.to_dict(orient='records')
+#delete temp file
+os.remove(filename)
 requestOBJ = {
         "data" : data_dict,
         "meta": {
-            "name": name,
+            "name": name + " "+valueField,
             "sourceOrganization": publisher,
             "source": publisher,
             "description": description,
@@ -496,7 +656,7 @@ requestOBJ = {
             "frequency": "INSERT EXPECTED DATA UPDATE CYCLE",
             "license": "Creative Commons Namensnennung 3.0 Österreich",
             "citation": "INSERT CITATION IF AVAILABLE",
-            "isoField": "DISTRICT_CODE",
+            "isoField": districtCode,
             "entityField": entityField,
             "timeField": "null",
             "timeDimension": "false",
@@ -510,10 +670,11 @@ requestOBJ = {
         },
         "parameters": {
             "source": "manual",
-            "provider": "open-government-vienna",
+            "provider": "reboting",
             "layer": "choropleth"
         }
     }
+#print(json.dumps(requestOBJ, indent=3, sort_keys=True))
 r = requests.post("http://52.166.116.205:2301/manual", json=requestOBJ)
 url = 'https://doh.23degrees.io/viz/'+r.json()['slug']
 iframe= '<div class="intrinsic-container" style="position: relative; padding-bottom: 56.25%;height: 0; overflow: hidden; width: 100%;height: auto;"><iframe src="' + url + '" allowfullscreen style=" position: absolute; top: 0; left: 0; width: 100%; height: 100%; "></iframe></div>'
