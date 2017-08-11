@@ -34,17 +34,39 @@ export class OpenDataComponent {
       });
   }
 
-  onExploreUrl(url) {
+  onExplore(searchresult: any) {
     // url.replace(/^http:\/\//i, 'https://')
     this.dataService.emitChange({
       message: 'directbotrequest',
-      data: 'analyze csv from url ' + url
+      data: 'analyze this ',
+      context: [{
+        name: 'wudatasearchresult',
+        lifespan: 10,
+        parameters: {
+          url: searchresult.url.replace(/(\r\n|\n|\r)/gm, '' ),
+          name: searchresult.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
+          description: searchresult.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
+          portal: searchresult.portal.replace(/(\r\n|\n|\r)/gm, '' ),
+          publisher: searchresult.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' )
+        }
+      }]
     });
   }
-  onScatterUrl(url) {
+  onScatter(searchresult: any) {
     this.dataService.emitChange({
       message: 'directbotrequest',
-      data: 'scatterplot ' + url
+      data: 'scatterplot this',
+      context: [{
+        name: 'wudatasearchresult',
+        lifespan: 10,
+        parameters: {
+          url: searchresult.url.replace(/(\r\n|\n|\r)/gm, '' ),
+          name: searchresult.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
+          description: searchresult.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
+          portal: searchresult.portal.replace(/(\r\n|\n|\r)/gm, '' ),
+          publisher: searchresult.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' )
+        }
+      }]
     });
   }
 

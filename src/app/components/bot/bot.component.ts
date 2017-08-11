@@ -11,6 +11,7 @@ import {AuthService} from '../../services/auth.service';
 export class BotComponent implements OnInit {
   public configModel: any = {recording: false, synthesis: true, autorecord: false, quickreplies: false, userprofile: false};
   public quickreplies = ['Show me what you got'];
+  public context: any;
   userData: any = {};
   botChat = [];
   msg = new SpeechSynthesisUtterance();
@@ -76,9 +77,10 @@ export class BotComponent implements OnInit {
             this.chatmessage = data.data;
             // is a context there 2 ?
             if (data.context) {
-              this.queryBot(data.context);
+              this.context = data.context;
+              this.queryBot();
             } else {
-              this.queryBot(null);
+              this.queryBot();
             }
             break;
           case 'login':
@@ -87,7 +89,7 @@ export class BotComponent implements OnInit {
               this.userData = data.data;
               this.show = true;
               this.chatmessage = 'show me what you got';
-              this.queryBot(null);
+              this.queryBot();
             });
             break;
           case 'notloggedin':
@@ -102,7 +104,7 @@ export class BotComponent implements OnInit {
   onQuickReply(reply) {
     this.configModel.quickreplies = false;
     this.chatmessage = reply;
-    this.queryBot( null);
+    this.queryBot();
   }
   onClickRecord() {
     console.log('clickonRecord');
@@ -121,7 +123,7 @@ export class BotComponent implements OnInit {
       console.log('executing Voice Commands' + val);
       this._ngZone.run(() => {
         this.chatmessage = val;
-        this.queryBot(null);
+        this.queryBot();
       });
     }
   }
@@ -193,15 +195,18 @@ export class BotComponent implements OnInit {
     );
     */
   }
-  queryBot(context: any ) {
+  queryBot() {
+    console.log('querying BOT');
+    console.log('context:');
+    console.log(this.context);
+    console.log(this.chatmessage);
     this.showchatlog = true;
     // mark this for cange detection
     const query = this.chatmessage;
-    console.log('enter: ' + query);
     if (query !== '') {
       this.botChat = [];
       this.botChat.push({you:  query});
-      this.dataService.postAction('query', {query: query, context: context}).subscribe(data => {
+      this.dataService.postAction('query', {query: query, context: this.context}).subscribe(data => {
         console.log(data);
         this.botChat.push(data);
         // add quick replies

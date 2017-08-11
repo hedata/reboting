@@ -13,14 +13,14 @@
                 (click)="onVisualizeAsMap(opendata)">
           Map
         </button>
-        <button class="btn btn-info" style="margin:auto"
+        <button *ngIf="CheckifValidForMap(opendata) && opendata.dataset" class="btn btn-info" style="margin:auto"
                     type="button"
-                    (click)="onExploreUrl(opendata.url)">
+                    (click)="onExplore(opendata)">
              Base Stats
         </button>
-      <button class="btn btn-info" style="margin:auto"
+      <button  *ngIf="CheckifValidForMap(opendata) && opendata.dataset" class="btn btn-info" style="margin:auto"
               type="button"
-              (click)="onScatterUrl(opendata.url)">
+              (click)="onScatter(opendata)">
         ScatterPlot
       </button>
       <a href="{{opendata.url}}" target="_blank" class="btn btn-info" role="button">Download</a>
