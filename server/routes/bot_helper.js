@@ -98,21 +98,21 @@ externalCalls = function(context) {
         var topics = context.responseObj.bot_response.result.parameters.topics;
         var geolocation = context.responseObj.bot_response.result.parameters.geolocation;
         var requesturi ="http://data.wu.ac.at/odgraph/locationsearch?";
+        //add limit param
+        requesturi = requesturi+"limit=50";
         if(topics.length>0) {
-          requesturi = requesturi+"q="+topics.join(" ");
+          requesturi = requesturi+"&q="+topics.join(" ");
         }
-        if(geolocation!=="") {
-          if(geolocation.lastIndexOf("http",0)=== 0) {
-            //we have a uri
-            if(topics.length>0) {
-              requesturi = requesturi+"&l="+geolocation;
-            } else {
-              requesturi = requesturi+"l="+geolocation;
+        // split gelocations they are
+        var gelocarr = geolocation.split("#%#");
+        gelocarr.forEach(function(geoloc) {
+          if(geolocation!=="") {
+            if(geoloc.lastIndexOf("http",0)=== 0) {
+              //we have a uri
+              requesturi = requesturi+"&l="+geoloc;
             }
           }
-        }
-        //add limit param
-        requesturi = requesturi+"&limit=50";
+        });
         console.log("searching for: "+requesturi);
         request(requesturi, function (error, response, body) {
           if(error) {
