@@ -16,7 +16,7 @@ def checkforknowncsv( url ):
         "url" : url
     }
     r = requests.post("http://reboting:3000/rb/actions", json=requestOBJ)
-    print(r.json());
+    #print(r.json());
     return "notknown";
 def readandcleancsv( url ):
     r = requests.get(url)

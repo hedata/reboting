@@ -569,7 +569,8 @@ requestOBJ = {
 #print(json.dumps(requestOBJ, indent=3, sort_keys=True))
 r = requests.post("http://52.166.116.205:2301/manual", json=requestOBJ)
 url = 'https://doh.23degrees.io/viz/'+r.json()['slug']
-iframe= '<div class="intrinsic-container" style="position: relative; padding-bottom: 56.25%;height: 0; overflow: hidden; width: 100%;height: auto;"><iframe src="' + url + '" allowfullscreen style=" position: absolute; top: 0; left: 0; width: 100%; height: 100%; "></iframe></div>'
+#iframe= '<div class="intrinsic-container" style="position: relative; padding-bottom: 56.25%;height: 0; overflow: hidden; width: 100%;height: auto;"><iframe src="' + url + '" allowfullscreen style=" position: absolute; top: 0; left: 0; width: 100%; height: 100%; "></iframe></div>'
+iframe= '<iframe src="' + url + '" allowfullscreen style=" position: absolute; top: 0; left: 0; width: 100%; height: 100%; "></iframe>'
 #print(url)
 IPython.display.HTML(iframe)
 `;
@@ -694,7 +695,8 @@ requestOBJ = {
 #print(json.dumps(requestOBJ, indent=3, sort_keys=True))
 r = requests.post("http://52.166.116.205:2301/manual", json=requestOBJ)
 url = 'https://doh.23degrees.io/viz/'+r.json()['slug']
-iframe= '<div class="intrinsic-container" style="position: relative; padding-bottom: 56.25%;height: 0; overflow: hidden; width: 100%;height: auto;"><iframe src="' + url + '" allowfullscreen style=" position: absolute; top: 0; left: 0; width: 100%; height: 100%; "></iframe></div>'
+#iframe= '<div class="intrinsic-container" style="position: relative; padding-bottom: 56.25%;height: 0; overflow: hidden; width: 100%;height: auto;"><iframe src="' + url + '" allowfullscreen style=" position: absolute; top: 0; left: 0; width: 100%; height: 100%; "></iframe></div>'
+iframe= '<iframe src="' + url + '" allowfullscreen style=" position: absolute; top: 0; left: 0; width: 100%; height: 100%; "></iframe>'
 #print(url)
 IPython.display.HTML(iframe)
 `;

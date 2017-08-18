@@ -63,6 +63,7 @@ export class BotComponent implements OnInit {
         }
       };
     } catch (err) {
+      console.log('NO SYNTHESIS');
       console.log(err);
     }
     /*
