@@ -8,7 +8,11 @@ var scriptsSchema = mongoose.Schema({
   code: String,
   action_name: { type: String, index: { unique: true }},
   params: []
-});
+},
+  {
+    timestamps: true
+  }
+);
 
 var Scripts = mongoose.model('Scripts', scriptsSchema);
 module.exports = Scripts;

@@ -5,7 +5,11 @@ var visualSchema = mongoose.Schema({
   params: [],
   model: [],
   script: {}
-});
+},
+{
+    timestamps: true
+}
+);
 
 /*
   Visuals are:

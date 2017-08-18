@@ -620,6 +620,7 @@ import re
 import chardet
 import reboting
 #data reading and preparation
+reboting.checkforknowncsv( url )
 filename = reboting.readandcleancsv( url )
 #print(filename)
 df = pd.read_csv(filename,sep=';', thousands='.', decimal=',')

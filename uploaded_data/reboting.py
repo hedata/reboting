@@ -8,6 +8,16 @@ import csv
 import re
 import chardet
 
+def checkforknowncsv( url ):
+    #http://reboting:3000
+    requestOBJ = {
+        "type" : "checkforknowncsv",
+        "userid": "pythonscript",
+        "url" : url
+    }
+    r = requests.post("http://reboting:3000/rb/actions", json=requestOBJ)
+    print(r.json());
+    return "notknown";
 def readandcleancsv( url ):
     r = requests.get(url)
     filename=str(random.getrandbits(64))+".csv.tmp"

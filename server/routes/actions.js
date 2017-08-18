@@ -48,7 +48,7 @@ module.exports.takeAction = function(req, res) {
     },
     responseObj : {}
    };
-  console.log("action type: "+req.body.type+" for very user: "+req.body.userid);
+  console.log("action type: "+req.body.type+" for user: "+req.body.userid);
   switch(req.body.type) {
     case 'csvupload':
         ctrlBot.fulfillFacebookDataupload(context);
@@ -101,6 +101,10 @@ module.exports.takeAction = function(req, res) {
           }
         };
         ctrlBot.botEvent(context);
+        break;
+    case 'checkforknowncsv':
+        console.log("checkingforcsv");
+        context.response.status(200).json({ "hi": "yes"});
         break;
     default:
         console.log("action not implemented");
