@@ -55,3 +55,4 @@ uploaded_data/neuralnet/
 uploaded_data/.bash_history
 uploaded_data/.keras/
 uploaded_data/.cache/jedi/
+uploaded_data/__pycache__/

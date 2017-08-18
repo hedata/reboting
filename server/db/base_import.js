@@ -241,229 +241,6 @@ intentname="interactive_test";
 insertIt(code,intentname,params);
 
 
-code =`import numpy as np
-from bokeh.models import ColumnDataSource
-from bokeh.plotting import Figure, show, ColumnDataSource, output_notebook
-from bokeh.layouts import row,column, widgetbox
-from bokeh.models.widgets import Select,TextInput
-from bokeh.models import CustomJS
-import requests
-import pandas as pd
-import json
-import os
-import IPython
-import random
-import csv
-import re
-import chardet
-#data reading and preparation
-def readandcleancsv( url ):
-    r = requests.get(url)
-    filename=str(random.getrandbits(64))+".csv.tmp"
-    header =[];
-    rows=[];
-    encoding='utf-8';
-    with open(filename, "wb") as code:
-        code.write(r.content)
-    with open(filename, 'rb') as f:
-        encoding = chardet.detect(f.read())['encoding']
-    with open(filename, 'r', encoding=encoding) as csvfile:        
-        try:
-            dialect = csv.Sniffer().sniff(csvfile.read(1024*16), delimiters=';,\\t')
-        except Exception as e:
-            print("exception"+e)
-        csvfile.seek(0)
-        reader = csv.reader(csvfile, dialect)
-        #go through all lines
-        #Todo get the header
-        #Todo detect dates and get them in a fixed format
-        #Todo get Numeric Values and get them in a fixed format  
-        #empty string
-        for index, entry in enumerate(reader):
-            #test for header in first 2 lines
-            if( (index==0 or index==1) and len(header) == 0):
-                empties = 0;
-                for i in entry:
-                    if(i==""):
-                        empties+=1
-                if(empties <= 1):
-                    #print("using header at index: "+str(index))
-                    header=entry
-            else:
-                rows.append(entry)
-    #amount of rows
-    #print(len(rows))
-    #amount of columns in header
-    #print(len(header))
-    with open(filename, 'w') as csvfile:
-        writer = csv.writer(csvfile, delimiter=';')
-        writer.writerow(header);
-        for element in rows:
-            writer.writerow(element);
-    return filename
-filename = readandcleancsv( url )
-try:
-    # Define the data to be used
-    df = pd.read_csv(filename,sep=None, engine='python')
-    output_notebook(hide_banner=True)
-    #remove special chars of column names
-    df.columns=df.columns.str.replace('#','')
-    df.columns=df.columns.str.replace('.','')
-    df.columns=df.columns.str.replace(':','')
-    df.columns=df.columns.str.replace('"','')
-    df.columns=df.columns.str.replace(' ','')
-    numeric_columns = list(df.select_dtypes(include=['int64','float64']).columns)
-    df = df[numeric_columns]
-    #add2 dummy columns where we put our data that will be shown in so we change around and nothing will be killed
-    #and can plot with x and y
-    df.insert(0, 'x', df[numeric_columns[0]] )
-    df.insert(0, 'y', df[numeric_columns[1]] )
-    
-    source = ColumnDataSource(data=df)
-    #x and y are probably copied over which sucks and is a huge BUG!!
-    if len(numeric_columns)>1:
-        codex="""
-                var data = source.data;
-                data['x'] = data[cb_obj.value]
-                source.trigger('change');
-            """
-        
-        codey="""
-                var data = source.data;
-                data['y'] = data[cb_obj.value]
-                source.trigger('change');
-            """
-
-        callbackx = CustomJS(args=dict(source=source), code=codex)
-        callbacky = CustomJS(args=dict(source=source), code=codey)
-
-        # create a new plot 
-        plot = Figure()
-
-        # Make a line and connect to data source
-        plot.scatter(x='x'
-                  , y='y'
-                  , line_color="#F46D43"
-                  , line_width=6
-                  , line_alpha=0.6
-                  , source=source)
-
-
-        # Add list boxes for selecting which columns to plot on the x and y axis
-        xaxis_select = Select(title="X axis:", value=numeric_columns[0],
-                                   options=numeric_columns, callback=callbackx)
-
-        yaxis_select = Select(title="Y axis:", value=numeric_columns[1],
-                                   options=numeric_columns, callback=callbacky)
-
-
-
-        # Layout widgets next to the plot                     
-        controls = column(xaxis_select,yaxis_select)
-        layout = column(
-            controls,
-            plot,
-            sizing_mode = 'scale_width'
-        )
-        show(layout)
-    else: 
-        print("sorry not enough columns to make a scatterplot")
-except Exception:
-    print("ups no csv file found under the url you provided")
-os.remove(filename)
-`;
-params=[{
-  name: 'url',
-  value: 'https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv/datasets/iris.csv',
-  type: 'string'
-}];
-intentname="scatterplot";
-insertIt(code,intentname,params);
-
-
-code =`import numpy as np
-from IPython.display import Image, display
-from IPython.core.display import HTML
-import requests
-import pandas as pd
-import json
-import os
-import random
-import csv
-import re
-import chardet
-#data reading and preparation
-def readandcleancsv( url ):
-    r = requests.get(url)
-    filename=str(random.getrandbits(64))+".csv.tmp"
-    header =[];
-    rows=[];
-    encoding='utf-8';
-    with open(filename, "wb") as code:
-        code.write(r.content)
-    with open(filename, 'rb') as f:
-        encoding = chardet.detect(f.read())['encoding']
-    with open(filename, 'r', encoding=encoding) as csvfile:        
-        try:
-            dialect = csv.Sniffer().sniff(csvfile.read(1024*16), delimiters=';,\\t')
-        except Exception as e:
-            print("exception"+e)
-        csvfile.seek(0)
-        reader = csv.reader(csvfile, dialect)
-        #go through all lines
-        #Todo get the header
-        #Todo detect dates and get them in a fixed format
-        #Todo get Numeric Values and get them in a fixed format  
-        #empty string
-        for index, entry in enumerate(reader):
-            #test for header in first 2 lines
-            if( (index==0 or index==1) and len(header) == 0):
-                empties = 0;
-                for i in entry:
-                    if(i==""):
-                        empties+=1
-                if(empties <= 1):
-                    #print("using header at index: "+str(index))
-                    header=entry
-            else:
-                rows.append(entry)
-    #amount of rows
-    #print(len(rows))
-    #amount of columns in header
-    #print(len(header))
-    with open(filename, 'w') as csvfile:
-        writer = csv.writer(csvfile, delimiter=';')
-        writer.writerow(header);
-        for element in rows:
-            writer.writerow(element);
-    return filename
-filename = readandcleancsv( url )
-# Define the data to be used
-#display(HTML('<b>'+url+'</b>'))
-df = pd.read_csv(filename,sep=';')
-os.remove(filename)
-#remove special chars of column names
-df.columns=df.columns.str.replace('#','')
-df.columns=df.columns.str.replace('.','')
-df.columns=df.columns.str.replace(':','')
-df.columns=df.columns.str.replace('"','')
-df.columns=df.columns.str.replace(' ','')
-pd.options.display.float_format = '{:,.2f}'.format
-display(HTML('<h1>First Lines of the Dataset</h1>'))
-display(df.head())   
-display(HTML('<h1>Some Indicators</h1>'))
-display(df.describe(include='all'))
-#except Exception:
-#    print("ups no csv file found under the url you provided")
-`;
-params=[{
-  name: 'url',
-  value: 'https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv/datasets/iris.csv',
-  type: 'string'
-}];
-intentname="analyze_csv";
-insertIt(code,intentname,params);
-
 
 
 
@@ -560,7 +337,163 @@ intentname="periodic_table";
 insertIt(code,intentname,params);
 
 
+/*
 
+  Scatterplot
+
+ */
+
+code =`import numpy as np
+from bokeh.models import ColumnDataSource
+from bokeh.plotting import Figure, show, ColumnDataSource, output_notebook
+from bokeh.layouts import row,column, widgetbox
+from bokeh.models.widgets import Select,TextInput
+from bokeh.models import CustomJS
+import requests
+import pandas as pd
+import json
+import os
+import IPython
+import random
+import csv
+import re
+import chardet
+import reboting
+#data reading and preparation
+filename = reboting.readandcleancsv( url )
+try:
+    # Define the data to be used
+    df = pd.read_csv(filename,sep=None, engine='python')
+    output_notebook(hide_banner=True)
+    #remove special chars of column names
+    df.columns=df.columns.str.replace('#','')
+    df.columns=df.columns.str.replace('.','')
+    df.columns=df.columns.str.replace(':','')
+    df.columns=df.columns.str.replace('"','')
+    df.columns=df.columns.str.replace(' ','')
+    numeric_columns = list(df.select_dtypes(include=['int64','float64']).columns)
+    df = df[numeric_columns]
+    #add2 dummy columns where we put our data that will be shown in so we change around and nothing will be killed
+    #and can plot with x and y
+    df.insert(0, 'x', df[numeric_columns[0]] )
+    df.insert(0, 'y', df[numeric_columns[1]] )
+    
+    source = ColumnDataSource(data=df)
+    #x and y are probably copied over which sucks and is a huge BUG!!
+    if len(numeric_columns)>1:
+        codex="""
+                var data = source.data;
+                data['x'] = data[cb_obj.value]
+                source.trigger('change');
+            """
+        
+        codey="""
+                var data = source.data;
+                data['y'] = data[cb_obj.value]
+                source.trigger('change');
+            """
+
+        callbackx = CustomJS(args=dict(source=source), code=codex)
+        callbacky = CustomJS(args=dict(source=source), code=codey)
+
+        # create a new plot 
+        plot = Figure()
+
+        # Make a line and connect to data source
+        plot.scatter(x='x'
+                  , y='y'
+                  , line_color="#F46D43"
+                  , line_width=6
+                  , line_alpha=0.6
+                  , source=source)
+
+
+        # Add list boxes for selecting which columns to plot on the x and y axis
+        xaxis_select = Select(title="X axis:", value=numeric_columns[0],
+                                   options=numeric_columns, callback=callbackx)
+
+        yaxis_select = Select(title="Y axis:", value=numeric_columns[1],
+                                   options=numeric_columns, callback=callbacky)
+
+
+
+        # Layout widgets next to the plot                     
+        controls = column(xaxis_select,yaxis_select)
+        layout = column(
+            controls,
+            plot,
+            sizing_mode = 'scale_width'
+        )
+        show(layout)
+    else: 
+        print("sorry not enough columns to make a scatterplot")
+except Exception:
+    print("ups no csv file found under the url you provided")
+os.remove(filename)
+`;
+params=[{
+  name: 'url',
+  value: 'https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv/datasets/iris.csv',
+  type: 'string'
+}];
+intentname="scatterplot";
+insertIt(code,intentname,params);
+
+
+
+/*
+
+  Analyze CSV - Descriptive statistics
+
+ */
+
+code =`import numpy as np
+from IPython.display import Image, display
+from IPython.core.display import HTML
+import requests
+import pandas as pd
+import json
+import os
+import random
+import csv
+import re
+import chardet
+import reboting
+#data reading and preparation
+filename = reboting.readandcleancsv( url )
+# Define the data to be used
+#display(HTML('<b>'+url+'</b>'))
+df = pd.read_csv(filename,sep=';')
+os.remove(filename)
+#remove special chars of column names
+df.columns=df.columns.str.replace('#','')
+df.columns=df.columns.str.replace('.','')
+df.columns=df.columns.str.replace(':','')
+df.columns=df.columns.str.replace('"','')
+df.columns=df.columns.str.replace(' ','')
+pd.options.display.float_format = '{:,.2f}'.format
+display(HTML('<h1>First Lines of the Dataset</h1>'))
+display(df.head())   
+display(HTML('<h1>Some Indicators</h1>'))
+display(df.describe(include='all'))
+#except Exception:
+#    print("ups no csv file found under the url you provided")
+`;
+params=[{
+  name: 'url',
+  value: 'https://raw.githubusercontent.com/vincentarelbundock/Rdatasets/master/csv/datasets/iris.csv',
+  type: 'string'
+}];
+intentname="analyze_csv";
+insertIt(code,intentname,params);
+
+
+
+/*
+
+  Maps
+
+ */
 code =`import requests
 import pandas as pd
 import json
@@ -570,52 +503,9 @@ import random
 import csv
 import re
 import chardet
+import reboting
 #data reading and preparation
-def readandcleancsv( url ):
-    r = requests.get(url)
-    filename=str(random.getrandbits(64))+".csv.tmp"
-    header =[];
-    rows=[];
-    encoding='utf-8';
-    with open(filename, "wb") as code:
-        code.write(r.content)
-    with open(filename, 'rb') as f:
-        encoding = chardet.detect(f.read())['encoding']
-    with open(filename, 'r', encoding=encoding) as csvfile:        
-        try:
-            dialect = csv.Sniffer().sniff(csvfile.read(1024*16), delimiters=';,\\t')
-        except Exception as e:
-            print("exception"+e)
-        csvfile.seek(0)
-        reader = csv.reader(csvfile, dialect)
-        #go through all lines
-        #Todo get the header
-        #Todo detect dates and get them in a fixed format
-        #Todo get Numeric Values and get them in a fixed format  
-        #empty string
-        for index, entry in enumerate(reader):
-            #test for header in first 2 lines
-            if( (index==0 or index==1) and len(header) == 0):
-                empties = 0;
-                for i in entry:
-                    if(i==""):
-                        empties+=1
-                if(empties <= 1):
-                    #print("using header at index: "+str(index))
-                    header=entry
-            else:
-                rows.append(entry)
-    #amount of rows
-    #print(len(rows))
-    #amount of columns in header
-    #print(len(header))
-    with open(filename, 'w') as csvfile:
-        writer = csv.writer(csvfile, delimiter=';')
-        writer.writerow(header);
-        for element in rows:
-            writer.writerow(element);
-    return filename
-filename = readandcleancsv( url )
+filename = reboting.readandcleancsv( url )
 #print(filename)
 df = pd.read_csv(filename,sep=';', thousands='.', decimal=',')
 #test if SUB_DISTRICT_CODE exists
@@ -691,26 +581,151 @@ params=[
   },
   {
     name : 'name',
-    value: 'test',
+    value: 'kein name angegeben',
     type: 'string'
   },
   {
     name: 'description',
-    value: 'desc',
+    value: 'keine Beschreibung vorhanden',
     type: 'string'
   },
   {
     name: 'publisher',
-    value: 'bla',
+    value: 'kein Publisher angegeben',
     type: 'string'
   },
   {
     name: 'portal',
-    value: 'https://data.gv.at',
+    value: 'kein Portal angegeben',
     type: 'string'
   }
 ];
 intentname="map";
 insertIt(code,intentname,params);
+
+/*
+
+  Barchart
+
+ */
+
+code =`import requests
+import pandas as pd
+import json
+import os
+import IPython
+import random
+import csv
+import re
+import chardet
+import reboting
+#data reading and preparation
+filename = reboting.readandcleancsv( url )
+#print(filename)
+df = pd.read_csv(filename,sep=';', thousands='.', decimal=',')
+#test if SUB_DISTRICT_CODE exists
+districtCode =""
+if 'DISTRICT_CODE' in df.columns:
+    districtCode="DISTRICT_CODE"
+if 'SUB_DISTRICT_CODE' in df.columns:
+    districtCode='SUB_DISTRICT_CODE'
+if 'LAU_CODE' in df.columns:
+    districtCode='LAU_CODE'
+#df = df.drop_duplicates(subset=districtCode)
+df.columns=df.columns.str.replace('#','')
+df.columns=df.columns.str.replace('.','')
+df.columns=df.columns.str.replace(':','')
+df.columns=df.columns.str.replace('"','')
+df.columns=df.columns.str.replace(' ','')
+numeric_columnlist = list(df._get_numeric_data().columns)
+#filter out empty column names
+string_columns=[item for item in list(df.columns) if item not in numeric_columnlist and item!='']
+#test if there is a time part
+timeDimension = "false"
+timeField = "null"
+if 'REF_YEAR' in df.columns:
+    timeDimension = "true"
+    timeField="REF_YEAR"
+if 'YEAR' in df.columns:
+    timeDimension = "true"
+    timeField="YEAR"
+numeric_columnlist=[item for item in numeric_columnlist if item!='' and item!='DISTRICT_CODE' and item!='SUB_DISTRICT_CODE' and item!='LAU_CODE' and item!='YEAR' and item!='REF_YEAR']
+#last numeric field as entity field for know.
+valueField = random.choice(numeric_columnlist)
+entityField = string_columns[-1]
+data_dict = df.to_dict(orient='records')
+#delete temp file
+os.remove(filename)
+requestOBJ = {
+        "data" : data_dict,
+        "meta": {
+            "name": name + " "+valueField,
+            "sourceOrganization": publisher,
+            "source": publisher,
+            "description": description,
+            "publisher_name": publisher,
+            "publisher_homepage": portal,
+            "publisher_contact": "EMAIL ADRESS OF PUBLISHER",
+            "publisher_tags": ["Reboting"],
+            "accessUrl": "/api/data/",
+            "accessFormat": "json",
+            "frequency": "INSERT EXPECTED DATA UPDATE CYCLE",
+            "license": "Creative Commons Namensnennung 3.0 Österreich",
+            "citation": "INSERT CITATION IF AVAILABLE",
+            "isoField": "null",
+            "entityField": entityField,
+            "timeField": timeField,
+            "timeDimension": timeDimension,
+            "timeUnit": "Year",
+            "valueField": valueField,
+            "colors": ["#ffc971", "#ffb627", "#ff9505", "#e2711d", "#cc5803"],
+            "legendtitles": ["low", "med-low", "med", "med-high", "high"],
+            "unit": "Value:",           
+            "tooltip": [{"label": valueField, "field": "data:"+valueField }],
+            "theme": "light"
+        },
+        "parameters": {
+            "source": "manual",
+            "provider": "reboting",
+            "layer": "chart"
+        }
+    }
+#print(json.dumps(requestOBJ, indent=3, sort_keys=True))
+r = requests.post("http://52.166.116.205:2301/manual", json=requestOBJ)
+url = 'https://doh.23degrees.io/viz/'+r.json()['slug']
+iframe= '<div class="intrinsic-container" style="position: relative; padding-bottom: 56.25%;height: 0; overflow: hidden; width: 100%;height: auto;"><iframe src="' + url + '" allowfullscreen style=" position: absolute; top: 0; left: 0; width: 100%; height: 100%; "></iframe></div>'
+#print(url)
+IPython.display.HTML(iframe)
+`;
+params=[
+  {
+    name: 'url',
+    value: 'http://www.wien.gv.at/politik/wahlen/ogd/nr131_99999999_9999_spr.csv',
+    type: 'string'
+  },
+  {
+    name : 'name',
+    value: 'kein name angegeben',
+    type: 'string'
+  },
+  {
+    name: 'description',
+    value: 'keine Beschreibung vorhanden',
+    type: 'string'
+  },
+  {
+    name: 'publisher',
+    value: 'kein Publisher angegeben',
+    type: 'string'
+  },
+  {
+    name: 'portal',
+    value: 'kein Portal angegeben',
+    type: 'string'
+  }
+];
+intentname="barchart";
+insertIt(code,intentname,params);
+
 
 

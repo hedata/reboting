@@ -99,7 +99,7 @@ externalCalls = function(context) {
         var geolocation = context.responseObj.bot_response.result.parameters.geolocation;
         var requesturi ="http://data.wu.ac.at/odgraph/locationsearch?";
         //add limit param
-        requesturi = requesturi+"limit=50";
+        requesturi = requesturi+"limit=150";
         if(topics.length>0) {
           requesturi = requesturi+"&q="+topics.join(" ");
         }
