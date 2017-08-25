@@ -8,16 +8,225 @@ import csv
 import re
 import chardet
 
-def checkforknowncsv( url ):
+def checkforknowncsv( data_desc ):
     #http://reboting:3000
+    #ask reboting if we know the data -> if not create data and return id
+    #we have 3 routes 1 just saves the data 
+    #we should save the metadata though after parsing the data if its not known
+    #especially columns and potentially if we have some field for geodata -> so if we can map it
+    #also if it is possible to create barchart or map    
     requestOBJ = {
         "type" : "checkforknowncsv",
-        "userid": "pythonscript",
-        "url" : url
+        "userid": data_desc["user_id"],
+        "url" : data_desc["url"]
     }
     r = requests.post("http://reboting:3000/rb/actions", json=requestOBJ)
-    #print(r.json());
-    return "notknown";
+    resp = r.json()
+    if resp["exists"]:
+        showchart = random.choice(["old","old","old","new"])
+        print(showchart)
+        if showchart=="old":
+            #take a random visual
+            visual = random.choice(resp["payload"]["visuals"])
+            return visual["slug"];
+        else:
+            chartRequestOBJ = createRandomChart(resp["payload"])
+            #add chart to current datafile so we know about it
+            requestOBJ = {
+                "type" : "addvisualtodatasource",
+                "userid": data_desc["user_id"],
+                "payload" : {
+                    "data_id" : resp['payload']['data_id'],
+                    "visual" : chartRequestOBJ
+                }
+            }
+            r = requests.post("http://reboting:3000/rb/actions", json=requestOBJ)
+            resp = r.json()
+            print(resp)
+            return chartRequestOBJ["slug"]
+    else:
+        print("it doesntexists")
+        slug = readCleanChart( data_desc )
+        #lets create the data
+        return slug;
+    
+def readCleanChart( data_desc ):
+    filename = readandcleancsv( data_desc["url"] )
+    #get column and row descriptions
+    df = pd.read_csv(filename,sep=';', thousands='.', decimal=',')
+    #santize column headers
+    df.columns=df.columns.str.replace('#','')
+    df.columns=df.columns.str.replace('.','')
+    df.columns=df.columns.str.replace(':','')
+    df.columns=df.columns.str.replace('"','')
+    df.columns=df.columns.str.replace(' ','')
+    data_dict = df.to_dict(orient='records')
+    #delete temp file
+    os.remove(filename)
+    requestOBJ = {
+            "data" : data_dict,            
+            "parameters": {
+                "source": "manual",
+                "provider": "reboting",
+                "layer": "choropleth"
+            }
+    }
+    r = requests.post("http://52.166.116.205:2301/save_data", json=requestOBJ)
+    resp = r.json()
+    #got a data id 
+    print(resp['data']['_id'])
+    #create random visual
+    districtCode =""
+    if 'DISTRICT_CODE' in df.columns:
+        districtCode="DISTRICT_CODE"
+    if 'SUB_DISTRICT_CODE' in df.columns:
+        districtCode='SUB_DISTRICT_CODE'
+    if 'LAU_CODE' in df.columns:
+        districtCode='LAU_CODE'
+    numeric_columnlist = list(df._get_numeric_data().columns)
+    string_columnlist=[item for item in list(df.columns) if item not in numeric_columnlist and item!='' and item!='DISTRICT_CODE' and item!='SUB_DISTRICT_CODE' and item!='LAU_CODE' and item!='YEAR' and item!='REF_YEAR']
+    #test if there is a time part
+    timeDimension = "false"
+    timeField = "null"
+    if 'REF_YEAR' in df.columns:
+        timeDimension = "true"
+        timeField="REF_YEAR"
+    if 'YEAR' in df.columns:
+        timeDimension = "true"
+        timeField="YEAR"
+    numeric_columnlist=[item for item in numeric_columnlist if item!='' and item!='DISTRICT_CODE' and item!='SUB_DISTRICT_CODE' and item!='LAU_CODE' and item!='YEAR' and item!='REF_YEAR']
+    #prepare request object
+    requestOBJ = {
+        "type" : "createdatasource",
+        "userid": data_desc["user_id"],
+        "payload" : {
+            "url" : data_desc["url"],
+            "user_id" : data_desc["user_id"],
+            "data_id" : resp['data']['_id'],
+            "timeDimension" : timeDimension,
+            "timeField" : timeField,
+            "columnlist" : list(df.columns),
+            "isoField" : districtCode,
+            "numericColumnlist" : numeric_columnlist,
+            "stringColumnlist" : string_columnlist,
+            "dataDesc" : data_desc,
+            "visuals" : []
+        }
+    }
+    #create chart
+    chartRequestOBJ = createRandomChart( requestOBJ["payload"])
+    #add chart to current slug
+    requestOBJ["payload"]["visuals"].append(chartRequestOBJ)
+    #create new dataobject 
+    r = requests.post("http://reboting:3000/rb/actions", json=requestOBJ)
+    resp = r.json()
+    if resp["status"] == "ok":
+        print(resp["id"])
+    else:
+        print("error while saving datasource")
+    return chartRequestOBJ["slug"]
+
+def createRandomChart( datacontext):
+    #last numeric field as entity field for know.
+    districtCode = datacontext["isoField"]
+    #random choice 50/50
+    whichchart = random.choice(["bar","map","map"])
+    #create a visual but which one?
+    if districtCode!="" and whichchart == "map":
+        print("district code exists and random said map")    
+        chartRequestOBJ = createMapRequestObject(datacontext) 
+        r = requests.post("http://52.166.116.205:2301/create_visual", json=chartRequestOBJ)
+        chartRequestOBJ["slug"]=r.json()['slug']
+        print("got a slug?")
+        print(chartRequestOBJ["slug"])
+    else:
+        #minimum requirement for a barchart is at list one string and one value column
+        print("trying a barchart")
+        chartRequestOBJ = createBarChartRequestObject(datacontext) 
+        r = requests.post("http://52.166.116.205:2301/create_visual", json=chartRequestOBJ)
+        chartRequestOBJ["slug"]=r.json()['slug']
+        print("got a slug?")
+        print(chartRequestOBJ["slug"])
+    return chartRequestOBJ
+def createBarChartRequestObject(datacontext):
+    valueField = random.choice(datacontext["numericColumnlist"] )
+    entityField = datacontext["stringColumnlist"][-1]
+    chartRequestOBJ = {
+            "meta": {
+                "name": datacontext["dataDesc"]["name"] + " "+valueField,
+                "sourceOrganization": datacontext["dataDesc"]["publisher"],
+                "source": datacontext["dataDesc"]["publisher"],
+                "description": datacontext["dataDesc"]["description"],
+                "publisher_name": datacontext["dataDesc"]["publisher"],
+                "publisher_homepage": datacontext["dataDesc"]["portal"],
+                "publisher_contact": "EMAIL ADRESS OF PUBLISHER",
+                "publisher_tags": ["City of Vienna", "Demographie", "Population"],
+                "accessUrl": "/api/data/",
+                "accessFormat": "json",
+                "frequency": "Probably no Data Update",
+                "license": "OpenData",
+                "citation": "INSERT CITATION IF AVAILABLE",
+                "isoField": "null",
+                "entityField": entityField,
+                "timeField": datacontext["timeField"],
+                "timeDimension": datacontext["timeDimension"],
+                "timeUnit": "year",
+                "valueField": valueField,
+                "unit": "Value:",
+                "colors": ["#ffc971", "#ffb627", "#ff9505", "#e2711d", "#cc5803"],
+                "legendtitles": ["low", "med-low", "med", "med-high", "high"],
+                "tooltip": [{"label": valueField, "field": "data:"+valueField }],
+                "theme": "light"
+            },
+            "parameters": {
+                "source": "manual",
+                "provider": "reboting",
+                "layer": "chart",
+                "data_id": datacontext["data_id"]
+            }
+        }
+    return chartRequestOBJ
+def createMapRequestObject(datacontext):
+    valueField = random.choice(datacontext["numericColumnlist"] )
+    entityField = datacontext["stringColumnlist"][-1]
+    districtCode = datacontext["isoField"]
+    chartRequestOBJ = {
+            "meta": {
+                "name": datacontext["dataDesc"]["name"] + " "+valueField,
+                "sourceOrganization": datacontext["dataDesc"]["publisher"],
+                "source": datacontext["dataDesc"]["publisher"],
+                "description": datacontext["dataDesc"]["description"],
+                "publisher_name": datacontext["dataDesc"]["publisher"],
+                "publisher_homepage": datacontext["dataDesc"]["portal"],
+                "publisher_contact": "EMAIL ADRESS OF PUBLISHER",
+                "publisher_tags": ["City of Vienna", "Demographie", "Population"],
+                "accessUrl": "/api/data/",
+                "accessFormat": "json",
+                "frequency": "Probably no Data Update",
+                "license": "OpenData",
+                "citation": "INSERT CITATION IF AVAILABLE",
+                "isoField": districtCode,
+                "entityField": entityField,
+                "timeField": datacontext["timeField"],
+                "timeDimension": datacontext["timeDimension"],
+                "timeUnit": "year",
+                "valueField": valueField,
+                "unit": "Value:",
+                "colors": ["#ffc971", "#ffb627", "#ff9505", "#e2711d", "#cc5803"],
+                "legendtitles": ["low", "med-low", "med", "med-high", "high"],
+                "tooltip": [{"label": valueField, "field": "data:"+valueField }],
+                "theme": "light"
+            },
+            "parameters": {
+                "source": "manual",
+                "provider": "reboting",
+                "layer": "choropleth",
+                "data_id": datacontext["data_id"]
+            }
+        }
+    return chartRequestOBJ
+
+#standard csv reading and cleaning
 def readandcleancsv( url ):
     r = requests.get(url)
     filename=str(random.getrandbits(64))+".csv.tmp"

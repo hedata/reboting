@@ -52,23 +52,6 @@ export class OpenDataComponent {
       }]
     });
   }
-  onBarChart(searchresult: any) {
-    this.dataService.emitChange({
-      message: 'directbotrequest',
-      data: 'barchart this ',
-      context: [{
-        name: 'wudatasearchresult',
-        lifespan: 10,
-        parameters: {
-          url: searchresult.url.replace(/(\r\n|\n|\r)/gm, '' )
-          // name: searchresult.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
-          // description: searchresult.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
-          // portal: searchresult.portal.replace(/(\r\n|\n|\r)/gm, '' ),
-          // publisher: searchresult.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' )
-        }
-      }]
-    });
-  }
   onScatter(searchresult: any) {
     this.dataService.emitChange({
       message: 'directbotrequest',
@@ -77,28 +60,20 @@ export class OpenDataComponent {
         name: 'wudatasearchresult',
         lifespan: 10,
         parameters: {
-          url: searchresult.url.replace(/(\r\n|\n|\r)/gm, '' )
-          // name: searchresult.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
-          // description: searchresult.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
-          // portal: searchresult.portal.replace(/(\r\n|\n|\r)/gm, '' ),
-          // publisher: searchresult.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' )
+          url: searchresult.url.replace(/(\r\n|\n|\r)/gm, '' ),
+          name: searchresult.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
+          description: searchresult.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
+          portal: searchresult.portal.replace(/(\r\n|\n|\r)/gm, '' ),
+          publisher: searchresult.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' )
         }
       }]
     });
   }
-
-  CheckifValidForMap(searchresult: any ) {
-    if (searchresult.headers.indexOf('DISTRICT_CODE') !== -1 ) {
-      return true;
-    }
-    // we have an opendata searchresult can we map this?
-    return false;
-  }
-  onVisualizeAsMap(searchresult: any) {
+  onVisualize(searchresult: any) {
     // request it
     this.dataService.emitChange({
       message: 'directbotrequest',
-      data: 'map this',
+      data: 'visualize this',
       context: [{
                   name: 'wudatasearchresult',
                   lifespan: 10,

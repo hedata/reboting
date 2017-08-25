@@ -1,6 +1,7 @@
 var ctrlBot = require('./bot_helper');
 var mongoose = require('mongoose');
 var Visuals = mongoose.model('Visuals');
+var dataHelper = require('./data_helper');
 /*
   every action sends data to the bot
 
@@ -104,8 +105,19 @@ module.exports.takeAction = function(req, res) {
         break;
     case 'checkforknowncsv':
         console.log("checkingforcsv");
-        context.response.status(200).json({ "hi": "yes"});
+        context.checkforknowncsv = {url: req.body.url};
+        dataHelper.queryDataExists(context);
         break;
+    case 'createdatasource':
+      console.log("createdatasource");
+      context.createdatasource = req.body.payload;
+      dataHelper.createNewDataSource(context);
+      break;
+    case 'addvisualtodatasource':
+      console.log("addvisualtodatasource");
+      context.addvisualtodatasource = req.body.payload;
+      dataHelper.AddvisualToDataSource(context);
+      break;
     default:
         console.log("action not implemented");
         res.status(200).json({

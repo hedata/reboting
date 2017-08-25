@@ -494,83 +494,19 @@ insertIt(code,intentname,params);
   Maps
 
  */
-code =`import requests
-import pandas as pd
-import json
-import os
-import IPython
-import random
-import csv
-import re
-import chardet
+code =`import IPython
 import reboting
-#data reading and preparation
-filename = reboting.readandcleancsv( url )
-#print(filename)
-df = pd.read_csv(filename,sep=';', thousands='.', decimal=',')
-#test if SUB_DISTRICT_CODE exists
-districtCode =""
-if 'DISTRICT_CODE' in df.columns:
-    districtCode="DISTRICT_CODE"
-if 'SUB_DISTRICT_CODE' in df.columns:
-    districtCode='SUB_DISTRICT_CODE'
-if 'LAU_CODE' in df.columns:
-    districtCode='LAU_CODE'
-df = df.drop_duplicates(subset=districtCode)
-df.columns=df.columns.str.replace('#','')
-df.columns=df.columns.str.replace('.','')
-df.columns=df.columns.str.replace(':','')
-df.columns=df.columns.str.replace('"','')
-df.columns=df.columns.str.replace(' ','')
-numeric_columnlist = list(df._get_numeric_data().columns)
-#filter out empty column names
-string_columns=[item for item in list(df.columns) if item not in numeric_columnlist and item!='']
-numeric_columnlist=[item for item in numeric_columnlist if item!='' and item!='DISTRICT_CODE' and item!='SUB_DISTRICT_CODE' and item!='LAU_CODE']
-#last numeric field as entity field for know.
-valueField = random.choice(numeric_columnlist)
-entityField = string_columns[-1]
-data_dict = df.to_dict(orient='records')
-#delete temp file
-os.remove(filename)
-requestOBJ = {
-        "data" : data_dict,
-        "meta": {
-            "name": name + " "+valueField,
-            "sourceOrganization": publisher,
-            "source": publisher,
-            "description": description,
-            "publisher_name": publisher,
-            "publisher_homepage": portal,
-            "publisher_contact": "EMAIL ADRESS OF PUBLISHER",
-            "publisher_tags": ["City of Vienna", "Demographie", "Population"],
-            "accessUrl": "/api/data/",
-            "accessFormat": "json",
-            "frequency": "INSERT EXPECTED DATA UPDATE CYCLE",
-            "license": "Creative Commons Namensnennung 3.0 Österreich",
-            "citation": "INSERT CITATION IF AVAILABLE",
-            "isoField": districtCode,
-            "entityField": entityField,
-            "timeField": "null",
-            "timeDimension": "false",
-            "timeUnit": "year",
-            "valueField": valueField,
-            "unit": "Value:",
-            "colors": ["#ffc971", "#ffb627", "#ff9505", "#e2711d", "#cc5803"],
-            "legendtitles": ["low", "med-low", "med", "med-high", "high"],
-            "tooltip": [{"label": valueField, "field": "data:"+valueField }],
-            "theme": "light"
-        },
-        "parameters": {
-            "source": "manual",
-            "provider": "reboting",
-            "layer": "choropleth"
-        }
-    }
-#print(json.dumps(requestOBJ, indent=3, sort_keys=True))
-r = requests.post("http://52.166.116.205:2301/manual", json=requestOBJ)
-url = 'https://doh.23degrees.io/viz/'+r.json()['slug']
+data_desc = {
+    "name" : name,
+    "description" : description,
+    "publisher" : publisher,
+    "portal" : portal,
+    "url": url,
+    "user_id" : "pythonscript"
+}
+slug = reboting.checkforknowncsv(data_desc = data_desc)
+url = 'https://doh.23degrees.io/view/'+slug
 iframe= '<iframe src="' + url + '" allowfullscreen frameborder="0" ></iframe>'
-#print(url)
 IPython.display.HTML(iframe)
 `;
 params=[
@@ -600,133 +536,9 @@ params=[
     type: 'string'
   }
 ];
-intentname="map";
+intentname="visualize";
 insertIt(code,intentname,params);
 
-/*
-
-  Barchart
-
- */
-
-code =`import requests
-import pandas as pd
-import json
-import os
-import IPython
-import random
-import csv
-import re
-import chardet
-import reboting
-#data reading and preparation
-reboting.checkforknowncsv( url )
-filename = reboting.readandcleancsv( url )
-#print(filename)
-df = pd.read_csv(filename,sep=';', thousands='.', decimal=',')
-#test if SUB_DISTRICT_CODE exists
-districtCode =""
-if 'DISTRICT_CODE' in df.columns:
-    districtCode="DISTRICT_CODE"
-if 'SUB_DISTRICT_CODE' in df.columns:
-    districtCode='SUB_DISTRICT_CODE'
-if 'LAU_CODE' in df.columns:
-    districtCode='LAU_CODE'
-#df = df.drop_duplicates(subset=districtCode)
-df.columns=df.columns.str.replace('#','')
-df.columns=df.columns.str.replace('.','')
-df.columns=df.columns.str.replace(':','')
-df.columns=df.columns.str.replace('"','')
-df.columns=df.columns.str.replace(' ','')
-numeric_columnlist = list(df._get_numeric_data().columns)
-#filter out empty column names
-string_columns=[item for item in list(df.columns) if item not in numeric_columnlist and item!='']
-#test if there is a time part
-timeDimension = "false"
-timeField = "null"
-if 'REF_YEAR' in df.columns:
-    timeDimension = "true"
-    timeField="REF_YEAR"
-if 'YEAR' in df.columns:
-    timeDimension = "true"
-    timeField="YEAR"
-numeric_columnlist=[item for item in numeric_columnlist if item!='' and item!='DISTRICT_CODE' and item!='SUB_DISTRICT_CODE' and item!='LAU_CODE' and item!='YEAR' and item!='REF_YEAR']
-#last numeric field as entity field for know.
-valueField = random.choice(numeric_columnlist)
-entityField = string_columns[-1]
-data_dict = df.to_dict(orient='records')
-#delete temp file
-os.remove(filename)
-requestOBJ = {
-        "data" : data_dict,
-        "meta": {
-            "name": name + " "+valueField,
-            "sourceOrganization": publisher,
-            "source": publisher,
-            "description": description,
-            "publisher_name": publisher,
-            "publisher_homepage": portal,
-            "publisher_contact": "EMAIL ADRESS OF PUBLISHER",
-            "publisher_tags": ["Reboting"],
-            "accessUrl": "/api/data/",
-            "accessFormat": "json",
-            "frequency": "INSERT EXPECTED DATA UPDATE CYCLE",
-            "license": "Creative Commons Namensnennung 3.0 Österreich",
-            "citation": "INSERT CITATION IF AVAILABLE",
-            "isoField": "null",
-            "entityField": entityField,
-            "timeField": timeField,
-            "timeDimension": timeDimension,
-            "timeUnit": "Year",
-            "valueField": valueField,
-            "colors": ["#ffc971", "#ffb627", "#ff9505", "#e2711d", "#cc5803"],
-            "legendtitles": ["low", "med-low", "med", "med-high", "high"],
-            "unit": "Value:",           
-            "tooltip": [{"label": valueField, "field": "data:"+valueField }],
-            "theme": "light"
-        },
-        "parameters": {
-            "source": "manual",
-            "provider": "reboting",
-            "layer": "chart"
-        }
-    }
-#print(json.dumps(requestOBJ, indent=3, sort_keys=True))
-r = requests.post("http://52.166.116.205:2301/manual", json=requestOBJ)
-url = 'https://doh.23degrees.io/viz/'+r.json()['slug']
-iframe= '<iframe src="' + url + '" allowfullscreen frameborder="0" ></iframe>'
-#print(url)
-IPython.display.HTML(iframe)
-`;
-params=[
-  {
-    name: 'url',
-    value: 'http://www.wien.gv.at/politik/wahlen/ogd/nr131_99999999_9999_spr.csv',
-    type: 'string'
-  },
-  {
-    name : 'name',
-    value: 'kein name angegeben',
-    type: 'string'
-  },
-  {
-    name: 'description',
-    value: 'keine Beschreibung vorhanden',
-    type: 'string'
-  },
-  {
-    name: 'publisher',
-    value: 'kein Publisher angegeben',
-    type: 'string'
-  },
-  {
-    name: 'portal',
-    value: 'kein Portal angegeben',
-    type: 'string'
-  }
-];
-intentname="barchart";
-insertIt(code,intentname,params);
 
 
 
