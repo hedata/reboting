@@ -10,7 +10,7 @@ import {AuthService} from '../../services/auth.service';
 })
 export class BotComponent implements OnInit {
   public configModel: any = {recording: false, synthesis: false, autorecord: false, userprofile: false};
-  public quickreplies = ['Show me what you got'];
+  public quickreplies = ['Wien', 'Steiermark' , 'Burgenland' , 'Kärnten', 'Salzburg', 'Vorarlberg', 'Oberösterreich' , 'Niederösterreich', 'Tirol'];
   public context: any;
   userData: any = {};
   botChat = [];
@@ -216,9 +216,14 @@ export class BotComponent implements OnInit {
           messages.forEach((element) => {
             if (element.type === 2) {
               this.quickreplies = element.replies;
-              this.quickreplies.push('Show me what you got');
+              this.quickreplies.push('Show me something');
             }
           });
+          // check if we have our special incomplete action
+          if (data.bot_response.result.action === 'show_random_visual' && data.bot_response.result.actionIncomplete) {
+            this.quickreplies = ['Wien', 'Steiermark' , 'Burgenland' , 'Kärnten', 'Salzburg', 'Vorarlberg',
+              'Oberösterreich' , 'Niederösterreich', 'Tirol'];
+          }
         }
         this.chatmessage = '';
         this.dataService.emitChange({
@@ -234,6 +239,7 @@ export class BotComponent implements OnInit {
           speechSynthesis.speak(this.msg);
         }
         // show chatlogtimer
+        /*
         this.showChatLogTime = new Date().getTime() / 1000;
         setTimeout(() => {
           // have 7,5 seconds expired since last time the chatlogtime was set?
@@ -242,6 +248,7 @@ export class BotComponent implements OnInit {
             this.showchatlog = false;
           }
         }, 6000 );
+        */
       });
     }
     /*

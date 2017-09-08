@@ -165,18 +165,35 @@ externalCalls = function(context) {
           //select a random item
           var selecteditem = results[Math.floor(Math.random()*results.length)];
           //only return interesting part of the item as params
-          context.responseObj.bot_context=  [{
-            name: 'wudatasearchresult',
-            lifespan: 10,
-            parameters: {
-              url: selecteditem.url,
-              name: selecteditem.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
-              description: selecteditem.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
-              portal: selecteditem.portal.replace(/(\r\n|\n|\r)/gm, '' ),
-              publisher: selecteditem.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' ),
-              user_id : context.botparams.session_id
-            }
-          }];
+          if(selecteditem.dataset) {
+            context.responseObj.bot_context=  [{
+              name: 'wudatasearchresult',
+              lifespan: 10,
+              parameters: {
+                url: selecteditem.url,
+                name: selecteditem.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
+                description: selecteditem.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
+                portal: selecteditem.portal.replace(/(\r\n|\n|\r)/gm, '' ),
+                publisher: selecteditem.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' ),
+                user_id : context.botparams.session_id
+              }
+            }];
+          } else {
+            context.responseObj.bot_context=  [{
+              name: 'wudatasearchresult',
+              lifespan: 10,
+              parameters: {
+                url: selecteditem.url,
+                name: "no name available",
+                description: "no description available",
+                portal: selecteditem.portal.replace(/(\r\n|\n|\r)/gm, '' ),
+                publisher: "no publisher available",
+                user_id : context.botparams.session_id
+              }
+            }];
+          }
+
+
           console.log("FOUND A RANDOM FILE: ");
           console.log(context.responseObj.bot_context);
           callback(null,"returning from random search all good");
