@@ -43,11 +43,11 @@ export class OpenDataComponent {
         name: 'wudatasearchresult',
         lifespan: 10,
         parameters: {
-          url: searchresult.url.replace(/(\r\n|\n|\r)/gm, '' )
-          // name: searchresult.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
-          // description: searchresult.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
-          // portal: searchresult.portal.replace(/(\r\n|\n|\r)/gm, '' ),
-          // publisher: searchresult.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' )
+          url: searchresult.url.replace(/(\r\n|\n|\r)/gm, '' ),
+          name: searchresult.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
+          description: searchresult.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
+          portal: searchresult.portal.replace(/(\r\n|\n|\r)/gm, '' ),
+          publisher: searchresult.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' )
         }
       }]
     });

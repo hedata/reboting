@@ -540,5 +540,57 @@ intentname="visualize";
 insertIt(code,intentname,params);
 
 
+code =`import IPython
+import reboting
+print("userid: "+user_id)
+data_desc = {
+    "name" : name,
+    "description" : description,
+    "publisher" : publisher,
+    "portal" : portal,
+    "url": url,
+    "user_id" : user_id
+}
+slug = reboting.checkforknowncsv(data_desc = data_desc)
+url = 'https://doh.23degrees.io/view/'+slug
+iframe= '<iframe src="' + url + '" allowfullscreen frameborder="0" ></iframe>'
+IPython.display.HTML(iframe)
+`;
+params=[
+  {
+    name: 'url',
+    value: 'http://www.wien.gv.at/politik/wahlen/ogd/nr131_99999999_9999_spr.csv',
+    type: 'string'
+  },
+  {
+    name : 'name',
+    value: 'kein name angegeben',
+    type: 'string'
+  },
+  {
+    name: 'description',
+    value: 'keine Beschreibung vorhanden',
+    type: 'string'
+  },
+  {
+    name: 'publisher',
+    value: 'kein Publisher angegeben',
+    type: 'string'
+  },
+  {
+    name: 'portal',
+    value: 'kein Portal angegeben',
+    type: 'string'
+  },
+  {
+    name: 'user_id',
+    value: 'unknown',
+    type: 'string'
+  }
+];
+intentname="show_random_visual";
+insertIt(code,intentname,params);
+
+
 
 

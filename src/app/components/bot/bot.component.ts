@@ -9,12 +9,12 @@ import {AuthService} from '../../services/auth.service';
   styleUrls: ['./bot.component.css']
 })
 export class BotComponent implements OnInit {
-  public configModel: any = {recording: false, synthesis: true, autorecord: false, quickreplies: false, userprofile: false};
+  public configModel: any = {recording: false, synthesis: false, autorecord: false, userprofile: false};
   public quickreplies = ['Show me what you got'];
   public context: any;
   userData: any = {};
   botChat = [];
-  msg = new SpeechSynthesisUtterance();
+  msg: any;
   showChatLogTime: any;
   showchatlog = false;
   show = false;
@@ -46,6 +46,7 @@ export class BotComponent implements OnInit {
       setting base synthesis options
      */
     try {
+      this.msg = new SpeechSynthesisUtterance();
       this.msg.volume = 1;							// 0 to 1
       this.msg.rate = 0.8;							// 0.1 to 10
       this.msg.pitch = 0;							// 0 to 2
@@ -89,7 +90,7 @@ export class BotComponent implements OnInit {
               console.log('Bot Component Login');
               this.userData = data.data;
               this.show = true;
-              this.chatmessage = 'show me what you got';
+              this.chatmessage = 'show me something';
               this.queryBot();
             });
             break;
@@ -103,7 +104,6 @@ export class BotComponent implements OnInit {
       });
   }
   onQuickReply(reply) {
-    this.configModel.quickreplies = false;
     this.chatmessage = reply;
     this.queryBot();
   }

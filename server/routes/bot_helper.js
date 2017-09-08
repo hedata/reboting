@@ -93,6 +93,7 @@ externalCalls = function(context) {
   //search in opendata wu portal
   calls.push(function(callback){
     console.log("starting with searching in opendata");
+    //TODO save this to db?
     if(context.responseObj.bot_response.result.action && context.responseObj.bot_response.result.action === 'search_opendata'){
       if(!context.responseObj.bot_response.result.actionIncomplete) {
         var topics = context.responseObj.bot_response.result.parameters.topics;
@@ -128,6 +129,61 @@ externalCalls = function(context) {
       } else {
         callback(null,"returning from search opendata error");
       }
+    } else if(context.responseObj.bot_response.result.action &&
+      context.responseObj.bot_response.result.action === 'show_random_visual' &&
+      !context.responseObj.bot_response.result.actionIncomplete) {
+      /*
+        show random visual part
+        choose params
+       */
+      //search our set
+      var randtopics = context.responseObj.bot_response.result.parameters.topics;
+      var randgeolocation = context.responseObj.bot_response.result.parameters.geolocation;
+      var randrequesturi ="http://data.wu.ac.at/odgraph/locationsearch?";
+      //add limit param
+      randrequesturi = randrequesturi+"limit=150";
+      if(randtopics.length>0) {
+        randrequesturi = randrequesturi+"&q="+randtopics.join(" ");
+      }
+      // split gelocations they are
+      var randgelocarr = randgeolocation.split("#%#");
+      randgelocarr.forEach(function(geoloc) {
+        if(geolocation!=="") {
+          if(geoloc.lastIndexOf("http",0)=== 0) {
+            //we have a uri
+            randrequesturi = randrequesturi+"&l="+geoloc;
+          }
+        }
+      });
+      console.log("searching for: "+randrequesturi);
+      request(randrequesturi, function (error, response, body) {
+        if(error) {
+          console.log(error);
+          callback(null,"returning from search opendata error");
+        } else if(response.statusCode === 200) {
+          var results = JSON.parse(body).results;
+          //select a random item
+          var selecteditem = results[Math.floor(Math.random()*results.length)];
+          //only return interesting part of the item as params
+          context.responseObj.bot_context=  [{
+            name: 'wudatasearchresult',
+            lifespan: 10,
+            parameters: {
+              url: selecteditem.url,
+              name: selecteditem.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
+              description: selecteditem.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
+              portal: selecteditem.portal.replace(/(\r\n|\n|\r)/gm, '' ),
+              publisher: selecteditem.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' ),
+              user_id : context.botparams.session_id
+            }
+          }];
+          console.log("FOUND A RANDOM FILE: ");
+          console.log(context.responseObj.bot_context);
+          callback(null,"returning from random search all good");
+        } else {
+          callback(null,"api seems to be down");
+        }
+      });
     } else {
       callback(null,"returning from search opendata error");
     }
