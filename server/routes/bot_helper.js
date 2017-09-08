@@ -129,7 +129,8 @@ externalCalls = function(context) {
       } else {
         callback(null,"returning from search opendata error");
       }
-    } else if(context.responseObj.bot_response.result.action &&
+    }
+    else if(context.responseObj.bot_response.result.action &&
       context.responseObj.bot_response.result.action === 'show_random_visual' &&
       !context.responseObj.bot_response.result.actionIncomplete) {
       /*
@@ -139,68 +140,33 @@ externalCalls = function(context) {
       //search our set
       var randtopics = context.responseObj.bot_response.result.parameters.topics;
       var randgeolocation = context.responseObj.bot_response.result.parameters.geolocation;
-      var randrequesturi ="http://data.wu.ac.at/odgraph/locationsearch?";
+      var randrequesturi = "http://data.wu.ac.at/odgraph/locationsearch?";
       //add limit param
-      randrequesturi = randrequesturi+"limit=150";
-      if(randtopics.length>0) {
-        randrequesturi = randrequesturi+"&q="+randtopics.join(" ");
+      randrequesturi = randrequesturi + "limit=150";
+      if (randtopics.length > 0) {
+        randrequesturi = randrequesturi + "&q=" + randtopics.join(" ");
       }
       // split gelocations they are
       var randgelocarr = randgeolocation.split("#%#");
-      randgelocarr.forEach(function(geoloc) {
-        if(geolocation!=="") {
-          if(geoloc.lastIndexOf("http",0)=== 0) {
+      randgelocarr.forEach(function (geoloc) {
+        if (geolocation !== "") {
+          if (geoloc.lastIndexOf("http", 0) === 0) {
             //we have a uri
-            randrequesturi = randrequesturi+"&l="+geoloc;
+            randrequesturi = randrequesturi + "&l=" + geoloc;
           }
         }
       });
-      console.log("searching for: "+randrequesturi);
-      request(randrequesturi, function (error, response, body) {
-        if(error) {
-          console.log(error);
-          callback(null,"returning from search opendata error");
-        } else if(response.statusCode === 200) {
-          var results = JSON.parse(body).results;
-          //select a random item
-          var selecteditem = results[Math.floor(Math.random()*results.length)];
-          //only return interesting part of the item as params
-          if(selecteditem.dataset) {
-            context.responseObj.bot_context=  [{
-              name: 'wudatasearchresult',
-              lifespan: 10,
-              parameters: {
-                url: selecteditem.url,
-                name: selecteditem.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
-                description: selecteditem.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
-                portal: selecteditem.portal.replace(/(\r\n|\n|\r)/gm, '' ),
-                publisher: selecteditem.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' ),
-                user_id : context.botparams.session_id
-              }
-            }];
-          } else {
-            context.responseObj.bot_context=  [{
-              name: 'wudatasearchresult',
-              lifespan: 10,
-              parameters: {
-                url: selecteditem.url,
-                name: "no name available",
-                description: "no description available",
-                portal: selecteditem.portal.replace(/(\r\n|\n|\r)/gm, '' ),
-                publisher: "no publisher available",
-                user_id : context.botparams.session_id
-              }
-            }];
-          }
+      findRandomData(context, callback, randrequesturi);
+    } else if (context.responseObj.bot_response.result.action &&
+      context.responseObj.bot_response.result.action === 'not_like' &&
+      !context.responseObj.bot_response.result.actionIncomplete){
+      console.log("THIS IS NOT LIKE BOT RESPONSE I NEED THE CONTEXT");
+      console.log(context.responseObj.bot_response.result.contexts);
+      var uri = context.responseObj.bot_response.result.contexts[0].parameters.request_uri;
+      //TODO save rating!
 
 
-          console.log("FOUND A RANDOM FILE: ");
-          console.log(context.responseObj.bot_context);
-          callback(null,"returning from random search all good");
-        } else {
-          callback(null,"api seems to be down");
-        }
-      });
+      findRandomData(context, callback, uri);
     } else {
       callback(null,"returning from search opendata error");
     }
@@ -281,6 +247,56 @@ externalCalls = function(context) {
       }
     });
   }*/
+};
+
+findRandomData = function(context,callback,requesturi) {
+  console.log("searching for: "+requesturi);
+  request(requesturi, function (error, response, body) {
+    if(error) {
+      console.log(error);
+      callback(null,"returning from search opendata error");
+    } else if(response.statusCode === 200) {
+      //TODO better error handling
+      var results = JSON.parse(body).results;
+      //select a random item
+      var selecteditem = results[Math.floor(Math.random()*results.length)];
+      //only return interesting part of the item as params
+      if(selecteditem.dataset) {
+        context.responseObj.bot_context=  [{
+          name: 'wudatasearchresult',
+          lifespan: 10,
+          parameters: {
+            url: selecteditem.url,
+            name: selecteditem.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
+            description: selecteditem.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
+            portal: selecteditem.portal.replace(/(\r\n|\n|\r)/gm, '' ),
+            publisher: selecteditem.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' ),
+            user_id : context.botparams.session_id,
+            request_uri: requesturi
+          }
+        }];
+      } else {
+        context.responseObj.bot_context=  [{
+          name: 'wudatasearchresult',
+          lifespan: 10,
+          parameters: {
+            url: selecteditem.url,
+            name: "no name available",
+            description: "no description available",
+            portal: selecteditem.portal.replace(/(\r\n|\n|\r)/gm, '' ),
+            publisher: "no publisher available",
+            user_id : context.botparams.session_id,
+            request_uri: requesturi
+          }
+        }];
+      }
+      console.log("FOUND A RANDOM FILE: ");
+      console.log(context.responseObj.bot_context);
+      callback(null,"returning from random search all good");
+    } else {
+      callback(null,"api seems to be down");
+    }
+  });
 };
 
 addExecutionScripts = function(context,callback) {

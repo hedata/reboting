@@ -224,6 +224,12 @@ export class BotComponent implements OnInit {
             this.quickreplies = ['Wien', 'Steiermark' , 'Burgenland' , 'Kärnten', 'Salzburg', 'Vorarlberg',
               'Oberösterreich' , 'Niederösterreich', 'Tirol'];
           }
+          // check if we have a context to set
+          if(data.bot_context) {
+            this.context = data.bot_context;
+            console.log('setting context to :');
+            console.log(this.context);
+          }
         }
         this.chatmessage = '';
         this.dataService.emitChange({
@@ -257,6 +263,12 @@ export class BotComponent implements OnInit {
     */
   }
 
+  DontLike() {
+    console.log('I dont Like it so what shall we send the bot?');
+    console.log(this.context)
+    this.chatmessage = 'I dont like it';
+    this.queryBot();
+  }
   findWithAttr(array, attr, value) {
     for (let i = 0; i < array.length; i += 1) {
       if (array[i][attr] === value) {
