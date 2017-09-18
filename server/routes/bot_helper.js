@@ -102,7 +102,7 @@ externalCalls = function(context) {
         var geolocation = context.responseObj.bot_response.result.parameters.geolocation;
         var requesturi ="http://data.wu.ac.at/odgraph/locationsearch?";
         //add limit param
-        requesturi = requesturi+"limit=150";
+        requesturi = requesturi+"limit=50";
         if(topics.length>0) {
           requesturi = requesturi+"&q="+topics.join(" ");
         }
@@ -144,7 +144,7 @@ externalCalls = function(context) {
       var randgeolocation = context.responseObj.bot_response.result.parameters.geolocation;
       var randrequesturi = "http://data.wu.ac.at/odgraph/locationsearch?";
       //add limit param
-      randrequesturi = randrequesturi + "limit=20";
+      randrequesturi = randrequesturi + "limit=50";
       if (randtopics.length > 0) {
         randrequesturi = randrequesturi + "&q=" + randtopics.join(" ");
       }

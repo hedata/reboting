@@ -17,8 +17,7 @@ export class BotComponent implements OnInit {
   userData: any = {};
   botChat = [];
   msg: any;
-  showChatLogTime: any;
-  showchatlog = false;
+  showchatlog = true;
   show = false;
   voices;
   private commands_listen = {
@@ -203,7 +202,7 @@ export class BotComponent implements OnInit {
     console.log('context:');
     console.log(this.context);
     console.log(this.chatmessage);
-    this.showchatlog = true;
+    // this.showchatlog = true;
     // mark this for cange detection
     const query = this.chatmessage;
     if (query !== '') {
