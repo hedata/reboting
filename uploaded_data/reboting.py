@@ -24,18 +24,20 @@ def checkforknowncsv( data_desc ):
     resp = r.json()
     if resp["exists"]:
         showchart = random.choice(["old","old","old","new"])
-        print(showchart)
+        print(showchart)        
         if showchart=="old":
             #take a random visual
             visual = random.choice(resp["payload"]["visuals"])
-            return visual["slug"];
+            return visual;
         else:
             chartRequestOBJ = createRandomChart(resp["payload"])
             #add chart to current datafile so we know about it
+            print("adding visual to datasource")
             requestOBJ = {
                 "type" : "addvisualtodatasource",
                 "userid": data_desc["user_id"],
                 "payload" : {
+                    "user_id": data_desc["user_id"],
                     "data_id" : resp['payload']['data_id'],
                     "visual" : chartRequestOBJ
                 }
@@ -96,6 +98,7 @@ def readCleanChart( data_desc ):
         timeField="YEAR"
     numeric_columnlist=[item for item in numeric_columnlist if item!='' and item!='DISTRICT_CODE' and item!='SUB_DISTRICT_CODE' and item!='LAU_CODE' and item!='YEAR' and item!='REF_YEAR']
     #prepare request object
+    external_data_id = resp['data']['_id']
     requestOBJ = {
         "type" : "createdatasource",
         "userid": data_desc["user_id"],
@@ -116,7 +119,7 @@ def readCleanChart( data_desc ):
     #create chart
     chartRequestOBJ = createRandomChart( requestOBJ["payload"])
     #add chart to current slug
-    requestOBJ["payload"]["visuals"].append(chartRequestOBJ)
+    #requestOBJ["payload"]["visuals"].append(chartRequestOBJ["slug"])
     #create new dataobject 
     r = requests.post("http://reboting:3000/rb/actions", json=requestOBJ)
     resp = r.json()
@@ -124,6 +127,20 @@ def readCleanChart( data_desc ):
         print(resp["id"])
     else:
         print("error while saving datasource")
+    #add chart to current datafile so we know about it
+    print("adding visual to datasource")
+    requestOBJ = {
+                "type" : "addvisualtodatasource",
+                "userid": data_desc["user_id"],
+                "payload" : {
+                    "user_id": data_desc["user_id"],
+                    "data_id" : external_data_id,
+                    "visual" : chartRequestOBJ
+                }
+    }
+    r = requests.post("http://reboting:3000/rb/actions", json=requestOBJ)
+    resp = r.json()
+    print(resp)    
     return chartRequestOBJ["slug"]
 
 def createRandomChart( datacontext):

@@ -5,3 +5,6 @@ require('./datasources.js');
 require('./visuals.js');
 require('./logs');
 require('./scripts');
+require('./external_visuals');
+require('./users');
+require('./ratings');

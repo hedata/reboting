@@ -94,8 +94,7 @@ export class AuthService {
           appId            : environment.fbappid.toString(),
           autoLogAppEvents : true,
           xfbml            : true,
-          status : true,
-          cookie: false,
+          cookie: true,
           version          : 'v2.10'
       });
       console.log('after init');

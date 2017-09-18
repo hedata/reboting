@@ -8,6 +8,8 @@ var DataSources = mongoose.model('DataSources');
 var Logs = mongoose.model('Logs');
 var Scripts = mongoose.model('Scripts');
 var Visuals = mongoose.model('Visuals');
+var Users = mongoose.model('Users');
+var Ratings = mongoose.model('Ratings');
 var request = require('request');
 var async = require('async');
 
@@ -142,7 +144,7 @@ externalCalls = function(context) {
       var randgeolocation = context.responseObj.bot_response.result.parameters.geolocation;
       var randrequesturi = "http://data.wu.ac.at/odgraph/locationsearch?";
       //add limit param
-      randrequesturi = randrequesturi + "limit=150";
+      randrequesturi = randrequesturi + "limit=20";
       if (randtopics.length > 0) {
         randrequesturi = randrequesturi + "&q=" + randtopics.join(" ");
       }
@@ -157,17 +159,88 @@ externalCalls = function(context) {
         }
       });
       findRandomData(context, callback, randrequesturi);
-    } else if (context.responseObj.bot_response.result.action &&
+    }
+    else if (context.responseObj.bot_response.result.action &&
       context.responseObj.bot_response.result.action === 'not_like' &&
       !context.responseObj.bot_response.result.actionIncomplete){
       console.log("THIS IS NOT LIKE BOT RESPONSE I NEED THE CONTEXT");
-      console.log(context.responseObj.bot_response.result.contexts);
-      var uri = context.responseObj.bot_response.result.contexts[0].parameters.request_uri;
-      //TODO save rating!
+      var contextParams = context.responseObj.bot_response.result.contexts[0].parameters;
+      var uri = contextParams.request_uri;
+      console.log(contextParams);
+      Users.findOne({ user_id : contextParams.user_id }).exec(function(err,userobj){
+        if(userobj) {
+          //saverating
+          var rating = new Ratings( {
+            user_id : userobj.user_id,
+            slug : userobj.current_slug,
+            data_id : userobj.current_data_id,
+            rating : -1,
+            description: contextParams.description,
+            request_uri: contextParams.request_uri,
+            url: contextParams.url,
+            name: contextParams.name,
+            publisher: contextParams.publisher,
+            search_rank: contextParams.search_rank,
+            portal: contextParams.portal,
+            geolocation: contextParams.geolocation
+          });
+          rating.save(function(err,newdatasource) {
+            if(err) {
+              console.log("error on save "+err);
+              findRandomData(context, callback, uri);
+            } else {
+              findRandomData(context, callback, uri);
+            }
+          });
 
+        }
+        else {
+          console.log("couldnt find user: "+err);
+          findRandomData(context, callback, uri);
+        }
+      });
+    }
+    else if (context.responseObj.bot_response.result.action &&
+      context.responseObj.bot_response.result.action === 'like' &&
+      !context.responseObj.bot_response.result.actionIncomplete){
+      console.log("THIS IS LIKE BOT RESPONSE I NEED THE CONTEXT");
+      var contextParams2 = context.responseObj.bot_response.result.contexts[0].parameters;
+      var uri2 = contextParams2.request_uri;
+      console.log(contextParams2);
+      Users.findOne({ user_id : contextParams2.user_id }).exec(function(err,userobj){
+        if(userobj) {
+          //saverating
+          var rating = new Ratings( {
+            user_id : userobj.user_id,
+            slug : userobj.current_slug,
+            data_id : userobj.current_data_id,
+            rating : 1,
+            description: contextParams2.description,
+            request_uri: contextParams2.request_uri,
+            url: contextParams2.url,
+            name: contextParams2.name,
+            publisher: contextParams2.publisher,
+            search_rank: contextParams2.search_rank,
+            portal: contextParams2.portal,
+            geolocation: contextParams2.geolocation
+          });
+          rating.save(function(err,newdatasource) {
+            if(err) {
+              console.log("error on save "+err);
+              findRandomData(context, callback, uri2);
+            } else {
+              findRandomData(context, callback, uri2);
+            }
+          });
 
-      findRandomData(context, callback, uri);
-    } else {
+        }
+        else {
+          console.log("couldnt find user: "+err);
+          findRandomData(context, callback, uri2);
+        }
+      });
+    }
+    else {
       callback(null,"returning from search opendata error");
     }
   });
@@ -259,13 +332,15 @@ findRandomData = function(context,callback,requesturi) {
       //TODO better error handling
       var results = JSON.parse(body).results;
       //select a random item
-      var selecteditem = results[Math.floor(Math.random()*results.length)];
+      var search_rank = Math.floor(Math.random()*results.length);
+      var selecteditem = results[search_rank];
       //only return interesting part of the item as params
       if(selecteditem.dataset) {
         context.responseObj.bot_context=  [{
           name: 'wudatasearchresult',
           lifespan: 10,
           parameters: {
+            search_rank : search_rank,
             url: selecteditem.url,
             name: selecteditem.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
             description: selecteditem.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
@@ -280,6 +355,7 @@ findRandomData = function(context,callback,requesturi) {
           name: 'wudatasearchresult',
           lifespan: 10,
           parameters: {
+            search_rank : search_rank,
             url: selecteditem.url,
             name: "no name available",
             description: "no description available",

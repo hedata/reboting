@@ -20,7 +20,7 @@ var dataSourceSchema = mongoose.Schema({
   numericColumnlist : [String],
   stringColumnlist : [String],
   dataDesc : {},
-  visuals : [{}],
+  visuals : [String],
 },
 {
   timestamps: true
