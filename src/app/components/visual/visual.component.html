@@ -1,6 +1,15 @@
 <div [class.hidden]="showComponent!=='visual'"  class="centered_visual">
 
-  <div *ngIf="loading" class="loading">
+  <div *ngIf="loading" >
+    <div class="loading_center">
+      <div class="middle_center">
+        <div>
+          <div style="display:flex;justify-content:center;text-align:center">
+            <div class="loading"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id ="{{visual_id}}" class="padding_bottom">
