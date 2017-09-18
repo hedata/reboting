@@ -10,7 +10,9 @@ import {AuthService} from '../../services/auth.service';
 })
 export class BotComponent implements OnInit {
   public configModel: any = {recording: false, synthesis: false, autorecord: false, userprofile: false};
-  public quickreplies = ['Wien', 'Steiermark' , 'Burgenland' , 'Kärnten', 'Salzburg', 'Vorarlberg', 'Oberösterreich' , 'Niederösterreich', 'Tirol'];
+  public quickreplies = ['Wien', 'Steiermark' , 'Burgenland'
+    , 'Kärnten', 'Salzburg', 'Vorarlberg', 'Oberösterreich'
+    , 'Niederösterreich', 'Tirol'];
   public context: any;
   userData: any = {};
   botChat = [];

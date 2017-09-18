@@ -12,7 +12,6 @@ declare const FB: any ;
 export class AuthService {
   private dataService: DataService;
   private userData: any = {};
-
   constructor() {
     console.log('in the auth0 constructor');
   }
@@ -89,13 +88,17 @@ export class AuthService {
 
   public checkAuthStatus(): void {
     if(typeof FB !== 'undefined') {
+      console.log('in the check auth part');
+      try {
       FB.init({
-          appId            : environment.fbappid,
+          appId            : environment.fbappid.toString(),
           autoLogAppEvents : true,
           xfbml            : true,
-          cookie: true,
+          status : true,
+          cookie: false,
           version          : 'v2.10'
       });
+      console.log('after init');
       FB.AppEvents.logPageView();
       FB.getLoginStatus((response) => {
         console.log('response from login status!');
@@ -109,6 +112,9 @@ export class AuthService {
           });
         }
       });
+      } catch (err) {
+        console.log('FACEBOOK ERROR ! WTF');
+      }
     } else {
       console.log('OHOH facebook not loaded trying again');
       setTimeout(() => { this.checkAuthStatus(); }, 1000);

@@ -15,7 +15,7 @@ export class DataService {
    */
   // Observable string sources
   private emitdataSource = new Subject<any>();
-  private authService : AuthService;
+  private authService: AuthService;
   // Observable string streams
   changeEmitted$ = this.emitdataSource.asObservable();
   // Service message commands
