@@ -265,9 +265,11 @@ export class BotComponent implements OnInit {
     */
   }
 
+  Like() {
+    this.chatmessage = 'I like it';
+    this.queryBot();
+  }
   DontLike() {
-    console.log('I dont Like it so what shall we send the bot?');
-    console.log(this.context)
     this.chatmessage = 'I dont like it';
     this.queryBot();
   }
