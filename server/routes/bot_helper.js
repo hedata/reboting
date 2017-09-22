@@ -265,61 +265,7 @@ externalCalls = function(context) {
 
 
 
-  /*else if (context.responseObj.bot_response.result.action
-            && context.responseObj.bot_response.result.action === 'analyze_csv_NOW'
-            && !context.responseObj.bot_response.result.actionIncomplete) {
-    var url = context.responseObj.bot_response.result.parameters.url;
-    console.log('requesting url: '+url);
-    request('http://data.wu.ac.at/csvengine/api/v1/profiler/'+url, function (error, response, body) {
-      if(error) {
-        console.log(error);
-        addExecutionScripts(context);
-      } else {
-        if(response.statusCode === 200) {
-          console.log('Request to analyze successfully finished :'+response.statusCode);
-          //TODO make entry in database for data_source
-          var datasource = new DataSources({
-            type: 'opendataprofiled',
-            profiler : JSON.parse(body)});
-          datasource.save(function(err,obj) {
-            if(err) {
-              console.log("error on datasource save "+err);
-              addExecutionScripts(context);
-            } else {
-              console.log("saved datasource: "+obj._id);
-              // https://docs.api.ai/docs/contexts
-              // https://github.com/api-ai/apiai-nodejs-client/blob/master/module/apiai.js
-              var request = app.contextsRequest(
-                [
-                  {
-                    "name": "datasource",
-                    "lifespan": 10,
-                    "parameters": obj
-                  }
-                ],
-                { sessionId: context.botparams.session_id }
-              );
-              request.on('response', function(response) {
-                console.log("context response");
-                console.log(response);
-              });
-              request.on('error', function(error) {
-                console.log("context response error");
-                console.log(error);
-              });
-              request.end();
 
-
-              //TODO save file on disk https://stackoverflow.com/questions/11944932/how-to-download-a-file-with-node-js-without-using-third-party-libraries
-              addExecutionScripts(context);
-            }
-          });
-        } else {
-          addExecutionScripts(context);
-        }
-      }
-    });
-  }*/
 };
 
 findRandomData = function(context,callback,requesturi) {
@@ -439,3 +385,59 @@ module.exports.fulfillFacebookDataupload = function(context) {
     }
   });
 };
+
+/*else if (context.responseObj.bot_response.result.action
+           && context.responseObj.bot_response.result.action === 'analyze_csv_NOW'
+           && !context.responseObj.bot_response.result.actionIncomplete) {
+   var url = context.responseObj.bot_response.result.parameters.url;
+   console.log('requesting url: '+url);
+   request('http://data.wu.ac.at/csvengine/api/v1/profiler/'+url, function (error, response, body) {
+     if(error) {
+       console.log(error);
+       addExecutionScripts(context);
+     } else {
+       if(response.statusCode === 200) {
+         console.log('Request to analyze successfully finished :'+response.statusCode);
+         //TODO make entry in database for data_source
+         var datasource = new DataSources({
+           type: 'opendataprofiled',
+           profiler : JSON.parse(body)});
+         datasource.save(function(err,obj) {
+           if(err) {
+             console.log("error on datasource save "+err);
+             addExecutionScripts(context);
+           } else {
+             console.log("saved datasource: "+obj._id);
+             // https://docs.api.ai/docs/contexts
+             // https://github.com/api-ai/apiai-nodejs-client/blob/master/module/apiai.js
+             var request = app.contextsRequest(
+               [
+                 {
+                   "name": "datasource",
+                   "lifespan": 10,
+                   "parameters": obj
+                 }
+               ],
+               { sessionId: context.botparams.session_id }
+             );
+             request.on('response', function(response) {
+               console.log("context response");
+               console.log(response);
+             });
+             request.on('error', function(error) {
+               console.log("context response error");
+               console.log(error);
+             });
+             request.end();
+
+
+             //TODO save file on disk https://stackoverflow.com/questions/11944932/how-to-download-a-file-with-node-js-without-using-third-party-libraries
+             addExecutionScripts(context);
+           }
+         });
+       } else {
+         addExecutionScripts(context);
+       }
+     }
+   });
+ }*/
