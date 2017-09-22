@@ -542,24 +542,27 @@ insertIt(code,intentname,params);
 
 code =`import IPython
 import reboting
-print("userid: "+user_id)
-data_desc = {
-    "name" : name,
-    "description" : description,
-    "publisher" : publisher,
-    "portal" : portal,
-    "url": url,
-    "user_id" : user_id
-}
-slug = reboting.checkforknowncsv(data_desc = data_desc)
-url = 'https://doh.23degrees.io/view/'+slug
-iframe= '<iframe src="' + url + '" allowfullscreen frameborder="0" ></iframe>'
-IPython.display.HTML(iframe)
+if url == 'NOTDEFINED':
+  print("Wu Dataservice not reachable atm - Sorry")
+else:
+  print("userid: "+user_id)
+  data_desc = {
+      "name" : name,
+      "description" : description,
+      "publisher" : publisher,
+      "portal" : portal,
+      "url": url,
+      "user_id" : user_id
+  }
+  slug = reboting.checkforknowncsv(data_desc = data_desc)
+  url = 'https://doh.23degrees.io/view/'+slug
+  iframe= '<iframe src="' + url + '" allowfullscreen frameborder="0" ></iframe>'
+  IPython.display.HTML(iframe)
 `;
 params=[
   {
     name: 'url',
-    value: 'http://www.wien.gv.at/politik/wahlen/ogd/nr131_99999999_9999_spr.csv',
+    value: 'NOTDEFINED',
     type: 'string'
   },
   {
