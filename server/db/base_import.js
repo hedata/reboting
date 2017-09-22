@@ -542,22 +542,24 @@ insertIt(code,intentname,params);
 
 code =`import IPython
 import reboting
+iframe='<div></div>'
 if url == 'NOTDEFINED':
   print("Wu Dataservice not reachable atm - Sorry")
 else:
   print("userid: "+user_id)
+  print("url: "+url)
   data_desc = {
-      "name" : name,
-      "description" : description,
-      "publisher" : publisher,
-      "portal" : portal,
-      "url": url,
-      "user_id" : user_id
+        "name" : name,
+        "description" : description,
+        "publisher" : publisher,
+        "portal" : portal,
+        "url": url,
+        "user_id" : user_id
   }
   slug = reboting.checkforknowncsv(data_desc = data_desc)
-  url = 'https://doh.23degrees.io/view/'+slug
+  url = 'https://doh.23degrees.io/viz/'+slug
   iframe= '<iframe src="' + url + '" allowfullscreen frameborder="0" ></iframe>'
-  IPython.display.HTML(iframe)
+IPython.display.HTML(iframe)
 `;
 params=[
   {

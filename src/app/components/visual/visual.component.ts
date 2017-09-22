@@ -171,6 +171,7 @@ export class VisualComponent implements OnInit {
             // append widget to notebook
             $('#' + this.visual_id).append(this.widget.node);
             // visual is created time for saving it
+            /*
             const saveobj = {
               model : this.widget.model.toJSON(),
               script: this.currentScript,
@@ -180,11 +181,13 @@ export class VisualComponent implements OnInit {
             this.dataService.postAction('save_visual', saveobj).subscribe(
               result => {
                 console.log(result);
-                this.loading = false;
+
                 // $('#' + this.visual_id).addClass('vertical_center_visual');
               },
               error => console.log(error)
             );
+            */
+            this.loading = false;
             // Kill the kernel.
             kernel.shutdown().then(() => {
               console.log('Kernel shut down');
