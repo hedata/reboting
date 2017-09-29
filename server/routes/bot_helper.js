@@ -12,6 +12,7 @@ var Users = mongoose.model('Users');
 var Ratings = mongoose.model('Ratings');
 var request = require('request');
 var async = require('async');
+var UserSearchResults = mongoose.model('UserSearchResults');
 
 /*
  var context = {
@@ -95,19 +96,18 @@ externalCalls = function(context) {
   //search in opendata wu portal
   calls.push(function(callback){
     console.log("starting with searching in opendata");
-    //TODO save this to db?
     if(context.responseObj.bot_response.result.action && context.responseObj.bot_response.result.action === 'search_opendata'){
       if(!context.responseObj.bot_response.result.actionIncomplete) {
-        var topics = context.responseObj.bot_response.result.parameters.topics;
-        var geolocation = context.responseObj.bot_response.result.parameters.geolocation;
-        var requesturi ="http://data.wu.ac.at/odgraph/locationsearch?";
+        let topics = context.responseObj.bot_response.result.parameters.topics;
+        let geolocation = context.responseObj.bot_response.result.parameters.geolocation;
+        let requesturi ="http://data.wu.ac.at/odgraph/locationsearch?";
         //add limit param
         requesturi = requesturi+"limit=50";
         if(topics.length>0) {
           requesturi = requesturi+"&q="+topics.join(" ");
         }
         // split gelocations they are
-        var gelocarr = geolocation.split("#%#");
+        let gelocarr = geolocation.split("#%#");
         gelocarr.forEach(function(geoloc) {
           if(geolocation!=="") {
             if(geoloc.lastIndexOf("http",0)=== 0) {
@@ -135,42 +135,61 @@ externalCalls = function(context) {
     else if(context.responseObj.bot_response.result.action &&
       context.responseObj.bot_response.result.action === 'show_random_visual' &&
       !context.responseObj.bot_response.result.actionIncomplete) {
-      /*
-        show random visual part
-        choose params
-       */
-      //search our set
-      var randtopics = context.responseObj.bot_response.result.parameters.topics;
-      var randgeolocation = context.responseObj.bot_response.result.parameters.geolocation;
-      var randrequesturi = "http://data.wu.ac.at/odgraph/locationsearch?";
+      //create request uri
+      let randtopics = context.responseObj.bot_response.result.parameters.topics;
+      let randgeolocation = context.responseObj.bot_response.result.parameters.geolocation;
+      let randrequesturi = "http://data.wu.ac.at/odgraph/locationsearch?";
       //add limit param
-      randrequesturi = randrequesturi + "limit=50";
+      randrequesturi = randrequesturi + "limit=1";
       if (randtopics.length > 0) {
         randrequesturi = randrequesturi + "&q=" + randtopics.join(" ");
       }
       // split gelocations they are
-      var randgelocarr = randgeolocation.split("#%#");
+      let randgelocarr = randgeolocation.split("#%#");
       randgelocarr.forEach(function (geoloc) {
-        if (geolocation !== "") {
+        if (randgeolocation !== "") {
           if (geoloc.lastIndexOf("http", 0) === 0) {
             //we have a uri
             randrequesturi = randrequesturi + "&l=" + geoloc;
           }
         }
       });
-      findRandomData(context, callback, randrequesturi);
+      //base request uri is done with a limit of 1 so we always get one
+      //item
+      //the offset now tells us at which location we are
+      //we also need to save the offset in a user specific table
+      //check if this already exists?
+      //save visual as current for the user, create user if he doenst exist yet
+      UserSearchResults.findOne({
+          user_id: context.botparams.session_id,
+          request_uri : randrequesturi
+        }, // options
+        function (err,obj) { // callback
+          if (obj) {
+            //exists take offset +1 if offset < listsize otherwise start at 0
+            if(obj.offset < obj.results-1) {
+              findRandomData(context, callback, randrequesturi,obj.offset+1);
+            } else {
+              findRandomData(context, callback, randrequesturi,0);
+            }
+          } else {
+            //use normal offset
+            findRandomData(context, callback, randrequesturi,0);
+          }
+        }
+      );
     }
     else if (context.responseObj.bot_response.result.action &&
       context.responseObj.bot_response.result.action === 'not_like' &&
       !context.responseObj.bot_response.result.actionIncomplete){
       console.log("THIS IS NOT LIKE BOT RESPONSE I NEED THE CONTEXT");
-      var contextParams = context.responseObj.bot_response.result.contexts[0].parameters;
-      var uri = contextParams.request_uri;
+      let contextParams = context.responseObj.bot_response.result.contexts[0].parameters;
+      let uri = contextParams.request_uri;
       console.log(contextParams);
       Users.findOne({ user_id : contextParams.user_id }).exec(function(err,userobj){
         if(userobj) {
           //saverating
-          var rating = new Ratings( {
+          let rating = new Ratings( {
             user_id : userobj.user_id,
             slug : userobj.current_slug,
             data_id : userobj.current_data_id,
@@ -184,19 +203,37 @@ externalCalls = function(context) {
             portal: contextParams.portal,
             geolocation: contextParams.geolocation
           });
-          rating.save(function(err,newdatasource) {
+          rating.save(function(err) {
             if(err) {
               console.log("error on save "+err);
-              findRandomData(context, callback, uri);
+              findRandomData(context, callback, uri,0);
             } else {
-              findRandomData(context, callback, uri);
+              //this is where everything should work out
+              UserSearchResults.findOne({
+                  user_id: context.botparams.session_id,
+                  request_uri : uri
+                }, // options
+                function (err,obj) { // callback
+                  if (obj) {
+                    //exists take offset +1 if offset < listsize otherwise start at 0
+                    if(obj.offset < obj.results-1) {
+                      findRandomData(context, callback, uri,obj.offset+1);
+                    } else {
+                      findRandomData(context, callback, uri,0);
+                    }
+                  } else {
+                    //use normal offset
+                    findRandomData(context, callback, uri,0);
+                  }
+                }
+              );
             }
           });
 
         }
         else {
           console.log("couldnt find user: "+err);
-          findRandomData(context, callback, uri);
+          findRandomData(context, callback, uri,0);
         }
       });
     }
@@ -204,13 +241,13 @@ externalCalls = function(context) {
       context.responseObj.bot_response.result.action === 'like' &&
       !context.responseObj.bot_response.result.actionIncomplete){
       console.log("THIS IS LIKE BOT RESPONSE I NEED THE CONTEXT");
-      var contextParams2 = context.responseObj.bot_response.result.contexts[0].parameters;
-      var uri2 = contextParams2.request_uri;
+      let contextParams2 = context.responseObj.bot_response.result.contexts[0].parameters;
+      let uri2 = contextParams2.request_uri;
       console.log(contextParams2);
       Users.findOne({ user_id : contextParams2.user_id }).exec(function(err,userobj){
         if(userobj) {
           //saverating
-          var rating = new Ratings( {
+          let rating = new Ratings( {
             user_id : userobj.user_id,
             slug : userobj.current_slug,
             data_id : userobj.current_data_id,
@@ -224,19 +261,36 @@ externalCalls = function(context) {
             portal: contextParams2.portal,
             geolocation: contextParams2.geolocation
           });
-          rating.save(function(err,newdatasource) {
+          rating.save(function(err) {
             if(err) {
               console.log("error on save "+err);
-              findRandomData(context, callback, uri2);
+              findRandomData(context, callback, uri2,0);
             } else {
-              findRandomData(context, callback, uri2);
+              UserSearchResults.findOne({
+                  user_id: context.botparams.session_id,
+                  request_uri : uri2
+                }, // options
+                function (err,obj) { // callback
+                  if (obj) {
+                    //exists take offset +1 if offset < listsize otherwise start at 0
+                    if(obj.offset < obj.results-1) {
+                      findRandomData(context, callback, uri2,obj.offset+1);
+                    } else {
+                      findRandomData(context, callback, uri2,0);
+                    }
+                  } else {
+                    //use normal offset
+                    findRandomData(context, callback, uri2,0);
+                  }
+                }
+              );
             }
           });
 
         }
         else {
           console.log("couldnt find user: "+err);
-          findRandomData(context, callback, uri2);
+          findRandomData(context, callback, uri2,0);
         }
       });
     }
@@ -244,17 +298,15 @@ externalCalls = function(context) {
       callback(null,"returning from search opendata error");
     }
   });
-  //search in 23degree api
-
   //add execution scripts
   calls.push(function(callback) {
     addExecutionScripts(context,callback);
   });
-  console.log("starting async with calls: "+calls.length);
+  console.log(new Date()+": starting async with calls: "+calls.length);
   async.parallel(calls, function(err, result) {
     /* this code will run after all calls finished the job or
      when any of the calls passes an error */
-    console.log("in the callback of the async parallel call")
+    console.log(new Date()+": in the callback of the async parallel call");
     if (err) {
       console.log(err);
       returnJsonResponse(context);
@@ -268,25 +320,24 @@ externalCalls = function(context) {
 
 };
 
-findRandomData = function(context,callback,requesturi) {
-  console.log("searching for: "+requesturi);
-  request(requesturi, function (error, response, body) {
+findRandomData = function(context,callback,requesturi,offset) {
+  console.log("searching for: "+requesturi+"&offset="+offset);
+  request(requesturi+"&offset="+offset, function (error, response, body) {
     if(error) {
       console.log(error);
       callback(null,"returning from search opendata error");
     } else if(response.statusCode === 200) {
-      //TODO better error handling
-      var results = JSON.parse(body).results;
+      let resBody = JSON.parse(body);
+      let results = resBody.results;
       //select a random item
-      var search_rank = Math.floor(Math.random()*results.length);
-      var selecteditem = results[search_rank];
+      let selecteditem = results[0];
       //only return interesting part of the item as params
       if(selecteditem.dataset) {
         context.responseObj.bot_context=  [{
           name: 'wudatasearchresult',
           lifespan: 10,
           parameters: {
-            search_rank : search_rank,
+            search_rank : offset,
             url: selecteditem.url,
             name: selecteditem.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
             description: selecteditem.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
@@ -301,7 +352,7 @@ findRandomData = function(context,callback,requesturi) {
           name: 'wudatasearchresult',
           lifespan: 10,
           parameters: {
-            search_rank : search_rank,
+            search_rank : offset,
             url: selecteditem.url,
             name: "no name available",
             description: "no description available",
@@ -312,7 +363,28 @@ findRandomData = function(context,callback,requesturi) {
           }
         }];
       }
-      console.log("FOUND A RANDOM FILE: ");
+      /*
+        Save for this user and this request uri where we are now and how many results there are
+       */
+      //save visual as current for the user, create user if he doenst exist yet
+      UserSearchResults.findOneAndUpdate({
+          user_id: context.botparams.session_id,
+          request_uri : requesturi
+        }, // find a document with that filter
+        {
+          user_id : context.botparams.session_id,
+          request_uri : requesturi,
+          results : resBody.total,
+          offset: offset
+        }, // document to insert when nothing was found
+        {upsert: true, new: true}, // options
+        function (err) { // callback
+          if (err) {
+            console.log(new Date()+": Error on UserSearchResults Save "+err);
+          }
+        }
+      );
+      console.log(new Date()+": SearchResult found");
       console.log(context.responseObj.bot_context);
       callback(null,"returning from random search all good");
     } else {
@@ -324,7 +396,7 @@ findRandomData = function(context,callback,requesturi) {
 addExecutionScripts = function(context,callback) {
   if(context.responseObj.bot_response.result.action){
     if(!context.responseObj.bot_response.result.actionIncomplete) {
-      console.log("searching for action: "+context.responseObj.bot_response.result.action);
+      console.log(new Date()+": searching for action: "+context.responseObj.bot_response.result.action);
       Scripts.findOne({action_name : context.responseObj.bot_response.result.action},function(err,obj) {
         if(obj) {
           context.responseObj.script = obj;
@@ -334,24 +406,22 @@ addExecutionScripts = function(context,callback) {
         }
       });
     }else {
-      callback(null,"nothing to add from exection script");
+      callback(null,"nothing to add from Execution Script");
     }
   } else {
-    callback(null,"nothing to add from exection script");
+    callback(null,"nothing to add from Execution script");
   }
 };
 
 returnJsonResponse = function(context) {
-  //put this shit into the log
   context.response.status(200).json(context.responseObj);
   context.responseObj.bot_response.result.contexts = {};
-  //console.log(context.responseObj);
-  var logEntry = new Logs(context.responseObj);
-  logEntry.save(function(err,logentry) {
+  let logEntry = new Logs(context.responseObj);
+  logEntry.save(function(err) {
     if(err) {
-      console.log("error on logentry"+err);
+      console.log(new Date()+": Error on Log Save: "+err);
     } else {
-      console.log("saved: logentry");
+      console.log(new Date()+": Log Saved");
     }
   });
 };
@@ -362,9 +432,8 @@ returnJsonResponse = function(context) {
 
  */
 module.exports.fulfillFacebookDataupload = function(context) {
-  //console.log(req.body.payload);
-  var datasource = new DataSources(context.request.body.payload);
-  datasource.save(function(err,newdatasource) {
+  let dataSource = new DataSources(context.request.body.payload);
+  dataSource.save(function(err,newDataSource) {
     if(err){
       console.log("error on save: "+err);
       context.response.status(500).json({'error': 'error on save: '+err})
@@ -374,12 +443,12 @@ module.exports.fulfillFacebookDataupload = function(context) {
       context.botparams.event = {
         name: "facebook_insights_upload",
         data: {
-          filename: newdatasource.fileName
+          filename: newDataSource.fileName
         }
       };
       context.responseObj.action={
         status: "ok",
-        payload: { data: newdatasource }
+        payload: { data: newDataSource }
       };
       botEvent(context);
     }

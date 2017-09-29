@@ -80,9 +80,9 @@ module.exports.AddvisualToDataSource = function(context) {
              current_data_id : context.addvisualtodatasource.data_id,
              current_slug : context.addvisualtodatasource.visual.slug}, // document to insert when nothing was found
            {upsert: true, new: true}, // options
-           function (err, doc) { // callback
+           function (err) { // callback
              if (err) {
-               console.log("error on save "+err);
+               console.log(new Date()+": Error on User Save "+err);
                // handle error
                returnDataLogResponse(context);
              } else {

@@ -8,3 +8,4 @@ require('./scripts');
 require('./external_visuals');
 require('./users');
 require('./ratings');
+require('./user_search_results');
