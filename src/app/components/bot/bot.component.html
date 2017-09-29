@@ -60,6 +60,7 @@
       <div  class="quickreply_list">
         <button *ngFor="let reply of quickreplies" class="btn btn-info"
                 style="display: inline;margin:3px;"
+                [disabled]="inputDisabled"
                 type="button"
                 (click)="onQuickReply(reply)">
           {{reply}}
@@ -75,7 +76,8 @@
       <input
               class="form-control"
               type="text"
-              placeholder="Write stuff"
+              [disabled]="inputDisabled"
+              placeholder="Chat with Reboting"
               (keyup.enter)="queryBot()"
               autocomplete="off"
               [(ngModel)]="chatmessage">
@@ -89,6 +91,7 @@
                   type="button"
                   [(ngModel)]="configModel.recording"
                   title="Record Input"
+                  [disabled]="inputDisabled"
                   (click)="onClickRecord()"
                   btnCheckbox>
             <i class="fa fa-microphone" aria-hidden="true"></i>
@@ -102,6 +105,7 @@
         <button class="btn btn-info"
                   style="margin-left:0px; margin-right:0px;width: 25%"
                   type="button"
+                  [disabled]="inputDisabled || ratingDisabled"
                    (click)="Like()"
                    title="Like this Visual and Show next"
                    btnCheckbox>
@@ -129,6 +133,7 @@
                 type="button"
                 style="margin-left:0px; margin-right:0px;width: 25%"
                 (click)="DontLike()"
+                [disabled]="inputDisabled || ratingDisabled"
                 title="Dont Like this Visual and Show next"
                 btnCheckbox>
             <i class="fa fa-thumbs-down" aria-hidden="true"></i>

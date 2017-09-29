@@ -9,6 +9,8 @@ import {AuthService} from '../../services/auth.service';
   styleUrls: ['./bot.component.css']
 })
 export class BotComponent implements OnInit {
+  public inputDisabled = true;
+  public ratingDisabled = true;
   public configModel: any = {recording: false, synthesis: false, autorecord: false, userprofile: false};
   public quickreplies = ['Wien', 'Steiermark' , 'Burgenland'
     , 'Kärnten', 'Salzburg', 'Vorarlberg', 'Oberösterreich'
@@ -198,6 +200,7 @@ export class BotComponent implements OnInit {
     */
   }
   queryBot() {
+    this.inputDisabled = true;
     console.log('querying BOT');
     console.log('context:');
     console.log(this.context);
@@ -205,6 +208,7 @@ export class BotComponent implements OnInit {
     // this.showchatlog = true;
     // mark this for cange detection
     const query = this.chatmessage;
+    this.chatmessage = '';
     if (query !== '') {
       this.botChat = [];
       this.botChat.push({you:  query});
@@ -226,25 +230,30 @@ export class BotComponent implements OnInit {
               'Oberösterreich' , 'Niederösterreich', 'Tirol'];
           }
           // check if we have a context to set
-          if(data.bot_context) {
+          if (data.bot_context) {
             this.context = data.bot_context;
             console.log('setting context to :');
             console.log(this.context);
+            // enable rating if we have a resultitem in the context
+            if (this.context.length > 0 ) {
+              if (this.context[0].name === 'wudatasearchresult') {
+                console.log('enabling rating');
+                this.ratingDisabled = false;
+              }
+            }
           }
         }
-        this.chatmessage = '';
+
         this.dataService.emitChange({
           message: 'botanswer',
           data: data
         });
         if (this.configModel.synthesis) {
-          // setup synthesis
-          // const voices = window.speechSynthesis.getVoices();
-          // console.log('Speech Synthesis');
-          // console.log(voices);
           this.msg.text = data.bot_response.result.fulfillment.speech;
           speechSynthesis.speak(this.msg);
         }
+        // enable input again
+        this.inputDisabled = false;
         // show chatlogtimer
         /*
         this.showChatLogTime = new Date().getTime() / 1000;
@@ -258,10 +267,6 @@ export class BotComponent implements OnInit {
         */
       });
     }
-    /*
-    this.store.dispatch({type: 'NEW_MESSAGE', payload: query});
-    this.botService.queryBot(query);
-    */
   }
 
   Like() {
