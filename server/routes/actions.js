@@ -1,7 +1,7 @@
-var ctrlBot = require('./bot_helper');
-var mongoose = require('mongoose');
-var Visuals = mongoose.model('Visuals');
-var dataHelper = require('./data_helper');
+let ctrlBot = require('./bot_helper');
+let mongoose = require('mongoose');
+let Visuals = mongoose.model('Visuals');
+let dataHelper = require('./data_helper');
 /*
   every action sends data to the bot
 
@@ -41,7 +41,7 @@ var dataHelper = require('./data_helper');
 
 
 module.exports.takeAction = function(req, res) {
-  var context = {
+  let context = {
     request: req,
     response: res,
     botparams: {
@@ -55,7 +55,7 @@ module.exports.takeAction = function(req, res) {
         ctrlBot.fulfillFacebookDataupload(context);
         break;
     case 'save_visual':
-        console.log("save_visual");
+        console.log(new Date()+": Begin save_visual");
         ctrlBot.saveVisual(context);
         break;
     case 'query':
@@ -73,7 +73,7 @@ module.exports.takeAction = function(req, res) {
         break;
     case 'show_visual':
         //find Visual in Db and return the object
-        var visual_id = req.body.payload.visual_id;
+        let visual_id = req.body.payload.visual_id;
         Visuals.findOne({_id : visual_id}).exec(function(err,obj){
           if(obj) {
             console.log("sending response");
@@ -104,22 +104,22 @@ module.exports.takeAction = function(req, res) {
         ctrlBot.botEvent(context);
         break;
     case 'checkforknowncsv':
-        console.log("checkingforcsv");
+        console.log(new Date()+": Begin Checking for known CSV  url: "+req.body.url);
         context.checkforknowncsv = {url: req.body.url};
         dataHelper.queryDataExists(context);
         break;
     case 'createdatasource':
-      console.log("createdatasource");
+      console.log(new Date()+": Begin Create Data Source");
       context.createdatasource = req.body.payload;
       dataHelper.createNewDataSource(context);
       break;
     case 'addvisualtodatasource':
-      console.log("addvisualtodatasource");
+      console.log(new Date()+": Begin Add Visual to Data Source");
       context.addvisualtodatasource = req.body.payload;
       dataHelper.AddvisualToDataSource(context);
       break;
     default:
-        console.log("action not implemented");
+        console.log(new Date()+": Error: action not implemented");
         res.status(200).json({
           action: { status: "ok"  },
           bot_response : { speach: "you suck" }

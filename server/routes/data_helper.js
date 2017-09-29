@@ -1,26 +1,24 @@
-var apiai = require('apiai');
-var app = apiai("ebcf0040b9324ebf84475422b113d202");
-var mongoose = require('mongoose');
-var DataSources = mongoose.model('DataSources');
-var Logs = mongoose.model('Logs');
-var Scripts = mongoose.model('Scripts');
-var Users = mongoose.model('Users');
-var Visuals = mongoose.model('Visuals');
-var ExternalVisuals = mongoose.model('ExternalVisuals');
-var request = require('request');
-var async = require('async');
+let apiai = require('apiai');
+let mongoose = require('mongoose');
+let DataSources = mongoose.model('DataSources');
+let Logs = mongoose.model('Logs');
+let Scripts = mongoose.model('Scripts');
+let Users = mongoose.model('Users');
+let Visuals = mongoose.model('Visuals');
+let ExternalVisuals = mongoose.model('ExternalVisuals');
 
 
 module.exports.queryDataExists = function(context) {
   DataSources.findOne({url: context.checkforknowncsv.url}).exec(function(err,obj){
     if(obj) {
-      console.log("sending response");
+      console.log(new Date()+ " Data exists: "+ context.checkforknowncsv.url);
       context.responseObj = {
         exists: true,
         payload: obj
       };
       returnDataLogResponse(context);
     } else {
+      console.log(new Date()+ " Data Does Not exist: "+ context.checkforknowncsv.url);
       context.responseObj = {
         exists: false,
         payload: {}
@@ -31,10 +29,10 @@ module.exports.queryDataExists = function(context) {
 };
 
 module.exports.createNewDataSource = function(context) {
-  var datasource = new DataSources(context.createdatasource);
-  datasource.save(function(err,newdatasource) {
+  let dataSource = new DataSources(context.createdatasource);
+  dataSource.save(function(err,newDataSource) {
     if(err){
-      console.log("error on save: "+err);
+      console.log(new Date()+": Error on save new Data Source: "+err);
       context.responseObj ={
         status: "error"
       };
@@ -44,7 +42,7 @@ module.exports.createNewDataSource = function(context) {
     {
       context.responseObj ={
         status: "ok",
-        id: newdatasource._id
+        id: newDataSource._id
       };
       returnDataLogResponse(context);
     }
@@ -52,18 +50,18 @@ module.exports.createNewDataSource = function(context) {
 };
 
 module.exports.AddvisualToDataSource = function(context) {
-  var data_id = context.addvisualtodatasource.data_id;
-  console.log("SAVING VISUAL:");
+  let data_id = context.addvisualtodatasource.data_id;
+  console.log(new Date()+": Creating Visual and Adding it to Data Source DataID: "+data_id+" Visual: "+context.addvisualtodatasource.visual.slug);
   //console.log(context.addvisualtodatasource);
-  var visual = new ExternalVisuals(context.addvisualtodatasource);
-  visual.save(function(err,newdatasource) {
+  let visual = new ExternalVisuals(context.addvisualtodatasource);
+  visual.save(function(err) {
    if(err) {
-     console.log("error on save "+err);
+     console.log(new Date()+": Error on Saving Visual "+err);
      returnDataLogResponse(context);
    } else {
      DataSources.findOneAndUpdate({data_id: data_id}, {
        $push: { visuals: context.addvisualtodatasource.visual.slug }
-     },function(err, doc)
+     },function(err)
      {
        if(err){
          context.responseObj =  {
@@ -104,12 +102,10 @@ module.exports.AddvisualToDataSource = function(context) {
 returnDataLogResponse = function(context) {
   //put this shit into the log
   context.response.status(200).json(context.responseObj);
-  var logEntry = new Logs(context.responseObj);
-  logEntry.save(function(err,logentry) {
+  let logEntry = new Logs(context.responseObj);
+  logEntry.save(function(err) {
     if(err) {
-      console.log("error on logentry"+err);
-    } else {
-      console.log("saved: logentry");
+      console.log(new Date()+" Error on Saving Log in Data Helper: "+err);
     }
   });
 };
