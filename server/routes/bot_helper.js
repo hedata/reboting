@@ -333,37 +333,37 @@ findRandomData = function(context,callback,requesturi,offset) {
       //select a random item
       let selecteditem = results[0];
       //only return interesting part of the item as params
-      if(selecteditem.dataset) {
-        context.responseObj.bot_context=  [{
-          name: 'wudatasearchresult',
-          lifespan: 10,
-          parameters: {
-            search_rank : offset,
-            url: selecteditem.url,
-            name: selecteditem.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
-            description: selecteditem.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
-            portal: selecteditem.portal.replace(/(\r\n|\n|\r)/gm, '' ),
-            publisher: selecteditem.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' ),
-            user_id : context.botparams.session_id,
-            request_uri: requesturi
-          }
-        }];
-      } else {
-        context.responseObj.bot_context=  [{
-          name: 'wudatasearchresult',
-          lifespan: 10,
-          parameters: {
-            search_rank : offset,
-            url: selecteditem.url,
-            name: "no name available",
-            description: "no description available",
-            portal: selecteditem.portal.replace(/(\r\n|\n|\r)/gm, '' ),
-            publisher: "no publisher available",
-            user_id : context.botparams.session_id,
-            request_uri: requesturi
-          }
-        }];
+      //safely create the context object
+      let name = "No name available";
+      if(selecteditem.dataset && selecteditem.dataset.dataset_name) {
+        name= selecteditem.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' );
       }
+      let description = "No description available";
+      if(selecteditem.dataset && selecteditem.dataset.dataset_description) {
+        description= selecteditem.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' );
+      }
+      let portal = "No Portal available";
+      if(selecteditem.port) {
+        portal = selecteditem.portal.replace(/(\r\n|\n|\r)/gm, '' );
+      }
+      let publisher = "no publisher available";
+      if(selecteditem.dataset && selecteditem.dataset.publisher) {
+        publisher = selecteditem.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' );
+      }
+      context.responseObj.bot_context=  [{
+          name: 'wudatasearchresult',
+          lifespan: 10,
+          parameters: {
+            search_rank : offset,
+            url: selecteditem.url,
+            name: name,
+            description: description,
+            portal: portal,
+            publisher: publisher,
+            user_id : context.botparams.session_id,
+            request_uri: requesturi
+          }
+        }];
       /*
         Save for this user and this request uri where we are now and how many results there are
        */
