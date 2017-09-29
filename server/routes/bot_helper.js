@@ -1,18 +1,18 @@
 /**
  * Created by hedata on 31.03.17.
  */
-var apiai = require('apiai');
-var app = apiai("ebcf0040b9324ebf84475422b113d202");
-var mongoose = require('mongoose');
-var DataSources = mongoose.model('DataSources');
-var Logs = mongoose.model('Logs');
-var Scripts = mongoose.model('Scripts');
-var Visuals = mongoose.model('Visuals');
-var Users = mongoose.model('Users');
-var Ratings = mongoose.model('Ratings');
-var request = require('request');
-var async = require('async');
-var UserSearchResults = mongoose.model('UserSearchResults');
+let apiai = require('apiai');
+let app = apiai("ebcf0040b9324ebf84475422b113d202");
+let mongoose = require('mongoose');
+let DataSources = mongoose.model('DataSources');
+let Logs = mongoose.model('Logs');
+let Scripts = mongoose.model('Scripts');
+let Visuals = mongoose.model('Visuals');
+let Users = mongoose.model('Users');
+let Ratings = mongoose.model('Ratings');
+let request = require('request');
+let async = require('async');
+let UserSearchResults = mongoose.model('UserSearchResults');
 
 /*
  var context = {
@@ -27,10 +27,10 @@ var UserSearchResults = mongoose.model('UserSearchResults');
 
 
 module.exports.saveVisual = function(context) {
-  var visual = new Visuals(context.request.body.payload);
+  let visual = new Visuals(context.request.body.payload);
   visual.save(function(err,obj) {
     if(err) {
-      console.log("error on logentry"+err);
+      console.log(new Date()+"error on Save Visual "+err);
     } else {
       context.response.status(200).json(obj);
     }
@@ -46,11 +46,11 @@ module.exports.botEvent = function(context) {
 };
 
 askBot = function(context) {
-  var request;
+  let request;
   if(context.botparams.context) {
     //add context to responseobj
     context.responseObj.bot_context=context.botparams.context;
-    console.log("Querying with context");
+    console.log(new Date()+"Querying with context");
     console.log(context.botparams);
     request = app.textRequest(context.botparams.query, {
       sessionId: context.botparams.session_id,
@@ -63,8 +63,9 @@ askBot = function(context) {
   }
   request.on('response', function(response) {
     context.responseObj.bot_response = response;
-    console.log(response);
-    console.log(response.result.contexts);
+    console.log(new Date()+": got response from API AI");
+    //console.log(response);
+    //console.log(response.result.contexts);
     externalCalls(context);
   });
   request.on('error', function(error) {
@@ -73,7 +74,7 @@ askBot = function(context) {
   request.end();
 };
 botEvent = function(context) {
-  var request = app.eventRequest(context.botparams.event, {
+  let request = app.eventRequest(context.botparams.event, {
     sessionId: context.botparams.session_id
   });
   request.on('response', function(response) {
@@ -81,7 +82,7 @@ botEvent = function(context) {
     returnJsonResponse(context);
   });
   request.on('error', function(error) {
-    console.log(error);
+    console.log(new Date()+"Error on Request to API AI "+error);
   });
   request.end();
 };
@@ -91,8 +92,8 @@ botEvent = function(context) {
  */
 externalCalls = function(context) {
   // making it a parallel function and just returning when everything finished
-  console.log("created new task");
-  var calls = [];
+  console.log(new Date()+" Starting external Calls");
+  let calls = [];
   //search in opendata wu portal
   calls.push(function(callback){
     console.log("starting with searching in opendata");
@@ -119,7 +120,7 @@ externalCalls = function(context) {
         console.log("searching for: "+requesturi);
         request(requesturi, function (error, response, body) {
           if(error) {
-            console.log(error);
+            console.log(new Date()+" Error on Request OpenData Search "+error);
             callback(null,"returning from search opendata error");
           } else if(response.statusCode === 200) {
             context.responseObj.opendata_search_results = JSON.parse(body);
@@ -182,17 +183,16 @@ externalCalls = function(context) {
     else if (context.responseObj.bot_response.result.action &&
       context.responseObj.bot_response.result.action === 'not_like' &&
       !context.responseObj.bot_response.result.actionIncomplete){
-      console.log("THIS IS NOT LIKE BOT RESPONSE I NEED THE CONTEXT");
+      console.log(new Date()+": start Rating - NOT LIKE");
       let contextParams = context.responseObj.bot_response.result.contexts[0].parameters;
       let uri = contextParams.request_uri;
-      console.log(contextParams);
-      Users.findOne({ user_id : contextParams.user_id }).exec(function(err,userobj){
-        if(userobj) {
+      Users.findOne({ user_id : contextParams.user_id }).exec(function(err,userObj){
+        if(userObj) {
           //saverating
           let rating = new Ratings( {
-            user_id : userobj.user_id,
-            slug : userobj.current_slug,
-            data_id : userobj.current_data_id,
+            user_id : userObj.user_id,
+            slug : userObj.current_slug,
+            data_id : userObj.current_data_id,
             rating : -1,
             description: contextParams.description,
             request_uri: contextParams.request_uri,
@@ -205,7 +205,7 @@ externalCalls = function(context) {
           });
           rating.save(function(err) {
             if(err) {
-              console.log("error on save "+err);
+              console.log(new Date()+": Error on Rating save "+err);
               findRandomData(context, callback, uri,0);
             } else {
               //this is where everything should work out
@@ -263,7 +263,7 @@ externalCalls = function(context) {
           });
           rating.save(function(err) {
             if(err) {
-              console.log("error on save "+err);
+              console.log(new Date()+": Rating error on save "+err);
               findRandomData(context, callback, uri2,0);
             } else {
               UserSearchResults.findOne({
@@ -289,13 +289,13 @@ externalCalls = function(context) {
 
         }
         else {
-          console.log("couldnt find user: "+err);
+          console.log(new Date()+": could not find user:"+ contextParams2.user_id +" "+err);
           findRandomData(context, callback, uri2,0);
         }
       });
     }
     else {
-      callback(null,"returning from search opendata error");
+      callback(null,"returning from search OpenData error");
     }
   });
   //add execution scripts
@@ -308,9 +308,10 @@ externalCalls = function(context) {
      when any of the calls passes an error */
     console.log(new Date()+": in the callback of the async parallel call");
     if (err) {
-      console.log(err);
+      console.log(new Date()+": error on async callback "+err);
       returnJsonResponse(context);
     } else {
+      console.log(new Date()+": finished async callback with: "+result);
       returnJsonResponse(context);
     }
   });
