@@ -1,6 +1,7 @@
 import {Component, Input, NgZone, OnInit} from '@angular/core';
 import { DataService } from '../../services/data.service';
 import annyang from 'annyang';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
   selector: 'app-opendata',
@@ -13,6 +14,7 @@ export class OpenDataComponent {
   showComponent: String;
   constructor(
     private dataService: DataService,
+    private authService: AuthService
   ) {
     dataService.changeEmitted$.subscribe(
       data => {
@@ -47,7 +49,8 @@ export class OpenDataComponent {
           name: searchresult.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
           description: searchresult.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
           portal: searchresult.portal.replace(/(\r\n|\n|\r)/gm, '' ),
-          publisher: searchresult.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' )
+          publisher: searchresult.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' ),
+          user_id: this.authService.getUserData().userid,
         }
       }]
     });
@@ -64,7 +67,8 @@ export class OpenDataComponent {
           name: searchresult.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
           description: searchresult.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
           portal: searchresult.portal.replace(/(\r\n|\n|\r)/gm, '' ),
-          publisher: searchresult.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' )
+          publisher: searchresult.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' ),
+          user_id: this.authService.getUserData().userid,
         }
       }]
     });
@@ -82,7 +86,8 @@ export class OpenDataComponent {
                     name: searchresult.dataset.dataset_name.replace(/(\r\n|\n|\r)/gm, '' ),
                     description: searchresult.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' ),
                     portal: searchresult.portal.replace(/(\r\n|\n|\r)/gm, '' ),
-                    publisher: searchresult.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' )
+                    publisher: searchresult.dataset.publisher.replace(/(\r\n|\n|\r)/gm, '' ),
+                    user_id: this.authService.getUserData().userid,
                   }
                 }]
     })

@@ -51,13 +51,6 @@ module.exports.takeAction = function(req, res) {
    };
   console.log("action type: "+req.body.type+" for user: "+req.body.userid);
   switch(req.body.type) {
-    case 'csvupload':
-        ctrlBot.fulfillFacebookDataupload(context);
-        break;
-    case 'save_visual':
-        console.log(new Date()+": Begin save_visual");
-        ctrlBot.saveVisual(context);
-        break;
     case 'query':
         context.botparams.query = req.body.payload.query;
         if(req.body.payload.context) {
@@ -71,41 +64,9 @@ module.exports.takeAction = function(req, res) {
         };
         ctrlBot.askBot(context);
         break;
-    case 'show_visual':
-        //find Visual in Db and return the object
-        let visual_id = req.body.payload.visual_id;
-        Visuals.findOne({_id : visual_id}).exec(function(err,obj){
-          if(obj) {
-            console.log("sending response");
-            context.responseObj = {
-              action:{
-                status: "ok",
-                payload: {}
-              }
-            };
-            context.responseObj.visual = obj;
-            res.status(200).json(context.responseObj);
-          }
-        });
-        break;
-    case 'testing':
-        context.botparams.event = {
-          name: "facebook_insights_upload",
-          data: {
-              filename: "myfacebookfile.csv"
-          }
-        };
-        context.responseObj = {
-          action:{
-            status: "ok",
-            payload: {}
-          }
-        };
-        ctrlBot.botEvent(context);
-        break;
     case 'checkforknowncsv':
         console.log(new Date()+": Begin Checking for known CSV  url: "+req.body.url);
-        context.checkforknowncsv = {url: req.body.url};
+        context.checkforknowncsv = {url: req.body.url, userid : req.body.userid};
         dataHelper.queryDataExists(context);
         break;
     case 'createdatasource':
@@ -113,11 +74,50 @@ module.exports.takeAction = function(req, res) {
       context.createdatasource = req.body.payload;
       dataHelper.createNewDataSource(context);
       break;
-    case 'addvisualtodatasource':
+    case 'csvupload':
+      ctrlBot.fulfillFacebookDataupload(context);
+      break;
+    case 'save_visual':
+      console.log(new Date()+": Begin save_visual");
+      ctrlBot.saveVisual(context);
+      break;
+    case 'show_visual':
+      //find Visual in Db and return the object
+      let visual_id = req.body.payload.visual_id;
+      Visuals.findOne({_id : visual_id}).exec(function(err,obj){
+        if(obj) {
+          console.log("sending response");
+          context.responseObj = {
+            action:{
+              status: "ok",
+              payload: {}
+            }
+          };
+          context.responseObj.visual = obj;
+          res.status(200).json(context.responseObj);
+        }
+      });
+      break;
+    case 'testing':
+      context.botparams.event = {
+        name: "facebook_insights_upload",
+        data: {
+          filename: "myfacebookfile.csv"
+        }
+      };
+      context.responseObj = {
+        action:{
+          status: "ok",
+          payload: {}
+        }
+      };
+      ctrlBot.botEvent(context);
+      break;
+    /*case 'addvisualtodatasource':
       console.log(new Date()+": Begin Add Visual to Data Source");
       context.addvisualtodatasource = req.body.payload;
       dataHelper.AddvisualToDataSource(context);
-      break;
+      break;*/
     default:
         console.log(new Date()+": Error: action not implemented");
         res.status(200).json({

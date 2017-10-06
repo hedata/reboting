@@ -65,7 +65,6 @@ export class VisualComponent implements OnInit {
               const params = data.data.bot_response.result.parameters;
               let context = null;
               if (data.data.bot_context) {
-                // TODO for now this only works with the first context
                 context = data.data.bot_context[0].parameters;
               }
               this.code_string = '';

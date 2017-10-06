@@ -1,4 +1,4 @@
-let apiai = require('apiai');
+
 let mongoose = require('mongoose');
 let DataSources = mongoose.model('DataSources');
 let Logs = mongoose.model('Logs');
@@ -6,17 +6,38 @@ let Scripts = mongoose.model('Scripts');
 let Users = mongoose.model('Users');
 let Visuals = mongoose.model('Visuals');
 let ExternalVisuals = mongoose.model('ExternalVisuals');
-
+let VisualHelper = require('./visual_helper');
 
 module.exports.queryDataExists = function(context) {
   DataSources.findOne({url: context.checkforknowncsv.url}).exec(function(err,obj){
     if(obj) {
-      console.log(new Date()+ " Data exists: "+ context.checkforknowncsv.url);
+      let randVisualSlug = obj.visuals[Math.floor(Math.random() * obj.visuals.length)];
+      console.log(new Date()+ " Data exists: "+ context.checkforknowncsv.url+" Random Slug for showing: "+randVisualSlug);
       context.responseObj = {
         exists: true,
-        payload: obj
+        slug: randVisualSlug
       };
       returnDataLogResponse(context);
+      //do this as  current visual that user is looking at
+      let userid = context.checkforknowncsv.userid;
+      //save visual as current for the user, create user if he doenst exist yet
+      Users.findOneAndUpdate({user_id: userid}, // find a document with that filter
+        {  user_id : userid,
+          current_data_id : obj.data_id,
+          current_slug : randVisualSlug}, // document to insert when nothing was found
+        {upsert: true, new: true}, // options
+        function (err) { // callback
+          if (err) {
+            console.log(new Date()+": Error on User Save "+err);
+            // handle error
+            returnDataLogResponse(context);
+          } else {
+            // handle document
+            returnDataLogResponse(context);
+          }
+        }
+      );
+
     } else {
       console.log(new Date()+ " Data Does Not exist: "+ context.checkforknowncsv.url);
       context.responseObj = {
@@ -40,62 +61,45 @@ module.exports.createNewDataSource = function(context) {
     }
     else
     {
-      context.responseObj ={
-        status: "ok",
-        id: newDataSource._id
-      };
-      returnDataLogResponse(context);
+      //create all possible visuals and return slug of first created
+      //keep creating visuals afterwards
+      let created = 0;
+      console.log(new Date()+ " Starting Creating Visuals:");
+
+      let visualsToCreate = [];
+      //map possibilities
+      if(newDataSource.isoField!==null && newDataSource.isoField!=="")
+      {
+        newDataSource.stringColumnlist.forEach(function(stringColumn) {
+          newDataSource.numericColumnlist.forEach(function(numericColumn){
+            console.log(new Date()+ " Creating Job for Visual String Column: "+stringColumn+" numeric Column: "+numericColumn+" IsoField: "+newDataSource.isoField);
+            visualsToCreate.push({
+              type : "map",
+              stringColumn : stringColumn,
+              numericColumn : numericColumn,
+              isoField: newDataSource.isoField
+            })
+          })
+        })
+      }
+      //barchart possibilities:
+      // - we can create charts for each combination of string fields and numeric fields
+      newDataSource.stringColumnlist.forEach(function(stringColumn) {
+        newDataSource.numericColumnlist.forEach(function(numericColumn){
+          console.log(new Date()+ " Creating Bar Visual String Column: "+stringColumn+" numeric Column: "+numericColumn);
+          visualsToCreate.push({
+            type : "bar",
+            stringColumn : stringColumn,
+            numericColumn : numericColumn,
+            isoField: newDataSource.isoField
+          });
+        })
+      });
+      VisualHelper.createVisualRecursive(context,newDataSource,created,visualsToCreate);
     }
   });
 };
 
-module.exports.AddvisualToDataSource = function(context) {
-  let data_id = context.addvisualtodatasource.data_id;
-  console.log(new Date()+": Creating Visual and Adding it to Data Source DataID: "+data_id+" Visual: "+context.addvisualtodatasource.visual.slug);
-  //console.log(context.addvisualtodatasource);
-  let visual = new ExternalVisuals(context.addvisualtodatasource);
-  visual.save(function(err) {
-   if(err) {
-     console.log(new Date()+": Error on Saving Visual "+err);
-     returnDataLogResponse(context);
-   } else {
-     DataSources.findOneAndUpdate({data_id: data_id}, {
-       $push: { visuals: context.addvisualtodatasource.visual.slug }
-     },function(err)
-     {
-       if(err){
-         context.responseObj =  {
-           status: "error"
-         };
-         returnDataLogResponse(context);
-       } else {
-         context.responseObj =  {
-           status: "ok"
-         };
-         //save visual as current for the user, create user if he doenst exist yet
-         Users.findOneAndUpdate({user_id: context.addvisualtodatasource.user_id}, // find a document with that filter
-           {  user_id : context.addvisualtodatasource.user_id,
-             current_data_id : context.addvisualtodatasource.data_id,
-             current_slug : context.addvisualtodatasource.visual.slug}, // document to insert when nothing was found
-           {upsert: true, new: true}, // options
-           function (err) { // callback
-             if (err) {
-               console.log(new Date()+": Error on User Save "+err);
-               // handle error
-               returnDataLogResponse(context);
-             } else {
-               // handle document
-               returnDataLogResponse(context);
-             }
-           }
-         );
-
-       }
-
-     });
-   }
-  });
-};
 
 
 

@@ -1,10 +1,10 @@
 /*
   import scripts for base usage
  */
-var mongoose = require('mongoose');
-var Scripts = mongoose.model('Scripts');
+let mongoose = require('mongoose');
+let Scripts = mongoose.model('Scripts');
 insertIt = function(code,actionname,params) {
-  var query = { action_name : actionname },
+  let query = { action_name : actionname },
     update = {
       action_name : actionname,
       code : code,
@@ -494,51 +494,6 @@ insertIt(code,intentname,params);
   Maps
 
  */
-code =`import IPython
-import reboting
-data_desc = {
-    "name" : name,
-    "description" : description,
-    "publisher" : publisher,
-    "portal" : portal,
-    "url": url,
-    "user_id" : "pythonscript"
-}
-slug = reboting.checkforknowncsv(data_desc = data_desc)
-url = 'https://doh.23degrees.io/view/'+slug
-iframe= '<iframe src="' + url + '" allowfullscreen frameborder="0" ></iframe>'
-IPython.display.HTML(iframe)
-`;
-params=[
-  {
-    name: 'url',
-    value: 'http://www.wien.gv.at/politik/wahlen/ogd/nr131_99999999_9999_spr.csv',
-    type: 'string'
-  },
-  {
-    name : 'name',
-    value: 'kein name angegeben',
-    type: 'string'
-  },
-  {
-    name: 'description',
-    value: 'keine Beschreibung vorhanden',
-    type: 'string'
-  },
-  {
-    name: 'publisher',
-    value: 'kein Publisher angegeben',
-    type: 'string'
-  },
-  {
-    name: 'portal',
-    value: 'kein Portal angegeben',
-    type: 'string'
-  }
-];
-intentname="visualize";
-insertIt(code,intentname,params);
-
 
 code =`import IPython
 import reboting
@@ -599,6 +554,9 @@ intentname="not_like";
 insertIt(code,intentname,params);
 intentname="like";
 insertIt(code,intentname,params);
+intentname="visualize";
+insertIt(code,intentname,params);
+
 
 
 

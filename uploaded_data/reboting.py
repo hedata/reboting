@@ -23,29 +23,8 @@ def checkforknowncsv( data_desc ):
     r = requests.post("http://reboting:3000/rb/actions", json=requestOBJ)
     resp = r.json()
     if resp["exists"]:
-        showchart = random.choice(["old","old","old","new"])
-        print(showchart)        
-        if showchart=="old":
-            #take a random visual
-            visual = random.choice(resp["payload"]["visuals"])
-            return visual;
-        else:
-            chartRequestOBJ = createRandomChart(resp["payload"])
-            #add chart to current datafile so we know about it
-            print("adding visual to datasource")
-            requestOBJ = {
-                "type" : "addvisualtodatasource",
-                "userid": data_desc["user_id"],
-                "payload" : {
-                    "user_id": data_desc["user_id"],
-                    "data_id" : resp['payload']['data_id'],
-                    "visual" : chartRequestOBJ
-                }
-            }
-            r = requests.post("http://reboting:3000/rb/actions", json=requestOBJ)
-            resp = r.json()
-            print(resp)
-            return chartRequestOBJ["slug"]
+        visual = resp["slug"]
+        return visual
     else:
         print("it doesntexists")
         slug = readCleanChart( data_desc )
@@ -85,8 +64,13 @@ def readCleanChart( data_desc ):
         districtCode='SUB_DISTRICT_CODE'
     if 'LAU_CODE' in df.columns:
         districtCode='LAU_CODE'
+    if 'LAU2_CODE' in df.columns:
+        districtCode='LAU_CODE2'
+    if 'COMMUNE_CODE' in df.columns:
+        districtCode='COMMUNE_CODE'
+    districtCodeList = ["DISTRICT_CODE","SUB_DISTRICT_CODE","LAU_CODE","LAU2_CODE","COMMUNE_CODE"]
     numeric_columnlist = list(df._get_numeric_data().columns)
-    string_columnlist=[item for item in list(df.columns) if item not in numeric_columnlist and item!='' and item!='DISTRICT_CODE' and item!='SUB_DISTRICT_CODE' and item!='LAU_CODE' and item!='YEAR' and item!='REF_YEAR']
+    string_columnlist=[item for item in list(df.columns) if item not in numeric_columnlist and item!='' and item not in districtCodeList and item!='YEAR' and item!='REF_YEAR']
     #test if there is a time part
     timeDimension = "false"
     timeField = "null"
@@ -96,7 +80,7 @@ def readCleanChart( data_desc ):
     if 'YEAR' in df.columns:
         timeDimension = "true"
         timeField="YEAR"
-    numeric_columnlist=[item for item in numeric_columnlist if item!='' and item!='DISTRICT_CODE' and item!='SUB_DISTRICT_CODE' and item!='LAU_CODE' and item!='YEAR' and item!='REF_YEAR']
+    numeric_columnlist=[item for item in numeric_columnlist if item!='' and item not in districtCodeList and item!='YEAR' and item!='REF_YEAR']
     #prepare request object
     external_data_id = resp['data']['_id']
     requestOBJ = {
@@ -116,33 +100,23 @@ def readCleanChart( data_desc ):
             "visuals" : []
         }
     }
-    #create chart
-    chartRequestOBJ = createRandomChart( requestOBJ["payload"])
-    #add chart to current slug
-    #requestOBJ["payload"]["visuals"].append(chartRequestOBJ["slug"])
-    #create new dataobject 
+    #Chart Slug is here !
     r = requests.post("http://reboting:3000/rb/actions", json=requestOBJ)
     resp = r.json()
     if resp["status"] == "ok":
         print(resp["id"])
+        #slug
+        print(resp["slug"])
+        return resp["slug"]
     else:
         print("error while saving datasource")
-    #add chart to current datafile so we know about it
-    print("adding visual to datasource")
-    requestOBJ = {
-                "type" : "addvisualtodatasource",
-                "userid": data_desc["user_id"],
-                "payload" : {
-                    "user_id": data_desc["user_id"],
-                    "data_id" : external_data_id,
-                    "visual" : chartRequestOBJ
-                }
-    }
-    r = requests.post("http://reboting:3000/rb/actions", json=requestOBJ)
-    resp = r.json()
-    print(resp)    
-    return chartRequestOBJ["slug"]
+        return "";
 
+    
+#    
+#
+#           DEPRECATED FROM HERE
+#
 def createRandomChart( datacontext):
     #last numeric field as entity field for know.
     districtCode = datacontext["isoField"]
@@ -165,6 +139,7 @@ def createRandomChart( datacontext):
         print("got a slug?")
         print(chartRequestOBJ["slug"])
     return chartRequestOBJ
+
 def createBarChartRequestObject(datacontext):
     valueField = random.choice(datacontext["numericColumnlist"] )
     entityField = datacontext["stringColumnlist"][-1]
