@@ -30,10 +30,9 @@ module.exports.queryDataExists = function(context) {
           if (err) {
             console.log(new Date()+": Error on User Save "+err);
             // handle error
-            returnDataLogResponse(context);
           } else {
             // handle document
-            returnDataLogResponse(context);
+            console.log(new Date()+": User save ok userid: "+userid);
           }
         }
       );
