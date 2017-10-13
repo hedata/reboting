@@ -49,19 +49,20 @@ module.exports.takeAction = function(req, res) {
     },
     responseObj : {}
    };
-  console.log("action type: "+req.body.type+" for user: "+req.body.userid);
+  console.log(new Date()+"########################################################################");
+  console.log(new Date()+ " request: action type: "+req.body.type+" for user: "+req.body.userid);
   switch(req.body.type) {
     case 'query':
         context.botparams.query = req.body.payload.query;
-        if(req.body.payload.context) {
-          context.botparams.context = req.body.payload.context;
-        }
         context.responseObj = {
           action:{
             status: "ok",
             payload: {}
           }
         };
+        if(req.body.payload.context) {
+          context.botparams.context = req.body.payload.context;
+        }
         ctrlBot.askBot(context);
         break;
     case 'checkforknowncsv':

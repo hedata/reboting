@@ -103,7 +103,7 @@ externalCalls = function(context) {
         let geolocation = context.responseObj.bot_response.result.parameters.geolocation;
         let requesturi ="http://data.wu.ac.at/odgraph/locationsearch?";
         //add limit param
-        requesturi = requesturi+"limit=50";
+        requesturi = requesturi+"b=1";
         if(topics.length>0) {
           requesturi = requesturi+"&q="+topics.join(" ");
         }
@@ -117,14 +117,43 @@ externalCalls = function(context) {
             }
           }
         });
-        console.log("searching for: "+requesturi);
-        request(requesturi, function (error, response, body) {
+        console.log("searching for: "+requesturi+"&limit=50");
+        request(requesturi+"&limit=50", function (error, response, body) {
           if(error) {
             console.log(new Date()+" Error on Request OpenData Search "+error);
             callback(null,"returning from search opendata error");
           } else if(response.statusCode === 200) {
             context.responseObj.opendata_search_results = JSON.parse(body);
-            callback(null,"returning from search opendata all good");
+            /*
+              Save for this user and this request uri where we are now and how many results there are
+            */
+            //save visual as current for the user, create user if he doenst exist yet
+            UserSearchResults.findOneAndUpdate({
+                user_id: context.botparams.session_id,
+                request_uri : requesturi
+              }, // find a document with that filter
+              {
+                user_id : context.botparams.session_id,
+                request_uri : requesturi,
+                results : context.responseObj.opendata_search_results.total,
+                offset : 0
+              }, // document to insert when nothing was found
+              {upsert: true, new: true}, // options
+              function (err) { // callback
+                if (err) {
+                  console.log(new Date()+": Error on UserSearchResults Save "+err);
+                }
+                context.responseObj.bot_context=  [{
+                  name: 'wudatasearchresultlist',
+                  lifespan: 10,
+                  parameters: {
+                    user_id : context.botparams.session_id,
+                    request_uri: requesturi,
+                  }
+                }];
+                callback(null,"returning from search opendata all good");
+              }
+            );
           } else {
             callback(null,"api seems to be down");
           }
@@ -141,7 +170,7 @@ externalCalls = function(context) {
       let randgeolocation = context.responseObj.bot_response.result.parameters.geolocation;
       let randrequesturi = "http://data.wu.ac.at/odgraph/locationsearch?";
       //add limit param
-      randrequesturi = randrequesturi + "limit=1";
+      randrequesturi = randrequesturi + "a=1";
       if (randtopics.length > 0) {
         randrequesturi = randrequesturi + "&q=" + randtopics.join(" ");
       }
@@ -295,7 +324,7 @@ externalCalls = function(context) {
       });
     }
     else {
-      callback(null,"returning from search OpenData error");
+      callback(null,"returning from additional data callbacks - nothing to do");
     }
   });
   //add execution scripts
@@ -322,8 +351,8 @@ externalCalls = function(context) {
 };
 
 findRandomData = function(context,callback,requesturi,offset) {
-  console.log("searching for: "+requesturi+"&offset="+offset);
-  request(requesturi+"&offset="+offset, function (error, response, body) {
+  console.log(new Date()+"searching for: "+requesturi+"&offset="+offset+"&limit=1");
+  request(requesturi+"&offset="+offset+"&limit=1", function (error, response, body) {
     if(error) {
       console.log(error);
       callback(null,"returning from search opendata error");

@@ -37,8 +37,8 @@ export class AuthService {
      */
   }
   public getUserData(): any {
-    console.log('AUTH SERVICE returning userdata:');
-    console.log(this.userData);
+    // console.log('AUTH SERVICE returning userdata:');
+    // console.log(this.userData);
     return this.userData;
   }
   private setUserData(): void {

@@ -3,25 +3,25 @@
     <div style="background:white">
       <h3>Results: {{searchResults.total}}</h3>
     </div>
-    <div *ngFor="let opendata of searchResults.results"
+    <div *ngFor="let opendata of searchResults.results; let i = index"
          style="background-color: white;margin-top:6px;margin-bottom:6px;padding:6px;">
         <h4>{{opendata.dataset?.dataset_name}}</h4>
         {{opendata.dataset?.dataset_description}}<br>
         {{opendata.dataset?.publisher}} - {{opendata.portal}} - Zeilen: {{opendata.row_no}}<br>
         <button *ngIf="opendata.dataset" class="btn btn-info" style="margin:3px"
                 type="button"
-                (click)="onVisualize(opendata)">
+                (click)="onVisualize(opendata,i)">
           Visualize
         </button>
        <!--   -->
         <button class="btn btn-info" style="margin:3px"
                     type="button"
-                    (click)="onExplore(opendata)">
+                    (click)="onExplore(opendata,i)">
              Base Stats
         </button>
       <button *ngIf="opendata.dataset"  class="btn btn-info" style="margin:3px"
               type="button"
-              (click)="onScatter(opendata)">
+              (click)="onScatter(opendata,i)">
         ScatterPlot
       </button>
       <a href="{{opendata.url}}" target="_blank" class="btn btn-info" style="margin:3px" role="button">Download</a>

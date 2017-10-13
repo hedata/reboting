@@ -2,6 +2,7 @@ import { Component, NgZone, OnInit} from '@angular/core';
 import { DataService } from '../../services/data.service';
 import annyang from 'annyang';
 import {AuthService} from '../../services/auth.service';
+import {BotContextService} from '../../services/botcontext.service';
 
 @Component({
   selector: 'app-bot',
@@ -15,7 +16,6 @@ export class BotComponent implements OnInit {
   public quickreplies = ['Wien', 'Steiermark' , 'Burgenland'
     , 'Kärnten', 'Salzburg', 'Vorarlberg', 'Oberösterreich'
     , 'Niederösterreich', 'Tirol'];
-  public context: any;
   userData: any = {};
   botChat = [];
   msg: any;
@@ -42,7 +42,8 @@ export class BotComponent implements OnInit {
   constructor(
     private dataService: DataService,
     private authService: AuthService,
-    private _ngZone: NgZone
+    private _ngZone: NgZone,
+    private botContext: BotContextService
   ) {
     console.log('in the constructor of bot component');
     /*
@@ -82,7 +83,7 @@ export class BotComponent implements OnInit {
             this.chatmessage = data.data;
             // is a context there 2 ?
             if (data.context) {
-              this.context = data.context;
+              this.botContext.setBotContext(data.context);
               this.queryBot();
             } else {
               this.queryBot();
@@ -203,7 +204,7 @@ export class BotComponent implements OnInit {
     this.inputDisabled = true;
     console.log('querying BOT');
     console.log('context:');
-    console.log(this.context);
+    console.log(this.botContext.getBotContext());
     console.log(this.chatmessage);
     // this.showchatlog = true;
     // mark this for cange detection
@@ -212,7 +213,7 @@ export class BotComponent implements OnInit {
     if (query !== '') {
       this.botChat = [];
       this.botChat.push({you:  query});
-      this.dataService.postAction('query', {query: query, context: this.context}).subscribe(data => {
+      this.dataService.postAction('query', {query: query, context: this.botContext.getBotContext()}).subscribe(data => {
         console.log(data);
         this.botChat.push(data);
         // add quick replies
@@ -231,12 +232,12 @@ export class BotComponent implements OnInit {
           }
           // check if we have a context to set
           if (data.bot_context) {
-            this.context = data.bot_context;
+            this.botContext.setBotContext(data.bot_context);
             console.log('setting context to :');
-            console.log(this.context);
+            console.log(this.botContext.getBotContext());
             // enable rating if we have a resultitem in the context
-            if (this.context.length > 0 ) {
-              if (this.context[0].name === 'wudatasearchresult') {
+            if (this.botContext.getBotContext().length > 0 ) {
+              if (this.botContext.getBotContext()[0].name === 'wudatasearchresult') {
                 console.log('enabling rating');
                 this.ratingDisabled = false;
               }

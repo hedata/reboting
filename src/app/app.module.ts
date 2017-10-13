@@ -15,6 +15,7 @@ import {OpenDataComponent} from './components/opendatasearchresults/opendata.com
 import {SplashComponent} from './components/splash/splash.component';
 import {AuthService} from './services/auth.service';
 import {IntentComponent} from './components/intent/intent.component'
+import {BotContextService} from "./services/botcontext.service";
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import {IntentComponent} from './components/intent/intent.component'
   providers: [
     DataService,
     AuthService,
+    BotContextService
   ],
   bootstrap: [AppComponent]
 })
