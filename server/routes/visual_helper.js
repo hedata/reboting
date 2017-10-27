@@ -127,7 +127,7 @@ generateMapQueryObject = function(datasource, valueField,entityField,districtCod
       "unit": "Value:",
       "colors":  getRandomColorMap(),
       "legendtitles": ["low", "med-low", "med", "med-high", "high"],
-      "tooltip": [{"label": valueField, "field": "data:"+valueField }],
+      "tooltip": getToolTips(datasource),
       "theme": "light"
     },
     "parameters": {
@@ -165,7 +165,7 @@ generateBarChartQueryObject = function (datasource, valueField,entityField) {
       "unit": "Value:",
       "colors": getRandomColorMap(),
       "legendtitles": ["low", "med-low", "med", "med-high", "high"],
-      "tooltip": [{"label": valueField, "field": "data:"+valueField }],
+      "tooltip": getToolTips(datasource),
       "theme": "light"
     },
     "parameters": {
@@ -186,5 +186,16 @@ getRandomColorMap = function () {
     ["#f2f0f7","#cbc9e2","#9e9ac8","#756bb1","#54278f"]
   ];
   return arr[Math.floor(arr.length * Math.random())];
+};
+
+getToolTips = function(datasource) {
+  let ret = [];
+  datasource.stringColumnlist.forEach(function(entry) {
+    ret.push({"label": entry, "field": "data:"+entry })
+  });
+  datasource.numericColumnlist.forEach(function(entry) {
+    ret.push({"label": entry, "field": "data:"+entry })
+  });
+  return ret;
 };
 
