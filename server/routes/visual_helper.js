@@ -125,7 +125,7 @@ generateMapQueryObject = function(datasource, valueField,entityField,districtCod
       "timeUnit": "year",
       "valueField": valueField,
       "unit": "Value:",
-      "colors": ["#ffc971", "#ffb627", "#ff9505", "#e2711d", "#cc5803"],
+      "colors":  getRandomColorMap(),
       "legendtitles": ["low", "med-low", "med", "med-high", "high"],
       "tooltip": [{"label": valueField, "field": "data:"+valueField }],
       "theme": "light"
@@ -163,7 +163,7 @@ generateBarChartQueryObject = function (datasource, valueField,entityField) {
       "timeUnit": "year",
       "valueField": valueField,
       "unit": "Value:",
-      "colors": ["#ffc971", "#ffb627", "#ff9505", "#e2711d", "#cc5803"],
+      "colors": getRandomColorMap(),
       "legendtitles": ["low", "med-low", "med", "med-high", "high"],
       "tooltip": [{"label": valueField, "field": "data:"+valueField }],
       "theme": "light"
@@ -176,5 +176,15 @@ generateBarChartQueryObject = function (datasource, valueField,entityField) {
     }
   };
   return chartRequestOBJ;
+};
+
+getRandomColorMap = function () {
+  let arr = [
+    ["#ffffcc","#c2e699","#78c679","#31a354","#006837"],
+    ["#f1eef6","#d7b5d8","#df65b0","#dd1c77","#980043"],
+    ["#ffffb2","#fecc5c","#fd8d3c","#f03b20","#bd0026"],
+    ["#f2f0f7","#cbc9e2","#9e9ac8","#756bb1","#54278f"]
+  ];
+  return arr[Math.floor(arr.length * Math.random())];
 };
 
