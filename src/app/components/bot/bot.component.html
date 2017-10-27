@@ -53,7 +53,7 @@
       <div *ngIf="message.you" >
         <img src="{{userData.profile_pic}}" width="35px" alt="Profile Image"/> {{message?.you}}
       </div>
-      <div *ngIf="message.bot_response"><b>Ben</b> {{ message?.bot_response?.result?.fulfillment?.speech }}</div>
+      <div *ngIf="message.bot_response"><img src="../../../assets/bot_icon.svg" width="35px" alt="Profile Image"/> {{ message?.bot_response?.result?.fulfillment?.speech }}</div>
     </div>
 
     <div>
