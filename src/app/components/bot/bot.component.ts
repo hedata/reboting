@@ -10,12 +10,13 @@ import {BotContextService} from '../../services/botcontext.service';
   styleUrls: ['./bot.component.css']
 })
 export class BotComponent implements OnInit {
+  private austrianFederalStates: any =  ['Vienna', 'Styria' , 'Burgenland'
+    , 'Carinthia', 'Salzburg', 'Vorarlberg', 'Upper Austria'
+    , 'Lower Austria', 'Tirol'];
   public inputDisabled = true;
   public ratingDisabled = true;
   public configModel: any = {recording: false, synthesis: false, autorecord: false, userprofile: false};
-  public quickreplies = ['Wien', 'Steiermark' , 'Burgenland'
-    , 'Kärnten', 'Salzburg', 'Vorarlberg', 'Oberösterreich'
-    , 'Niederösterreich', 'Tirol'];
+  public quickreplies = this.austrianFederalStates;
   userData: any = {};
   botChat = [];
   msg: any;
@@ -227,8 +228,7 @@ export class BotComponent implements OnInit {
           });
           // check if we have our special incomplete action
           if (data.bot_response.result.action === 'show_random_visual' && data.bot_response.result.actionIncomplete) {
-            this.quickreplies = ['Wien', 'Steiermark' , 'Burgenland' , 'Kärnten', 'Salzburg', 'Vorarlberg',
-              'Oberösterreich' , 'Niederösterreich', 'Tirol'];
+            this.quickreplies = this.austrianFederalStates;
           }
           // check if we have a context to set
           if (data.bot_context) {
