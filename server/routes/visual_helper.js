@@ -49,7 +49,6 @@ module.exports.createVisualRecursive = function createVisualRecursive (context,n
         if(err) {
           console.log(new Date()+": Error on Saving Visual "+err);
         } else {
-          console.log(new Date()+" created visual id: "+VisualObj._id);
           DataSources.findOneAndUpdate({data_id: newDataSource.data_id}, {
             $push: { visuals: slug }
           },function(err)
