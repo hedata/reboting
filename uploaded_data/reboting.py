@@ -41,6 +41,22 @@ def readCleanChart( data_desc ):
     df.columns=df.columns.str.replace(':','')
     df.columns=df.columns.str.replace('"','')
     df.columns=df.columns.str.replace(' ','')
+    districtCode =""
+    if 'DISTRICT_CODE' in df.columns:
+        districtCode="DISTRICT_CODE"
+    if 'SUB_DISTRICT_CODE' in df.columns:
+        districtCode='SUB_DISTRICT_CODE'
+    #Lau codes have to be 5 digits and a G in front
+    if 'LAU_CODE' in df.columns:
+        districtCode='LAU_CODE'
+        df['LAU_CODE']='G'+ df.LAU_CODE.map(str)
+    if 'LAU2_CODE' in df.columns:
+        districtCode='LAU2_CODE'
+        df['LAU2_CODE']='G'+ df.LAU2_CODE.map(str)
+    if 'COMMUNE_CODE' in df.columns:
+        districtCode='COMMUNE_CODE'
+        df['COMMUNE_CODE']='G'+ df.COMMUNE_CODE.map(str)
+    districtCodeList = ["DISTRICT_CODE","SUB_DISTRICT_CODE","LAU_CODE","LAU2_CODE","COMMUNE_CODE"]
     data_dict = df.to_dict(orient='records')
     #delete temp file
     os.remove(filename)
@@ -56,29 +72,17 @@ def readCleanChart( data_desc ):
     resp = r.json()
     #got a data id 
     print(resp['data']['_id'])
-    #create random visual
-    districtCode =""
-    if 'DISTRICT_CODE' in df.columns:
-        districtCode="DISTRICT_CODE"
-    if 'SUB_DISTRICT_CODE' in df.columns:
-        districtCode='SUB_DISTRICT_CODE'
-    if 'LAU_CODE' in df.columns:
-        districtCode='LAU_CODE'
-    if 'LAU2_CODE' in df.columns:
-        districtCode='LAU_CODE2'
-    if 'COMMUNE_CODE' in df.columns:
-        districtCode='COMMUNE_CODE'
-    districtCodeList = ["DISTRICT_CODE","SUB_DISTRICT_CODE","LAU_CODE","LAU2_CODE","COMMUNE_CODE"]
+    #create random visual   
     numeric_columnlist = list(df._get_numeric_data().columns)
     string_columnlist=[item for item in list(df.columns) if item not in numeric_columnlist and item!='' and item not in districtCodeList and item!='YEAR' and item!='REF_YEAR']
     #test if there is a time part
-    timeDimension = "false"
-    timeField = "null"
+    timeDimension = False
+    timeField = None
     if 'REF_YEAR' in df.columns:
-        timeDimension = "true"
+        timeDimension = True
         timeField="REF_YEAR"
     if 'YEAR' in df.columns:
-        timeDimension = "true"
+        timeDimension = True
         timeField="YEAR"
     numeric_columnlist=[item for item in numeric_columnlist if item!='' and item not in districtCodeList and item!='YEAR' and item!='REF_YEAR']
     #prepare request object

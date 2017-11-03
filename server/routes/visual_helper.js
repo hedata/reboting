@@ -14,9 +14,11 @@ module.exports.createVisualRecursive = function createVisualRecursive (context,n
   let current = toCreateArray[created];
   //create visual
   let queryObj = {};
-  if(current.type === "map") {
+  if(current.type === 'map') {
+    console.log(new Date()+" creating map");
     queryObj = generateMapQueryObject(newDataSource,current.numericColumn,current.stringColumn,newDataSource.isoField);
   } else {
+    console.log(new Date()+" creating bar");
     queryObj = generateBarChartQueryObject(newDataSource,current.numericColumn,current.stringColumn);
   }
   console.log(new Date()+ " querying server to create visual");
@@ -31,9 +33,9 @@ module.exports.createVisualRecursive = function createVisualRecursive (context,n
       let slug ="";
       if(body.slug) {
         slug = body.slug;
-        console.log(new Date()+" got new visual slug: "+slug);
+        console.log(new Date()+" got new visual slug: "+slug+ " type: "+current.type);
       } else {
-        console.log(new Date()+" ERROR got now slug"+body);
+        console.log(new Date()+" ERROR "+body);
       }
       //add it to datasource and save it in the db
       let VisualObj = {
@@ -47,6 +49,7 @@ module.exports.createVisualRecursive = function createVisualRecursive (context,n
         if(err) {
           console.log(new Date()+": Error on Saving Visual "+err);
         } else {
+          console.log(new Date()+" created visual id: "+VisualObj._id);
           DataSources.findOneAndUpdate({data_id: newDataSource.data_id}, {
             $push: { visuals: slug }
           },function(err)

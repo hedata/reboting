@@ -71,7 +71,7 @@ module.exports.createNewDataSource = function(context) {
       {
         newDataSource.stringColumnlist.forEach(function(stringColumn) {
           newDataSource.numericColumnlist.forEach(function(numericColumn){
-            console.log(new Date()+ " Creating Job for Visual String Column: "+stringColumn+" numeric Column: "+numericColumn+" IsoField: "+newDataSource.isoField);
+            console.log(new Date()+ " Creating Map Visual String Column: "+stringColumn+" numeric Column: "+numericColumn+" IsoField: "+newDataSource.isoField);
             visualsToCreate.push({
               type : "map",
               stringColumn : stringColumn,
