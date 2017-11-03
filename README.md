@@ -20,10 +20,14 @@ docker-compose down
 ng build --prod --aot
 docker-compose up -d --build
 
+# Reset Database Mongo with Mongobooster
+db.externalvisuals.remove({})
+db.usersearchresults.remove({})
+db.datasources.remove({})
+
 # Other stuff
 ## fix inotify shit
 echo fs.inotify.max_user_watches=582222 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
-
 
 #Jupyterlab updates
 Jupyterlab goes fast and it seems like "jupyterlab": "^0.17.5", is not the correct npm package anymore
