@@ -28,15 +28,11 @@ module.exports.createVisualRecursive = function createVisualRecursive (context,n
     json: true,
     body: queryObj
   }, function (error, response, body){
-    if (!error && response.statusCode === 200) {
+    if (!error && response.statusCode === 200 && body.slug) {
       console.log(body);
       let slug ="";
-      if(body.slug) {
-        slug = body.slug;
-        console.log(new Date()+" got new visual slug: "+slug+ " type: "+current.type);
-      } else {
-        console.log(new Date()+" ERROR "+body);
-      }
+      slug = body.slug;
+      console.log(new Date()+" got new visual slug: "+slug+ " type: "+current.type);
       //add it to datasource and save it in the db
       let VisualObj = {
         user_id : context.botparams.session_id,
@@ -88,6 +84,10 @@ module.exports.createVisualRecursive = function createVisualRecursive (context,n
         console.log("done creating visuals");
       }
     } else {
+      context.responseObj ={
+        status: "error"
+      };
+      returnDataLogResponse(context);
       console.log(new Date()+" on request to create visual on 23 degree"+error);
     }
   });

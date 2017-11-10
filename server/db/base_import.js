@@ -497,23 +497,37 @@ insertIt(code,intentname,params);
 
 code =`import IPython
 import reboting
+from reboting import CouldntSaveDataException
+from reboting import CsvDownloadAndParsingException
+from reboting import CouldNotDownloadFileException
+from reboting import CouldntCreateVisualException
 iframe='<div></div>'
 if url == 'NOTDEFINED':
-  print("Wu Dataservice not reachable atm - Sorry")
+    print("Wu Dataservice not reachable atm - Sorry")
 else:
-  print("userid: "+user_id)
-  print("url: "+url)
-  data_desc = {
+    print("userid: "+user_id)
+    print("url: "+url)
+    data_desc = {
         "name" : name,
         "description" : description,
         "publisher" : publisher,
         "portal" : portal,
         "url": url,
         "user_id" : user_id
-  }
-  slug = reboting.checkforknowncsv(data_desc = data_desc)
-  url = 'https://doh.23degrees.io/viz/'+slug
-  iframe= '<iframe src="' + url + '" allowfullscreen frameborder="0" ></iframe>'
+    }
+    try:
+        slug = reboting.checkforknowncsv(data_desc = data_desc)
+        url = 'https://doh.23degrees.io/viz/'+slug
+        iframe= '<iframe src="' + url + '" allowfullscreen frameborder="0" ></iframe>'
+    except CouldntSaveDataException as e:
+        print("ERROR: couldnt save data on 23 degree server")
+    except NoDialectFoundEception as e:
+        print("ERROR: couldnt parse dialect of csv file")
+    except CouldNotDownloadFileException as e:
+        print("ERROR: couldnt download file")
+    except CouldntCreateVisualException as e:
+        print("ERROR: couldnt create visual")
+    print(url)
 IPython.display.HTML(iframe)
 `;
 params=[

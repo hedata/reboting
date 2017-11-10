@@ -8,6 +8,16 @@ import csv
 import re
 import chardet
 
+class CouldNotDownloadFileException(Exception):
+    pass
+class CsvDownloadAndParsingException(Exception):
+    pass
+class CouldntSaveDataException(Exception):
+    pass
+class CouldntCreateVisualException(Exception):
+    pass
+
+
 def checkforknowncsv( data_desc ):
     #http://reboting:3000
     #ask reboting if we know the data -> if not create data and return id
@@ -27,14 +37,18 @@ def checkforknowncsv( data_desc ):
         return visual
     else:
         print("it doesntexists")
-        slug = readCleanChart( data_desc )
-        #lets create the data
+        slug = readCleanChart( data_desc )  
         return slug;
     
 def readCleanChart( data_desc ):
+    filename=""
     filename = readandcleancsv( data_desc["url"] )
+    #except NoDialectFoundEception as e:
+    #    raise e
+    print("filename: "+filename)
     #get column and row descriptions
     df = pd.read_csv(filename,sep=';', thousands='.', decimal=',')
+    print("df loaded")
     #santize column headers
     df.columns=df.columns.str.replace('#','')
     df.columns=df.columns.str.replace('.','')
@@ -68,10 +82,17 @@ def readCleanChart( data_desc ):
                 "layer": "choropleth"
             }
     }
+    #print(json.dumps(requestOBJ))
     r = requests.post("http://52.166.116.205:2301/save_data", json=requestOBJ)
+    #with open('request_data.json', 'w') as outfile:
+    #    json.dump(requestOBJ, outfile)
     resp = r.json()
+    print(resp)
     #got a data id 
-    print(resp['data']['_id'])
+    try:
+        print(resp['data']['_id'])
+    except Exception as e:
+        raise CouldntSaveDataException(data_desc["url"])
     #create random visual   
     numeric_columnlist = list(df._get_numeric_data().columns)
     string_columnlist=[item for item in list(df.columns) if item not in numeric_columnlist and item!='' and item not in districtCodeList and item!='YEAR' and item!='REF_YEAR']
@@ -114,8 +135,59 @@ def readCleanChart( data_desc ):
         return resp["slug"]
     else:
         print("error while saving datasource")
-        return "";
+        raise CouldntCreateVisualException("on the reboting server something happened")
 
+#standard csv reading and cleaning
+def readandcleancsv( url ):
+    print("downloading file")
+    try: 
+        r = requests.get(url)
+    except Exception:
+        raise CsvDownloadAndParsingException("for file from url:"+url)
+    filename=str(random.getrandbits(64))+".csv.tmp"
+    header =[];
+    rows=[];
+    encoding='utf-8';
+    with open(filename, "wb") as code:
+        code.write(r.content)
+    with open(filename, 'rb') as f:
+        encoding = chardet.detect(f.read())['encoding']
+    with open(filename, 'r', encoding=encoding) as csvfile:        
+        try:
+            dialect = csv.Sniffer().sniff(csvfile.read(1024*16), delimiters=';,\t')
+        except Exception as e:
+            #print("exception"+e)
+            raise CsvDownloadAndParsingException("for file from url: "+url)
+        csvfile.seek(0)
+        reader = csv.reader(csvfile, dialect)
+        #go through all lines
+        #Todo get the header
+        #Todo detect dates and get them in a fixed format
+        #Todo get Numeric Values and get them in a fixed format  
+        #empty string
+        for index, entry in enumerate(reader):
+            #test for header in first 2 lines
+            if( (index==0 or index==1) and len(header) == 0):
+                empties = 0;
+                for i in entry:
+                    if(i==""):
+                        empties+=1
+                if(empties <= 1):
+                    #print("using header at index: "+str(index))
+                    header=entry
+            else:
+                rows.append(entry)
+    #amount of rows
+    #print(len(rows))
+    #amount of columns in header
+    #print(len(header))
+    with open(filename, 'w') as csvfile:
+        writer = csv.writer(csvfile, delimiter=';')
+        writer.writerow(header);
+        for element in rows:
+            writer.writerow(element);
+    return filename    
+    
     
 #    
 #
@@ -221,49 +293,3 @@ def createMapRequestObject(datacontext):
             }
         }
     return chartRequestOBJ
-
-#standard csv reading and cleaning
-def readandcleancsv( url ):
-    r = requests.get(url)
-    filename=str(random.getrandbits(64))+".csv.tmp"
-    header =[];
-    rows=[];
-    encoding='utf-8';
-    with open(filename, "wb") as code:
-        code.write(r.content)
-    with open(filename, 'rb') as f:
-        encoding = chardet.detect(f.read())['encoding']
-    with open(filename, 'r', encoding=encoding) as csvfile:        
-        try:
-            dialect = csv.Sniffer().sniff(csvfile.read(1024*16), delimiters=';,\t')
-        except Exception as e:
-            print("exception"+e)
-        csvfile.seek(0)
-        reader = csv.reader(csvfile, dialect)
-        #go through all lines
-        #Todo get the header
-        #Todo detect dates and get them in a fixed format
-        #Todo get Numeric Values and get them in a fixed format  
-        #empty string
-        for index, entry in enumerate(reader):
-            #test for header in first 2 lines
-            if( (index==0 or index==1) and len(header) == 0):
-                empties = 0;
-                for i in entry:
-                    if(i==""):
-                        empties+=1
-                if(empties <= 1):
-                    #print("using header at index: "+str(index))
-                    header=entry
-            else:
-                rows.append(entry)
-    #amount of rows
-    #print(len(rows))
-    #amount of columns in header
-    #print(len(header))
-    with open(filename, 'w') as csvfile:
-        writer = csv.writer(csvfile, delimiter=';')
-        writer.writerow(header);
-        for element in rows:
-            writer.writerow(element);
-    return filename
