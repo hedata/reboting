@@ -87,6 +87,10 @@ def readCleanChart( data_desc ):
     if 'COMMUNE_CODE' in df.columns:
         districtCode='COMMUNE_CODE'
         df['COMMUNE_CODE']='G'+ df.COMMUNE_CODE.map(str)
+    #is our district code really a district code easy test is it different or only one?
+    if districtCode!="":
+        if df[districtCode].nunique() <= 2:
+            districtCode=""
     districtCodeList = ["DISTRICT_CODE","SUB_DISTRICT_CODE","LAU_CODE","LAU2_CODE","COMMUNE_CODE"]
     #fill nan values
     df.fillna(0,inplace=True)
@@ -119,7 +123,7 @@ def readCleanChart( data_desc ):
         raise CouldntSaveDataException(data_desc["url"])
     #create random visual   
     numeric_columnlist = list(df._get_numeric_data().columns)
-    string_columnlist=[item for item in list(df.columns) if item not in numeric_columnlist and item!='' and item not in districtCodeList and item!='YEAR' and item!='REF_YEAR']
+    string_columnlist=[item for item in list(df.columns) if item not in numeric_columnlist and item!='' and item not in districtCodeList and item!='YEAR' and item!='REF_YEAR']  
     #test if there is a time part
     timeDimension = False
     timeField = None
@@ -130,6 +134,11 @@ def readCleanChart( data_desc ):
         timeDimension = True
         timeField="YEAR"
     numeric_columnlist=[item for item in numeric_columnlist if item!='' and item not in districtCodeList and item!='YEAR' and item!='REF_YEAR']
+    #ok lets do some quality checks here - we only keep string columns that have a little varience in attributes
+    final_string_columnlist=[]
+    for item in string_columnlist:
+        if df[item].nunique() > 1:
+            final_string_columnlist.append(item)
     #prepare request object
     external_data_id = resp['data']['_id']
     requestOBJ = {
@@ -144,7 +153,7 @@ def readCleanChart( data_desc ):
             "columnlist" : list(df.columns),
             "isoField" : districtCode,
             "numericColumnlist" : numeric_columnlist,
-            "stringColumnlist" : string_columnlist,
+            "stringColumnlist" : final_string_columnlist,
             "dataDesc" : data_desc,
             "visuals" : []
         }

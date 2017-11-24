@@ -199,10 +199,10 @@ getRandomColorMap = function () {
 
 getToolTips = function(datasource) {
   let ret = [];
-  datasource.stringColumnlist.forEach(function(entry) {
+  datasource.columnlist.forEach(function(entry) {
     ret.push({"label": entry, "field": "data:"+entry })
   });
-  datasource.numericColumnlist.forEach(function(entry) {
+  datasource.columnlist.forEach(function(entry) {
     ret.push({"label": entry, "field": "data:"+entry })
   });
   return ret;
