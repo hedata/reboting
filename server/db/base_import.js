@@ -501,6 +501,7 @@ from reboting import CouldntSaveDataException
 from reboting import CsvDownloadAndParsingException
 from reboting import CouldNotDownloadFileException
 from reboting import CouldntCreateVisualException
+from reboting import DataTooBigException
 iframe='<div></div>'
 if url == 'NOTDEFINED':
     print("Wu Dataservice not reachable atm - Sorry")
@@ -527,6 +528,8 @@ else:
         print("ERROR: couldnt download file")
     except CouldntCreateVisualException as e:
         print("ERROR: couldnt create visual")
+    except DataTooBigException as e:
+        print("ERROR: too many lines: "+str(e))
     print(url)
 IPython.display.HTML(iframe)
 `;
