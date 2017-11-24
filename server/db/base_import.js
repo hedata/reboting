@@ -521,8 +521,8 @@ else:
         iframe= '<iframe src="' + url + '" allowfullscreen frameborder="0" ></iframe>'
     except CouldntSaveDataException as e:
         print("ERROR: couldnt save data on 23 degree server")
-    except NoDialectFoundEception as e:
-        print("ERROR: couldnt parse dialect of csv file")
+    except CsvDownloadAndParsingException as e:
+        print("ERROR: something went wrong when downloading the file")
     except CouldNotDownloadFileException as e:
         print("ERROR: couldnt download file")
     except CouldntCreateVisualException as e:

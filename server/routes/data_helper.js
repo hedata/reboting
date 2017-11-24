@@ -94,7 +94,23 @@ module.exports.createNewDataSource = function(context) {
           });
         })
       });
-      VisualHelper.createVisualRecursive(context,newDataSource,created,visualsToCreate);
+      //what if we cant create any visuals since we have no option to do so?
+      if(visualsToCreate.length>0) {
+        VisualHelper.createVisualRecursive(context,newDataSource,created,visualsToCreate);
+      } else
+      {
+        console.log(new Date()+": No Visuals to create for this datasource: ");
+        context.responseObj ={
+          status: "error"
+        };
+        returnDataLogResponse(context);
+        //remove this crappy datasource
+        DataSources.remove({ _id: newDataSource._id }, function (err) {
+          console.log(new Date()+" removed crappy datasource id: "+newDataSource._id );
+        });
+
+      }
+
     }
   });
 };

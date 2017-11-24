@@ -7,6 +7,7 @@ import random
 import csv
 import re
 import chardet
+import numpy
 
 class CouldNotDownloadFileException(Exception):
     pass
@@ -16,6 +17,20 @@ class CouldntSaveDataException(Exception):
     pass
 class CouldntCreateVisualException(Exception):
     pass
+class DataTooBigException(Exception):
+    pass
+
+#custom request encoder for json serialization when sending data
+class MyJsonEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, numpy.integer):
+            return int(obj)
+        elif isinstance(obj, numpy.floating):
+            return float(obj)
+        elif isinstance(obj, numpy.ndarray):
+            return obj.tolist()
+        else:
+            return super(MyJsonEncoder, self).default(obj)
 
 
 def checkforknowncsv( data_desc ):
@@ -73,9 +88,14 @@ def readCleanChart( data_desc ):
         districtCode='COMMUNE_CODE'
         df['COMMUNE_CODE']='G'+ df.COMMUNE_CODE.map(str)
     districtCodeList = ["DISTRICT_CODE","SUB_DISTRICT_CODE","LAU_CODE","LAU2_CODE","COMMUNE_CODE"]
+    #fill nan values
+    df.fillna(0,inplace=True)
     data_dict = df.to_dict(orient='records')
     #delete temp file
     os.remove(filename)
+    #check if data is to big
+    if len(df.index) > 20000:
+        raise DataTooBigException("lines: "+str(len(df.index))+" url: "+data_desc["url"])
     requestOBJ = {
             "data" : data_dict,            
             "parameters": {
@@ -85,15 +105,17 @@ def readCleanChart( data_desc ):
             }
     }
     #print(json.dumps(requestOBJ))
-    r = requests.post("http://52.166.116.205:2301/save_data", json=requestOBJ)
-    #with open('request_data.json', 'w') as outfile:
-    #    json.dump(requestOBJ, outfile)
+    #r = requests.post("http://52.166.116.205:2301/save_data", json=requestOBJ)
+    r = requests.post("http://52.166.116.205:2301/save_data", data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json'})
+    with open('request_data.tmp', 'w') as outfile:
+        json.dump(requestOBJ, outfile, cls=MyJsonEncoder)
     resp = r.json()
     #print(resp)
     #got a data id 
     try:
         print(resp['data']['_id'])
     except Exception as e:
+        print(resp)
         raise CouldntSaveDataException(data_desc["url"])
     #create random visual   
     numeric_columnlist = list(df._get_numeric_data().columns)

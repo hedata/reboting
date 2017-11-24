@@ -84,7 +84,9 @@ module.exports.createVisualRecursive = function createVisualRecursive (context,n
         console.log("done creating visuals");
       }
     } else {
-      console.log(new Date()+" on request to create visual on 23 degree"+error);
+      console.log(new Date()+" on request to create visual on 23 degree Error: "+error);
+      console.log(new Date()+" Body: : ");
+      console.log(body);
       if(created === 0) {
         context.responseObj ={
           status: "error"
@@ -162,12 +164,12 @@ generateBarChartQueryObject = function (datasource, valueField,entityField) {
       "frequency": "Probably no Data Update",
       "license": "OpenData",
       "citation": "INSERT CITATION IF AVAILABLE",
-      "isoField": "null",
+      "isoField": null,
       "entityField": entityField,
       "timeField": datasource.timeField,
-      "time_inputFormat": "YYYY",
       "timeDimension": datasource.timeDimension,
       "timeUnit": "year",
+      "time_inputFormat": "YYYY",
       "valueField": valueField,
       "unit": "Value:",
       "colors": getRandomColorMap(),
