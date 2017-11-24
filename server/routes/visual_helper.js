@@ -84,11 +84,14 @@ module.exports.createVisualRecursive = function createVisualRecursive (context,n
         console.log("done creating visuals");
       }
     } else {
-      context.responseObj ={
-        status: "error"
-      };
-      returnDataLogResponse(context);
       console.log(new Date()+" on request to create visual on 23 degree"+error);
+      if(created === 0) {
+        context.responseObj ={
+          status: "error"
+        };
+        returnDataLogResponse(context);
+      }
+
     }
   });
 };
@@ -125,6 +128,7 @@ generateMapQueryObject = function(datasource, valueField,entityField,districtCod
       "timeField": datasource.timeField,
       "timeDimension": datasource.timeDimension,
       "timeUnit": "year",
+      "time_inputFormat": "YYYY",
       "valueField": valueField,
       "unit": "Value:",
       "colors":  getRandomColorMap(),
@@ -161,6 +165,7 @@ generateBarChartQueryObject = function (datasource, valueField,entityField) {
       "isoField": "null",
       "entityField": entityField,
       "timeField": datasource.timeField,
+      "time_inputFormat": "YYYY",
       "timeDimension": datasource.timeDimension,
       "timeUnit": "year",
       "valueField": valueField,

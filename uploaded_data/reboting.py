@@ -58,8 +58,10 @@ def readCleanChart( data_desc ):
     districtCode =""
     if 'DISTRICT_CODE' in df.columns:
         districtCode="DISTRICT_CODE"
+        df['DISTRICT_CODE']='G'+ df.DISTRICT_CODE.map(str)
     if 'SUB_DISTRICT_CODE' in df.columns:
         districtCode='SUB_DISTRICT_CODE'
+        df['SUB_DISTRICT_CODE']='G'+ df.SUB_DISTRICT_CODE.map(str)
     #Lau codes have to be 5 digits and a G in front
     if 'LAU_CODE' in df.columns:
         districtCode='LAU_CODE'
@@ -87,7 +89,7 @@ def readCleanChart( data_desc ):
     #with open('request_data.json', 'w') as outfile:
     #    json.dump(requestOBJ, outfile)
     resp = r.json()
-    print(resp)
+    #print(resp)
     #got a data id 
     try:
         print(resp['data']['_id'])
