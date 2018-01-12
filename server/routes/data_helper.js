@@ -105,9 +105,11 @@ module.exports.createNewDataSource = function(context) {
         };
         returnDataLogResponse(context);
         //remove this crappy datasource
+        /*
         DataSources.remove({ _id: newDataSource._id }, function (err) {
           console.log(new Date()+" removed crappy datasource id: "+newDataSource._id );
         });
+        */
 
       }
 

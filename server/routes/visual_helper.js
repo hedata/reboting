@@ -132,7 +132,7 @@ generateMapQueryObject = function(datasource, valueField,entityField,districtCod
       "timeUnit": "year",
       "time_inputFormat": "YYYY",
       "valueField": valueField,
-      "unit": "Value:",
+      "unit": valueField+" : ",
       "colors":  getRandomColorMap(),
       "legendtitles": ["low", "med-low", "med", "med-high", "high"],
       "tooltip": getToolTips(datasource),
@@ -171,7 +171,7 @@ generateBarChartQueryObject = function (datasource, valueField,entityField) {
       "timeUnit": "year",
       "time_inputFormat": "YYYY",
       "valueField": valueField,
-      "unit": "Value:",
+      "unit": valueField+" : ",
       "colors": getRandomColorMap(),
       "legendtitles": ["low", "med-low", "med", "med-high", "high"],
       "tooltip": getToolTips(datasource),
@@ -199,9 +199,6 @@ getRandomColorMap = function () {
 
 getToolTips = function(datasource) {
   let ret = [];
-  datasource.columnlist.forEach(function(entry) {
-    ret.push({"label": entry, "field": "data:"+entry })
-  });
   datasource.columnlist.forEach(function(entry) {
     ret.push({"label": entry, "field": "data:"+entry })
   });

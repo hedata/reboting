@@ -118,7 +118,7 @@ externalCalls = function(context) {
           }
         });
         console.log("searching for: "+requesturi+"&limit=150");
-        request(requesturi+"&limit=150", function (error, response, body) {
+        request(requesturi+"&limit=20", function (error, response, body) {
           if(error) {
             console.log(new Date()+" Error on Request OpenData Search "+error);
             callback(null,"returning from search opendata error");

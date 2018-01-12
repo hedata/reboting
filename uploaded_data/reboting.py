@@ -70,28 +70,21 @@ def readCleanChart( data_desc ):
     df.columns=df.columns.str.replace(':','')
     df.columns=df.columns.str.replace('"','')
     df.columns=df.columns.str.replace(' ','')
-    districtCode =""
-    if 'DISTRICT_CODE' in df.columns:
-        districtCode="DISTRICT_CODE"
-        df['DISTRICT_CODE']='G'+ df.DISTRICT_CODE.map(str)
-    if 'SUB_DISTRICT_CODE' in df.columns:
-        districtCode='SUB_DISTRICT_CODE'
-        df['SUB_DISTRICT_CODE']='G'+ df.SUB_DISTRICT_CODE.map(str)
-    #Lau codes have to be 5 digits and a G in front
-    if 'LAU_CODE' in df.columns:
-        districtCode='LAU_CODE'
-        df['LAU_CODE']='G'+ df.LAU_CODE.map(str)
-    if 'LAU2_CODE' in df.columns:
-        districtCode='LAU2_CODE'
-        df['LAU2_CODE']='G'+ df.LAU2_CODE.map(str)
-    if 'COMMUNE_CODE' in df.columns:
-        districtCode='COMMUNE_CODE'
-        df['COMMUNE_CODE']='G'+ df.COMMUNE_CODE.map(str)
-    #is our district code really a district code easy test is it different or only one?
-    if districtCode!="":
-        if df[districtCode].nunique() <= 2:
-            districtCode=""
-    districtCodeList = ["DISTRICT_CODE","SUB_DISTRICT_CODE","LAU_CODE","LAU2_CODE","COMMUNE_CODE"]
+    districtCode =""   
+    districtCodeList = ["LAU_CODE","LAU2_CODE","DISTRICT_CODE","SUB_DISTRICT_CODE","COMMUNE_CODE"]
+    for potentialDistrictcode in districtCodeList:
+        if potentialDistrictcode in df.columns  and districtCode=="":
+            #check if this is a vienna district code and then add +1 to the value 
+            #very rudimentary test - from 90100 to 92300
+            df[potentialDistrictcode] = df.apply(
+                lambda row: row[potentialDistrictcode]+1 if row[potentialDistrictcode]>=90100 and row[potentialDistrictcode]<=92300 else row[potentialDistrictcode],
+                axis=1
+            )
+            df[potentialDistrictcode]='G'+ df[potentialDistrictcode].map(str)
+            #is our district code really a district code easy test is it different or only one?
+            if df[potentialDistrictcode].nunique() > 2:
+                districtCode=potentialDistrictcode
+                print(df[potentialDistrictcode][0])
     #fill nan values
     df.fillna(0,inplace=True)
     data_dict = df.to_dict(orient='records')
@@ -111,14 +104,15 @@ def readCleanChart( data_desc ):
     #print(json.dumps(requestOBJ))
     #r = requests.post("http://52.166.116.205:2301/save_data", json=requestOBJ)
     r = requests.post("http://52.166.116.205:2301/save_data", data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json'})
-    with open('request_data.tmp', 'w') as outfile:
-        json.dump(requestOBJ, outfile, cls=MyJsonEncoder)
+    #with open('request_data.tmp', 'w') as outfile:
+    #    json.dump(requestOBJ, outfile, cls=MyJsonEncoder)
     resp = r.json()
     #print(resp)
     #got a data id 
     try:
         print(resp['data']['_id'])
     except Exception as e:
+        print('error while saving data:')
         print(resp)
         raise CouldntSaveDataException(data_desc["url"])
     #create random visual   
@@ -139,7 +133,25 @@ def readCleanChart( data_desc ):
     for item in string_columnlist:
         if df[item].nunique() > 1:
             final_string_columnlist.append(item)
+    #what if final string columnlist isnull?
+    if len(final_string_columnlist)==0:
+        #if we have an isofield add it
+        if(districtCode!=""):
+            final_string_columnlist.append(districtCode)
+        else:
+            final_string_columnlist.append(numeric_columnlist[0])
+    #in fact we only want the string column that has the most chars - it probably is the one having the field
+    curlength = 0
+    curstrfield = ""
+    for item in final_string_columnlist:
+        length = df[item].str.len().sum()
+        if curlength<length:
+            curlength=length
+            curstrfield=item
+    final_string_columnlist = []
+    final_string_columnlist.append(curstrfield)
     #prepare request object
+    print('creating data object with isoField: '+districtCode)
     external_data_id = resp['data']['_id']
     requestOBJ = {
         "type" : "createdatasource",
@@ -198,17 +210,25 @@ def readandcleancsv( url ):
         #Todo detect dates and get them in a fixed format
         #Todo get Numeric Values and get them in a fixed format  
         #empty string
-        for index, entry in enumerate(reader):
-            #test for header in first 2 lines
-            if( (index==0 or index==1) and len(header) == 0):
-                empties = 0;
-                for i in entry:
-                    if(i==""):
+        headerindex = 0
+        curempties = 1000000000000
+        tmprows =[];
+        for i,entry in enumerate(reader):
+            empties = 0
+            if i<=1:
+                for z in entry:
+                    if(z==""):
                         empties+=1
-                if(empties <= 1):
-                    #print("using header at index: "+str(index))
-                    header=entry
-            else:
+                if(empties<curempties):
+                    curempties = empties
+                    headerindex=i
+            tmprows.append(entry)
+        print("using header at index: "+str(headerindex))
+        for index, entry in enumerate(tmprows):
+            #print(str(index)+" working on it")
+            if index==headerindex:
+                header=entry
+            if index>headerindex:
                 rows.append(entry)
     #amount of rows
     #print(len(rows))

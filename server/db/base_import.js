@@ -16,7 +16,7 @@ insertIt = function(code,actionname,params) {
       console.log(error)
     } else {
       console.log("insert/update successfull");
-      console.log(obj);
+      //console.log(obj);
     }
   });
 };
@@ -24,7 +24,7 @@ insertIt = function(code,actionname,params) {
 
 console.log("Importing Scripts ");
 
-var code = `import plotly;
+let code = `import plotly;
 plotly.offline.init_notebook_mode();
 import plotly.graph_objs as go;
 import pandas as pd;
@@ -40,8 +40,8 @@ data = [trace0, trace1];
 layout = dict(title = title, xaxis = dict(title = 'Days'), yaxis = dict(title = 'absolut'),);
 fig = dict(data = data, layout = layout);
 plotly.offline.iplot(fig);`;
-var intentname = 'fb_likes_and_people_per_day';
-var params = [{
+let intentname = 'fb_likes_and_people_per_day';
+let params = [{
   name: 'title',
   value: '(Dis)Likes and People per Day',
   type: 'string'
