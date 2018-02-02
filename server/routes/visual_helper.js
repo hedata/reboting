@@ -22,6 +22,8 @@ module.exports.createVisualRecursive = function createVisualRecursive (context,n
     queryObj = generateBarChartQueryObject(newDataSource,current.numericColumn,current.stringColumn);
   }
   console.log(new Date()+ " querying server to create visual");
+  //let fs = require('fs');
+  //fs.writeFile('uploaded_data/visual_request.tmp', JSON.stringify(queryObj), 'utf8', null);
   request({
     url: "http://52.166.116.205:2301/create_visual",
     method: "POST",
@@ -136,7 +138,19 @@ generateMapQueryObject = function(datasource, valueField,entityField,districtCod
       "colors":  getRandomColorMap(),
       "legendtitles": ["low", "med-low", "med", "med-high", "high"],
       "tooltip": getToolTips(datasource),
-      "theme": "light"
+      "theme": "light",
+      "map_element": {
+        "maxBounds" : [
+          [
+            7.21,
+            45.14
+          ],
+          [
+            19.91,
+            50.28
+          ]
+        ]
+      }
     },
     "parameters": {
       "source": "manual",
