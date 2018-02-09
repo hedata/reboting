@@ -25,7 +25,7 @@ module.exports.createVisualRecursive = function createVisualRecursive (context,n
   //let fs = require('fs');
   //fs.writeFile('uploaded_data/visual_request.tmp', JSON.stringify(queryObj), 'utf8', null);
   request({
-    url: "http://52.166.116.205:2301/create_visual",
+    url: "http://52.166.67.106:2301/create_visual",
     method: "POST",
     json: true,
     body: queryObj

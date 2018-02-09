@@ -103,7 +103,7 @@ def readCleanChart( data_desc ):
     }
     #print(json.dumps(requestOBJ))
     #r = requests.post("http://52.166.116.205:2301/save_data", json=requestOBJ)
-    r = requests.post("http://52.166.116.205:2301/save_data", data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json'})
+    r = requests.post("http://52.166.67.106:2301/save_data", data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json'})
     #with open('request_data.tmp', 'w') as outfile:
     #    json.dump(requestOBJ, outfile, cls=MyJsonEncoder)
     resp = r.json()
