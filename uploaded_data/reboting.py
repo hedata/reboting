@@ -94,7 +94,10 @@ def readCleanChart( data_desc ):
     if len(df.index) > 20000:
         raise DataTooBigException("lines: "+str(len(df.index))+" url: "+data_desc["url"])
     requestOBJ = {
-            "data" : data_dict,            
+            "data" : data_dict,  
+            "meta": {        
+               "id": data_desc["url"]
+            },
             "parameters": {
                 "source": "manual",
                 "provider": "reboting",
