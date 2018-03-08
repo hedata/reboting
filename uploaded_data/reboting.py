@@ -19,7 +19,8 @@ class CouldntCreateVisualException(Exception):
     pass
 class DataTooBigException(Exception):
     pass
-
+class NoVisualsPossible(Exception):
+    pass
 #custom request encoder for json serialization when sending data
 class MyJsonEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -48,10 +49,13 @@ def checkforknowncsv( data_desc ):
     r = requests.post("http://reboting:3000/rb/actions", json=requestOBJ)
     resp = r.json()
     if resp["exists"]:
-        visual = resp["slug"]
-        return visual
+        try: 
+            visual = resp["slug"]
+            return visual
+        except Exception as e:
+            raise NoVisualsPossible(data_desc["url"])
     else:
-        print("it doesntexists")
+        #print("it doesntexists")
         slug = readCleanChart( data_desc )  
         return slug;
     
@@ -63,7 +67,7 @@ def readCleanChart( data_desc ):
     print("filename: "+filename)
     #get column and row descriptions
     df = pd.read_csv(filename,sep=';', thousands='.', decimal=',')
-    print("df loaded")
+    #print("df loaded")
     #santize column headers
     df.columns=df.columns.str.replace('#','')
     df.columns=df.columns.str.replace('.','')
@@ -76,15 +80,18 @@ def readCleanChart( data_desc ):
         if potentialDistrictcode in df.columns  and districtCode=="":
             #check if this is a vienna district code and then add +1 to the value 
             #very rudimentary test - from 90100 to 92300
-            df[potentialDistrictcode] = df.apply(
-                lambda row: row[potentialDistrictcode]+1 if row[potentialDistrictcode]>=90100 and row[potentialDistrictcode]<=92300 else row[potentialDistrictcode],
-                axis=1
-            )
-            df[potentialDistrictcode]='G'+ df[potentialDistrictcode].map(str)
-            #is our district code really a district code easy test is it different or only one?
-            if df[potentialDistrictcode].nunique() > 2:
-                districtCode=potentialDistrictcode
-                print(df[potentialDistrictcode][0])
+            try:
+                df[potentialDistrictcode] = df.apply(
+                    lambda row: row[potentialDistrictcode]+1 if row[potentialDistrictcode]>=90100 and row[potentialDistrictcode]<=92300 else row[potentialDistrictcode],
+                    axis=1
+                )
+                df[potentialDistrictcode]='G'+ df[potentialDistrictcode].map(str)
+                #is our district code really a district code easy test is it different or only one?
+                if df[potentialDistrictcode].nunique() > 2:
+                    districtCode=potentialDistrictcode
+                    print(df[potentialDistrictcode][0])
+            except Exception as e:
+                u=1           
     #fill nan values
     df.fillna(0,inplace=True)
     data_dict = df.to_dict(orient='records')
@@ -103,21 +110,7 @@ def readCleanChart( data_desc ):
                 "provider": "reboting",
                 "layer": "choropleth"
             }
-    }
-    #print(json.dumps(requestOBJ))
-    #r = requests.post("http://52.166.116.205:2301/save_data", json=requestOBJ)
-    r = requests.post("http://52.166.67.106:2301/save_data", data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json'})
-    #with open('request_data.tmp', 'w') as outfile:
-    #    json.dump(requestOBJ, outfile, cls=MyJsonEncoder)
-    resp = r.json()
-    #print(resp)
-    #got a data id 
-    try:
-        print(resp['data']['_id'])
-    except Exception as e:
-        print('error while saving data:')
-        print(resp)
-        raise CouldntSaveDataException(data_desc["url"])
+    }    
     #create random visual   
     numeric_columnlist = list(df._get_numeric_data().columns)
     string_columnlist=[item for item in list(df.columns) if item not in numeric_columnlist and item!='' and item not in districtCodeList and item!='YEAR' and item!='REF_YEAR']  
@@ -131,6 +124,8 @@ def readCleanChart( data_desc ):
         timeDimension = True
         timeField="YEAR"
     numeric_columnlist=[item for item in numeric_columnlist if item!='' and item not in districtCodeList and item!='YEAR' and item!='REF_YEAR']
+    if len(numeric_columnlist)==0:
+        raise NoVisualsPossible(data_desc["url"])
     #ok lets do some quality checks here - we only keep string columns that have a little varience in attributes
     final_string_columnlist=[]
     for item in string_columnlist:
@@ -141,8 +136,8 @@ def readCleanChart( data_desc ):
         #if we have an isofield add it
         if(districtCode!=""):
             final_string_columnlist.append(districtCode)
-        else:
-            final_string_columnlist.append(numeric_columnlist[0])
+    if len(final_string_columnlist)==0:
+        raise NoVisualsPossible(data_desc["url"])
     #in fact we only want the string column that has the most chars - it probably is the one having the field
     curlength = 0
     curstrfield = ""
@@ -154,7 +149,21 @@ def readCleanChart( data_desc ):
     final_string_columnlist = []
     final_string_columnlist.append(curstrfield)
     #prepare request object
-    print('creating data object with isoField: '+districtCode)
+    #print('creating data object with isoField: '+districtCode)
+    #print(json.dumps(requestOBJ))
+    #r = requests.post("http://52.166.116.205:2301/save_data", json=requestOBJ)
+    r = requests.post("http://52.166.67.106:2301/save_data", data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json'})
+    #with open('request_data.tmp', 'w') as outfile:
+    #    json.dump(requestOBJ, outfile, cls=MyJsonEncoder)
+    resp = r.json()
+    #print(resp)
+    #got a data id 
+    try:
+        print(resp['data']['_id'])
+    except Exception as e:
+        #print('error while saving data:')
+        #print(resp)
+        raise CouldntSaveDataException(data_desc["url"])
     external_data_id = resp['data']['_id']
     requestOBJ = {
         "type" : "createdatasource",
@@ -182,12 +191,12 @@ def readCleanChart( data_desc ):
         print(resp["slug"])
         return resp["slug"]
     else:
-        print("error while saving datasource")
+        #print("error while saving datasource")
         raise CouldntCreateVisualException("on the reboting server something happened")
 
 #standard csv reading and cleaning
 def readandcleancsv( url ):
-    print("downloading file")
+    #print("downloading file")
     try: 
         r = requests.get(url)
     except Exception:
@@ -216,17 +225,21 @@ def readandcleancsv( url ):
         headerindex = 0
         curempties = 1000000000000
         tmprows =[];
-        for i,entry in enumerate(reader):
-            empties = 0
-            if i<=1:
-                for z in entry:
-                    if(z==""):
-                        empties+=1
-                if(empties<curempties):
-                    curempties = empties
-                    headerindex=i
-            tmprows.append(entry)
-        print("using header at index: "+str(headerindex))
+        try:
+            for i,entry in enumerate(reader):
+                empties = 0
+                if i<=1:
+                    for z in entry:
+                        if(z==""):
+                            empties+=1
+                    if(empties<curempties):
+                        curempties = empties
+                        headerindex=i
+                tmprows.append(entry)
+        except Exception as e:
+            #print("exception"+e)
+            raise CsvDownloadAndParsingException("for file from url: "+url)        
+        #print("using header at index: "+str(headerindex))
         for index, entry in enumerate(tmprows):
             #print(str(index)+" working on it")
             if index==headerindex:

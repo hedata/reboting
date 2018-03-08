@@ -372,7 +372,7 @@ findRandomData = function(context,callback,requesturi,offset) {
         description= selecteditem.dataset.dataset_description.replace(/(\r\n|\n|\r)/gm, '' );
       }
       let portal = "No Portal available";
-      if(selecteditem.port) {
+      if(selecteditem.portal) {
         portal = selecteditem.portal.replace(/(\r\n|\n|\r)/gm, '' );
       }
       let publisher = "no publisher available";
