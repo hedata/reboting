@@ -377,7 +377,7 @@ try:
     #and can plot with x and y
     df.insert(0, 'x', df[numeric_columns[0]] )
     df.insert(0, 'y', df[numeric_columns[1]] )
-    
+
     source = ColumnDataSource(data=df)
     #x and y are probably copied over which sucks and is a huge BUG!!
     if len(numeric_columns)>1:
@@ -386,7 +386,7 @@ try:
                 data['x'] = data[cb_obj.value]
                 source.trigger('change');
             """
-        
+
         codey="""
                 var data = source.data;
                 data['y'] = data[cb_obj.value]
@@ -396,7 +396,7 @@ try:
         callbackx = CustomJS(args=dict(source=source), code=codex)
         callbacky = CustomJS(args=dict(source=source), code=codey)
 
-        # create a new plot 
+        # create a new plot
         plot = Figure()
 
         # Make a line and connect to data source
@@ -417,7 +417,7 @@ try:
 
 
 
-        # Layout widgets next to the plot                     
+        # Layout widgets next to the plot
         controls = column(xaxis_select,yaxis_select)
         layout = column(
             controls,
@@ -425,7 +425,7 @@ try:
             sizing_mode = 'scale_width'
         )
         show(layout)
-    else: 
+    else:
         print("sorry not enough columns to make a scatterplot")
 except Exception:
     print("ups no csv file found under the url you provided")
@@ -473,7 +473,7 @@ df.columns=df.columns.str.replace('"','')
 df.columns=df.columns.str.replace(' ','')
 pd.options.display.float_format = '{:,.2f}'.format
 display(HTML('<h1>First Lines of the Dataset</h1>'))
-display(df.head())   
+display(df.head())
 display(HTML('<h1>Some Indicators</h1>'))
 display(df.describe(include='all'))
 #except Exception:
@@ -502,6 +502,10 @@ from reboting import CsvDownloadAndParsingException
 from reboting import CouldNotDownloadFileException
 from reboting import CouldntCreateVisualException
 from reboting import DataTooBigException
+from reboting import NoVisualsPossible
+import requests
+import pandas as pd
+import time
 iframe='<div></div>'
 if url == 'NOTDEFINED':
     print("Wu Dataservice not reachable atm - Sorry")
@@ -518,7 +522,7 @@ else:
     }
     try:
         slug = reboting.checkforknowncsv(data_desc = data_desc)
-        url = 'https://doh.23degrees.io/viz/'+slug
+        url = 'https://doh.23degrees.io/embed/'+slug
         iframe= '<iframe src="' + url + '" allowfullscreen frameborder="0" ></iframe>'
     except CouldntSaveDataException as e:
         print("ERROR: couldnt save data on 23 degree server")
@@ -530,6 +534,8 @@ else:
         print("ERROR: couldnt create visual")
     except DataTooBigException as e:
         print("ERROR: too many lines: "+str(e))
+    except NoVisualsPossible as e:
+        print("ERROR: no visual possible: "+str(e))
     print(url)
 IPython.display.HTML(iframe)
 `;
@@ -573,7 +579,3 @@ intentname="like";
 insertIt(code,intentname,params);
 intentname="visualize";
 insertIt(code,intentname,params);
-
-
-
-

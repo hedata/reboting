@@ -48,6 +48,12 @@ module.exports.queryDataExists = function(context) {
   });
 };
 
+
+/*
+  Creates DataSources
+   - adds Visuals to datasources via slug
+   - adds Current Visual to user object
+*/
 module.exports.createNewDataSource = function(context) {
   let dataSource = new DataSources(context.createdatasource);
   dataSource.save(function(err,newDataSource) {
@@ -60,6 +66,28 @@ module.exports.createNewDataSource = function(context) {
     }
     else
     {
+      let slug = newDataSource.visuals[0];
+      context.responseObj ={
+        status: "ok",
+        id: newDataSource._id,
+        slug: slug
+      };
+      //save visual as current for the user, create user if he doenst exist yet
+      let userid = context.botparams.session_id;
+      Users.findOneAndUpdate({user_id: userid}, // find a document with that filter
+        {  user_id : userid,
+          current_data_id : newDataSource.data_id,
+          current_slug : slug}, // document to insert when nothing was found
+        {upsert: true, new: true}, // options
+        function (err) { // callback
+          if (err) {
+            console.log(new Date()+": Error on User Save "+err);
+          }
+        }
+      );
+      returnDataLogResponse(context);
+
+      /*
       //create all possible visuals and return slug of first created
       //keep creating visuals afterwards
       let created = 0;
@@ -105,13 +133,14 @@ module.exports.createNewDataSource = function(context) {
         };
         returnDataLogResponse(context);
         //remove this crappy datasource
-        /*
-        DataSources.remove({ _id: newDataSource._id }, function (err) {
-          console.log(new Date()+" removed crappy datasource id: "+newDataSource._id );
-        });
-        */
+
+        //DataSources.remove({ _id: newDataSource._id }, function (err) {
+        //  console.log(new Date()+" removed crappy datasource id: "+newDataSource._id );
+        //});
+
 
       }
+      */
 
     }
   });

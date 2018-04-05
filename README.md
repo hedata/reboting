@@ -13,7 +13,7 @@ Playing around with Bots .-)
 # Update Packages
 npm install -g npm-check-updates
 npm-check-updates -u
-npm install 
+npm install
 
 # Updates
 docker-compose down
@@ -24,8 +24,14 @@ docker-compose up -d --build
 db.externalvisuals.remove({})
 db.usersearchresults.remove({})
 db.datasources.remove({})
+db.logs.remove({})
+db.ratings.remove({})
+db.usersearchresults.remove({})
+db.users.remove({})
 
 # Other stuff
+## what is listening on my local machine
+netstat -ntlp | grep LISTEN
+
 ## fix inotify shit
 echo fs.inotify.max_user_watches=582222 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
-

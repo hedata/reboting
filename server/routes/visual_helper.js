@@ -218,4 +218,3 @@ getToolTips = function(datasource) {
   });
   return ret;
 };
-

@@ -64,7 +64,7 @@ def readCleanChart( data_desc ):
     filename = readandcleancsv( data_desc["url"] )
     #except NoDialectFoundEception as e:
     #    raise e
-    print("filename: "+filename)
+    #print("filename: "+filename)
     #get column and row descriptions
     df = pd.read_csv(filename,sep=';', thousands='.', decimal=',')
     #print("df loaded")
@@ -89,7 +89,7 @@ def readCleanChart( data_desc ):
                 #is our district code really a district code easy test is it different or only one?
                 if df[potentialDistrictcode].nunique() > 2:
                     districtCode=potentialDistrictcode
-                    print(df[potentialDistrictcode][0])
+                    #print(df[potentialDistrictcode][0])
             except Exception as e:
                 u=1           
     #fill nan values
@@ -106,9 +106,7 @@ def readCleanChart( data_desc ):
                "id": data_desc["url"]
             },
             "parameters": {
-                "source": "manual",
-                "provider": "reboting",
-                "layer": "choropleth"
+                "user" : "erich-heil"
             }
     }    
     #create random visual   
@@ -152,26 +150,92 @@ def readCleanChart( data_desc ):
     #print('creating data object with isoField: '+districtCode)
     #print(json.dumps(requestOBJ))
     #r = requests.post("http://52.166.116.205:2301/save_data", json=requestOBJ)
-    r = requests.post("http://52.166.67.106:2301/save_data", data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json'})
+    r = requests.post("https://doh.23degrees.io/services/mdc/api/v1/saveData",timeout=None, data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json', 'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YWJlMWVmZTEwMDJjNTAwMWFjZWU5MTYiLCJlbWFpbCI6ImVyaWNoaGVpbEBnbWFpbC5jb20iLCJzbHVnIjoiZXJpY2gtaGVpbCIsImV4cCI6MTU1MzkzMjA5NywiaWF0IjoxNTIyODI4MDk3fQ.Hg6uXiWrQpZ30Wk5WRPS612ChDUb_rVhrwv_J3VzSSQ'})
     #with open('request_data.tmp', 'w') as outfile:
     #    json.dump(requestOBJ, outfile, cls=MyJsonEncoder)
     resp = r.json()
     #print(resp)
     #got a data id 
     try:
-        print(resp['data']['_id'])
+        cz=resp['data']['_id']
     except Exception as e:
         #print('error while saving data:')
         #print(resp)
         raise CouldntSaveDataException(data_desc["url"])
     external_data_id = resp['data']['_id']
+    #create visuals on 23degrees server    
+    tooltips = [];
+    for entry in list(df.columns):
+        tooltips.append({"label": entry, "field": "data:"+entry })  
+    #print(tooltips)
+    requestOBJ = {
+        "meta": {
+            "isPublic" : True,
+            "name": data_desc['name'],
+            "id": data_desc['url'],
+            "sourceOrganization": data_desc['publisher'],
+            "source": data_desc['publisher'],
+            "description": data_desc['description'],
+            "publisher_name": data_desc['publisher'],
+            "publisher_homepage": data_desc['portal'],
+            "publisher_contact": "erichheil@gmail.com",
+            "publisher_tags": ["reboting","erich heil"],
+            "accessUrl": "/api/data/",
+            "accessFormat": "json",
+            "frequency": "Probably no Data Update",
+            "license": "Open Data",
+            "citation": "INSERT CITATION IF AVAILABLE",
+            "isoField": None,
+            "entityField": curstrfield,
+            "timeField": timeField,
+            "timeDimension": timeDimension,
+            "time_inputFormat": "YYYY",
+            "timeUnit": "year",
+            "valueField": numeric_columnlist,
+            "unit": "Anzahl",
+            "colors": None,
+            "tooltip": tooltips,
+            "map_element": {
+            "viewport": {
+                "desktop": {
+                    "center": [
+                        13.99,
+                        47.88
+                    ],
+                    "zoom": 7
+                },
+                "mobile": {
+                    "center": [
+                        13.99,
+                        47.88
+                    ],
+                    "zoom": 5
+                }
+            }
+            }
+        },       
+        "parameters": {
+            "user": "erich-heil",
+            "dataId": external_data_id
+        }
+    }
+    #TODO add special tooltips
+    #set iso field if it is not null
+    #print("using time: ")
+    #print(timeDimension)
+    if(districtCode!=""):
+        requestOBJ["meta"]["isoField"] = districtCode  
+    #print(requestOBJ)
+    r = requests.post("https://doh.23degrees.io/services/mdc/api/v1/json_import", timeout=None, data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json', 'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YWJlMWVmZTEwMDJjNTAwMWFjZWU5MTYiLCJlbWFpbCI6ImVyaWNoaGVpbEBnbWFpbC5jb20iLCJzbHVnIjoiZXJpY2gtaGVpbCIsImV4cCI6MTU1MzkzMjA5NywiaWF0IjoxNTIyODI4MDk3fQ.Hg6uXiWrQpZ30Wk5WRPS612ChDUb_rVhrwv_J3VzSSQ'})
+    #print(r.json()); 
+    resp = r.json()      
     requestOBJ = {
         "type" : "createdatasource",
         "userid": data_desc["user_id"],
         "payload" : {
             "url" : data_desc["url"],
             "user_id" : data_desc["user_id"],
-            "data_id" : resp['data']['_id'],
+            "data_id" : external_data_id,
             "timeDimension" : timeDimension,
             "timeField" : timeField,
             "columnlist" : list(df.columns),
@@ -182,11 +246,15 @@ def readCleanChart( data_desc ):
             "visuals" : []
         }
     }
+    if(resp["status"]=="OK"):
+        requestOBJ["payload"]["visuals"] = resp["data"]["ContentItem_vizzes"]["slug"]
+    else: 
+        raise CouldntCreateVisualException("on 23degree server something happend: "+resp["message"])
     #Chart Slug is here !
     r = requests.post("http://reboting:3000/rb/actions", json=requestOBJ)
     resp = r.json()
     if resp["status"] == "ok":
-        print(resp["id"])
+        #print(resp["id"])
         #slug
         print(resp["slug"])
         return resp["slug"]
