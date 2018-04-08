@@ -28,6 +28,8 @@ services:
      - "8888:8888"
     volumes:
      - ./uploaded_data:/home/jovyan
+    environment:
+     - AUTH_TOKEN=secret
     command: start.sh jupyter lab --NotebookApp.token='' --NotebookApp.allow_origin="*" --NotebookApp.disable_check_xsrf=True
     links:
      - reboting

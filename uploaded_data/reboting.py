@@ -8,7 +8,6 @@ import csv
 import re
 import chardet
 import numpy
-
 class CouldNotDownloadFileException(Exception):
     pass
 class CsvDownloadAndParsingException(Exception):
@@ -62,6 +61,9 @@ def checkforknowncsv( data_desc ):
 def readCleanChart( data_desc ):
     filename=""
     filename = readandcleancsv( data_desc["url"] )
+    #auth token
+    #print(os.environ['AUTH_TOKEN'])
+    AUTH_TOKEN = os.environ['AUTH_TOKEN']
     #except NoDialectFoundEception as e:
     #    raise e
     #print("filename: "+filename)
@@ -150,7 +152,7 @@ def readCleanChart( data_desc ):
     #print('creating data object with isoField: '+districtCode)
     #print(json.dumps(requestOBJ))
     #r = requests.post("http://52.166.116.205:2301/save_data", json=requestOBJ)
-    r = requests.post("https://doh.23degrees.io/services/mdc/api/v1/saveData",timeout=None, data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json', 'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YWJlMWVmZTEwMDJjNTAwMWFjZWU5MTYiLCJlbWFpbCI6ImVyaWNoaGVpbEBnbWFpbC5jb20iLCJzbHVnIjoiZXJpY2gtaGVpbCIsImV4cCI6MTU1MzkzMjA5NywiaWF0IjoxNTIyODI4MDk3fQ.Hg6uXiWrQpZ30Wk5WRPS612ChDUb_rVhrwv_J3VzSSQ'})
+    r = requests.post("https://doh.23degrees.io/services/mdc/api/v1/saveData",timeout=None, data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json', 'Authorization' : 'Bearer '+AUTH_TOKEN})
     #with open('request_data.tmp', 'w') as outfile:
     #    json.dump(requestOBJ, outfile, cls=MyJsonEncoder)
     resp = r.json()
@@ -226,7 +228,7 @@ def readCleanChart( data_desc ):
     if(districtCode!=""):
         requestOBJ["meta"]["isoField"] = districtCode  
     #print(requestOBJ)
-    r = requests.post("https://doh.23degrees.io/services/mdc/api/v1/json_import", timeout=None, data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json', 'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YWJlMWVmZTEwMDJjNTAwMWFjZWU5MTYiLCJlbWFpbCI6ImVyaWNoaGVpbEBnbWFpbC5jb20iLCJzbHVnIjoiZXJpY2gtaGVpbCIsImV4cCI6MTU1MzkzMjA5NywiaWF0IjoxNTIyODI4MDk3fQ.Hg6uXiWrQpZ30Wk5WRPS612ChDUb_rVhrwv_J3VzSSQ'})
+    r = requests.post("https://doh.23degrees.io/services/mdc/api/v1/json_import", timeout=None, data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json', 'Authorization' : 'Bearer '+AUTH_TOKEN})
     #print(r.json()); 
     resp = r.json()      
     requestOBJ = {
