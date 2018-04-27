@@ -101,16 +101,7 @@ def readCleanChart( data_desc ):
     os.remove(filename)
     #check if data is to big
     if len(df.index) > 20000:
-        raise DataTooBigException("lines: "+str(len(df.index))+" url: "+data_desc["url"])
-    requestOBJ = {
-            "data" : data_dict,  
-            "meta": {        
-               "id": data_desc["url"]
-            },
-            "parameters": {
-                "user" : "erich-heil"
-            }
-    }    
+        raise DataTooBigException("lines: "+str(len(df.index))+" url: "+data_desc["url"])        
     #create random visual   
     numeric_columnlist = list(df._get_numeric_data().columns)
     string_columnlist=[item for item in list(df.columns) if item not in numeric_columnlist and item!='' and item not in districtCodeList and item!='YEAR' and item!='REF_YEAR']  
@@ -148,29 +139,37 @@ def readCleanChart( data_desc ):
             curstrfield=item
     final_string_columnlist = []
     final_string_columnlist.append(curstrfield)
-    #prepare request object
-    #print('creating data object with isoField: '+districtCode)
-    #print(json.dumps(requestOBJ))
-    #r = requests.post("http://52.166.116.205:2301/save_data", json=requestOBJ)
-    r = requests.post("https://doh.23degrees.io/services/mdc/api/v1/saveData",timeout=None, data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json', 'Authorization' : 'Bearer '+AUTH_TOKEN})
+    # Deprecated since we start direct
+    # Deprecated
+    #requestOBJ = {
+    #        "data" : data_dict,  
+    #        "meta": {        
+    #           "id": data_desc["url"]
+    #        },
+    #        "parameters": {
+    #            "user" : "erich-heil"
+    #        }
+    #}
+    #r = requests.post("https://doh.23degrees.io/services/mdc/api/v1/saveData",timeout=None, data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json', 'Authorization' : 'Bearer '+AUTH_TOKEN})
     #with open('request_data.tmp', 'w') as outfile:
     #    json.dump(requestOBJ, outfile, cls=MyJsonEncoder)
-    resp = r.json()
+    #resp = r.json()
     #print(resp)
     #got a data id 
-    try:
-        cz=resp['data']['_id']
-    except Exception as e:
+    #try:
+    #    cz=resp['data']['_id']
+    #except Exception as e:
         #print('error while saving data:')
         #print(resp)
-        raise CouldntSaveDataException(data_desc["url"])
-    external_data_id = resp['data']['_id']
+    #    raise CouldntSaveDataException(data_desc["url"])
+    #external_data_id = resp['data']['_id']
     #create visuals on 23degrees server    
     tooltips = [];
     for entry in list(df.columns):
         tooltips.append({"label": entry, "field": "data:"+entry })  
     #print(tooltips)
     requestOBJ = {
+        "data" : data_dict,
         "meta": {
             "isPublic" : True,
             "name": data_desc['name'],
@@ -217,8 +216,7 @@ def readCleanChart( data_desc ):
             }
         },       
         "parameters": {
-            "user": "erich-heil",
-            "dataId": external_data_id
+            "user": "erich-heil"
         }
     }
     #TODO add special tooltips
@@ -228,9 +226,20 @@ def readCleanChart( data_desc ):
     if(districtCode!=""):
         requestOBJ["meta"]["isoField"] = districtCode  
     #print(requestOBJ)
-    r = requests.post("https://doh.23degrees.io/services/mdc/api/v1/json_import", timeout=None, data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json', 'Authorization' : 'Bearer '+AUTH_TOKEN})
-    #print(r.json()); 
-    resp = r.json()      
+    r = requests.post("https://doh.23degrees.io/services/mdc/api/v1/json_import", timeout=None, data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json', 'Authorization' : 'Bearer '+AUTH_TOKEN})    
+    #print(r.json());    
+    resp = r.json()          
+    external_data_id =""
+    external_dataset_id =""
+    external_visuals =[]
+    visual_amount = 0
+    if(resp["status"]=="OK"):
+        external_visuals = resp["data"]["ContentItem_vizzes"]["slug"]
+        external_data_id = resp["data"]["DataId"]
+        external_dataset_id = resp["data"]["ContentItem_ds_id"]
+        visual_amount = resp["data"]["number_of_vizzes"]
+    else: 
+        raise CouldntCreateVisualException("on 23degree server something happend: "+resp["message"])
     requestOBJ = {
         "type" : "createdatasource",
         "userid": data_desc["user_id"],
@@ -238,6 +247,7 @@ def readCleanChart( data_desc ):
             "url" : data_desc["url"],
             "user_id" : data_desc["user_id"],
             "data_id" : external_data_id,
+            "dataset_id" : external_dataset_id,
             "timeDimension" : timeDimension,
             "timeField" : timeField,
             "columnlist" : list(df.columns),
@@ -245,13 +255,10 @@ def readCleanChart( data_desc ):
             "numericColumnlist" : numeric_columnlist,
             "stringColumnlist" : final_string_columnlist,
             "dataDesc" : data_desc,
-            "visuals" : []
+            "visuals" : external_visuals,
+            "visual_amount" : visual_amount
         }
     }
-    if(resp["status"]=="OK"):
-        requestOBJ["payload"]["visuals"] = resp["data"]["ContentItem_vizzes"]["slug"]
-    else: 
-        raise CouldntCreateVisualException("on 23degree server something happend: "+resp["message"])
     #Chart Slug is here !
     r = requests.post("http://reboting:3000/rb/actions", json=requestOBJ)
     resp = r.json()

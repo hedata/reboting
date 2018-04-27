@@ -1,4 +1,5 @@
-
+const AUTH_TOKEN = process.env.AUTH_TOKEN || "SUPERSECRET";
+let request = require('request');
 let mongoose = require('mongoose');
 let DataSources = mongoose.model('DataSources');
 let Logs = mongoose.model('Logs');
@@ -11,32 +12,58 @@ let VisualHelper = require('./visual_helper');
 module.exports.queryDataExists = function(context) {
   DataSources.findOne({url: context.checkforknowncsv.url}).exec(function(err,obj){
     if(obj) {
-      let randVisualSlug = obj.visuals[Math.floor(Math.random() * obj.visuals.length)];
-      console.log(new Date()+ " Data exists: "+ context.checkforknowncsv.url+" Random Slug for showing: "+randVisualSlug);
-      context.responseObj = {
-        exists: true,
-        slug: randVisualSlug
-      };
-      returnDataLogResponse(context);
-      //do this as  current visual that user is looking at
-      let userid = context.checkforknowncsv.userid;
-      //save visual as current for the user, create user if he doenst exist yet
-      Users.findOneAndUpdate({user_id: userid}, // find a document with that filter
-        {  user_id : userid,
-          current_data_id : obj.data_id,
-          current_slug : randVisualSlug}, // document to insert when nothing was found
-        {upsert: true, new: true}, // options
-        function (err) { // callback
+      //it may be that the datasource is not up 2 date we should query
+      //23degree here
+      request({
+        url: "https://doh.23degrees.io/services/pub/api/v1/content/dataset/getchildrenslugsbyid/"+obj.dataset_id,
+        method: "GET",
+        json : true,
+        headers: {
+           'Content-Type': 'application/json',
+           'Authorization': 'Bearer '+AUTH_TOKEN
+         }
+      }, function (error, response, body){
+        console.log("got slug children: "+body.length);
+        let randVisualSlug = body[Math.floor(Math.random() * body.length)];
+        console.log(new Date()+ " Data exists: "+ context.checkforknowncsv.url+" Random Slug for showing: "+randVisualSlug);
+        context.responseObj = {
+          exists: true,
+          slug: randVisualSlug
+        };
+        returnDataLogResponse(context);
+        //do this as  current visual that user is looking at
+        let userid = context.checkforknowncsv.userid;
+        //save datasource so we have update
+        DataSources.findOneAndUpdate({_id : obj._id}, {
+          visuals : body,
+          visual_amount : body.length
+        },function (err) { // callback
           if (err) {
-            console.log(new Date()+": Error on User Save "+err);
+            console.log(new Date()+": Error on DataSourceSave "+err);
             // handle error
           } else {
             // handle document
-            console.log(new Date()+": User save ok userid: "+userid);
+            console.log(new Date()+": DataSource save ok userid: "+userid);
           }
-        }
-      );
+        })
+        //save visual as current for the user, create user if he doenst exist yet
+        Users.findOneAndUpdate({user_id: userid}, // find a document with that filter
+          {  user_id : userid,
+            current_data_id : obj.data_id,
+            current_slug : randVisualSlug}, // document to insert when nothing was found
+          {upsert: true, new: true}, // options
+          function (err) { // callback
+            if (err) {
+              console.log(new Date()+": Error on User Save "+err);
+              // handle error
+            } else {
+              // handle document
+              console.log(new Date()+": User save ok userid: "+userid);
+            }
+          }
+        );
 
+      })
     } else {
       console.log(new Date()+ " Data Does Not exist: "+ context.checkforknowncsv.url);
       context.responseObj = {

@@ -57,7 +57,9 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.authService.setDataService(this.dataService);
     this.dataService.setAuthService(this.authService);
-    this.authService.checkAuthStatus();
+    //TODO enable again for facebook login
+    //this.authService.checkAuthStatus();
+    this.authService.localInit();
   }
 
 }

@@ -13,6 +13,7 @@ var dataSourceSchema = mongoose.Schema({
   user_id: String,
   url: String,
   data_id: String,
+  dataset_id :  String,
   timeDimension: String,
   timeField : String,
   isoField : String,
@@ -21,6 +22,7 @@ var dataSourceSchema = mongoose.Schema({
   stringColumnlist : [String],
   dataDesc : {},
   visuals : [String],
+  visual_amount : Number
 },
 {
   timestamps: true

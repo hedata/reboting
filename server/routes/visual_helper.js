@@ -7,8 +7,9 @@ let Users = mongoose.model('Users');
 let Visuals = mongoose.model('Visuals');
 let ExternalVisuals = mongoose.model('ExternalVisuals');
 
-
-
+/*
+  Deprecated
+*/
 
 module.exports.createVisualRecursive = function createVisualRecursive (context,newDataSource,created,toCreateArray){
   let current = toCreateArray[created];

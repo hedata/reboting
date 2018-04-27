@@ -3,12 +3,31 @@
     <div class="middle_center">
       <div>
         <h1 style="color:white;text-align:center">Explore Austria's Open Data visually with a bot!</h1>
+        <h2 style="color:white;text-align:center">Please tell me who you are:</h2>
         <div style="display:flex;justify-content:center;text-align:center">
+           <input
+                class="form-control"
+                style="max-width:300px;height:50px"
+                id="uname"
+                (keyup.enter)="onLocalLoginClicked()"
+                [(ngModel)]="username"
+                placeholder="Funny Rabbit"
+                type="text">
+        </div>
+
+        <div style="display:flex;justify-content:center;text-align:center;padding:10px">
+          <button class="btn btn-lg btn-info" style="margin:auto"
+                  type="button"
+                  (click)="onLocalLoginClicked()">
+            Lets Go
+          </button>
+          <!--
           <button class="btn btn-lg btn-info" style="margin:auto"
                   type="button"
                   (click)="onLoginClicked()">
             <i class="fa fa-facebook fa-fw"></i> Continue with Facebook
           </button>
+          -->
         </div>
       </div>
     </div>

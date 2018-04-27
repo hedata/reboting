@@ -15,6 +15,30 @@ export class AuthService {
   constructor() {
     console.log('in the auth0 constructor');
   }
+
+  //functions for pseudo auth
+  public localInit(): void {
+    this.dataService.emitChange({
+      message: 'notloggedin',
+      data: {}
+    });
+  }
+  public localLogin(userData: any): void {
+    this.userData=userData;
+    this.dataService.emitChange({
+      message: 'login',
+      data: this.userData
+    });
+  }
+  public localLogout(): void {
+    this.dataService.emitChange({
+      message: 'notloggedin',
+      data: {}
+    });
+  }
+
+
+  //functions for facebook login
   public setDataService(dataService: DataService) {
     this.dataService = dataService;
   }

@@ -122,7 +122,8 @@ export class BotComponent implements OnInit {
   }
   onClicLogout() {
     this.configModel.userprofile = false;
-    this.authService.logout();
+    //this.authService.logout();
+    this.authService.localLogout();
   }
   sendCommand(val) {
     if (val.length > 0) {

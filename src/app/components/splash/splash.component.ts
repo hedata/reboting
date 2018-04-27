@@ -11,7 +11,7 @@ import {AuthService} from '../../services/auth.service';
 export class SplashComponent implements OnInit {
   @Input()
   showComponent: String;
-
+  username : String;
   showLogin = false;
   ngOnInit(): void {
     console.log('Init Splash');
@@ -44,5 +44,26 @@ export class SplashComponent implements OnInit {
   }
   onLoginClicked() {
     this.authService.login();
+  }
+  onLocalLoginClicked() {
+    let username:String =""
+    if(this.username) {
+      username = this.username
+    } else {
+      username = "Funny Rabbit"
+    }
+    console.log("logging in with: "+username)
+    let userData={
+      email : "nobody@nobody.com",
+      name : username,
+      id : this.guidGenerator()
+    }
+    this.authService.localLogin(userData);
+  }
+  genS4() {
+    return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+  }
+  guidGenerator() {
+    return (this.genS4()+this.genS4()+this.genS4()+this.genS4()+this.genS4()+this.genS4()+this.genS4()+this.genS4());
   }
 }

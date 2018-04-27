@@ -51,7 +51,11 @@
   <div *ngIf="showchatlog" style="padding-left:6px; padding-right:6px">
     <div *ngFor="let message of botChat" class="list-group-item">
       <div *ngIf="message.you" >
-        <img *ngIf="userData.profile_pic" src="{{userData.profile_pic}}" width="35px" alt="Profile Image"/> {{message?.you}}
+        <!--
+        <img *ngIf="userData.profile_pic" src="{{userData.profile_pic}}" width="35px" alt="Profile Image"/>
+        -->
+        <img src="../../../assets/anime_eye.svg" width="35px" alt="{{userData.name}}"/>
+        {{message?.you}}
       </div>
       <div *ngIf="message.bot_response"><img src="../../../assets/bot_icon.svg" width="35px" alt="Profile Image"/> {{ message?.bot_response?.result?.fulfillment?.speech }}</div>
     </div>
@@ -126,7 +130,8 @@
                    style="margin-left:0px; margin-right:0px;padding:5px;width: 25%"
                    [(ngModel)]="configModel.userprofile"
                    btnCheckbox>
-          <img *ngIf="userData.profile_pic" src="{{userData.profile_pic}}" width="35px" alt="Profile Image"/>
+          <img src="../../../assets/anime_eye.svg" width="35px" alt="{{userData.name}}"/>
+          <!--<img *ngIf="userData.profile_pic" src="{{userData.profile_pic}}" width="35px" alt="Profile Image"/>-->
         </button>
 
         <button class="btn btn-info"

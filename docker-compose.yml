@@ -3,6 +3,8 @@ version: '3'
 services:
   reboting:
     build: .
+    environment:
+     - AUTH_TOKEN=SUPERSECRET
     volumes:
       - .:/usr/src/app/:rw
     links:
@@ -29,7 +31,7 @@ services:
     volumes:
      - ./uploaded_data:/home/jovyan
     environment:
-     - AUTH_TOKEN=secret
+     - AUTH_TOKEN=SUPERSECRET
     command: start.sh jupyter lab --NotebookApp.token='' --NotebookApp.allow_origin="*" --NotebookApp.disable_check_xsrf=True
     links:
      - reboting
