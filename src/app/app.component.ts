@@ -25,6 +25,10 @@ export class AppComponent implements OnInit {
     dataService.changeEmitted$.subscribe(
       data => {
         switch (data.message) {
+          case 'embed' :
+            console.log("APP COMPONENT GOT EMBED");
+            this.showComponent = 'embed';
+            break;
           case 'botanswer':
             const response = data.data;
             console.log(response);

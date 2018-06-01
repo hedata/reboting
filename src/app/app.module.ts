@@ -16,6 +16,7 @@ import {SplashComponent} from './components/splash/splash.component';
 import {AuthService} from './services/auth.service';
 import {IntentComponent} from './components/intent/intent.component'
 import {BotContextService} from "./services/botcontext.service";
+import { EmbedComponent } from "app/components/embed/embed.component";
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import {BotContextService} from "./services/botcontext.service";
     VisualComponent,
     OpenDataComponent,
     SplashComponent,
-    IntentComponent
+    IntentComponent,
+    EmbedComponent
   ],
   imports: [
     BrowserModule,

@@ -12,8 +12,8 @@ WORKDIR /usr/src/app
 
 COPY package.json /usr/src/app
 RUN npm install
-
+RUN npm rebuild grpc
 COPY . /usr/src/app/
-
+ENV GOOGLE_APPLICATION_CREDENTIALS /usr/src/app/reboting_gcloud.json
 CMD ["npm","run","server:docker"]
 EXPOSE 3000

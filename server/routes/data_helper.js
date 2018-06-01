@@ -14,6 +14,7 @@ module.exports.queryDataExists = function(context) {
     if(obj) {
       //it may be that the datasource is not up 2 date we should query
       //23degree here
+      console.log(new Date()+" Querying for dataset_id: "+obj.dataset_id);
       request({
         url: "https://doh.23degrees.io/services/pub/api/v1/content/dataset/getchildrenslugsbyid/"+obj.dataset_id,
         method: "GET",

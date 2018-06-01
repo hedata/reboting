@@ -35,3 +35,16 @@ netstat -ntlp | grep LISTEN
 
 ## fix inotify shit
 echo fs.inotify.max_user_watches=582222 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
+
+##Without jupyter
+- enable direct query and showing in reboting
+- enable rating in reboting_fulfillment -> adapt reboting afterwards
+- what is a good way to traverse the visuals?
+  -> get datasetids save it in context -> also get dataset information
+  -> maybe just keep the random with type preference
+
+- search query with geolcation optional part
+- return 1 - add this to context
+- followup with yes now
+- this is in fulfillment and saves the rating

@@ -1,4 +1,5 @@
 let ctrlBot = require('./bot_helper');
+let ctrlBotV2 = require('./bot_helper_apiv2');
 let mongoose = require('mongoose');
 let Visuals = mongoose.model('Visuals');
 let dataHelper = require('./data_helper');
@@ -63,7 +64,8 @@ module.exports.takeAction = function(req, res) {
         if(req.body.payload.context) {
           context.botparams.context = req.body.payload.context;
         }
-        ctrlBot.askBot(context);
+        //ctrlBot.askBot(context);
+        ctrlBotV2.askBot(context);
         break;
     case 'checkforknowncsv':
         console.log(new Date()+": Begin Checking for known CSV  url: "+req.body.url);

@@ -2,6 +2,7 @@
  * Created by hedata on 31.03.17.
  */
 let apiai = require('apiai');
+//api api ebcf0040b9324ebf84475422b113d202
 let app = apiai("ebcf0040b9324ebf84475422b113d202");
 let mongoose = require('mongoose');
 let DataSources = mongoose.model('DataSources');
@@ -57,6 +58,7 @@ askBot = function(context) {
       contexts: context.botparams.context
     });
   } else {
+    console.log("querying without context")
     request = app.textRequest(context.botparams.query, {
       sessionId: context.botparams.session_id
     });
@@ -64,6 +66,7 @@ askBot = function(context) {
   request.on('response', function(response) {
     context.responseObj.bot_response = response;
     console.log(new Date()+": got response from API AI");
+    console.log(response);
     //console.log(response);
     //console.log(response.result.contexts);
     externalCalls(context);

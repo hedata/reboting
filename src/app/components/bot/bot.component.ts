@@ -16,7 +16,7 @@ export class BotComponent implements OnInit {
   public inputDisabled = true;
   public ratingDisabled = true;
   public configModel: any = {recording: false, synthesis: false, autorecord: false, userprofile: false};
-  public quickreplies = this.austrianFederalStates;
+  public quickreplies = [];
   userData: any = {};
   botChat = [];
   msg: any;
@@ -95,7 +95,7 @@ export class BotComponent implements OnInit {
               console.log('Bot Component Login');
               this.userData = data.data;
               this.show = true;
-              this.chatmessage = 'show me something';
+              this.chatmessage = 'what can you do?';
               this.queryBot();
             });
             break;
@@ -216,7 +216,39 @@ export class BotComponent implements OnInit {
       this.botChat = [];
       this.botChat.push({you:  query});
       this.dataService.postAction('query', {query: query, context: this.botContext.getBotContext()}).subscribe(data => {
+
+
         console.log(data);
+        for(const message of data.bot_response.fulfillmentMessages) {
+          console.log("MESSSAGE FROM BOT: ");
+          console.log(message);
+          //checking if message is text then just show it
+          if(message.message=='text') {
+            //console.log("adding to bot CONTEXT: ",message.text.text[0])
+            const text = message.text.text[0];
+            this.botChat.push({bot : {
+              text: text
+            } });
+            //talk if speech is on
+            if (this.configModel.synthesis) {
+              this.msg.text = text;
+              speechSynthesis.speak(this.msg);
+            }
+          }
+          if(message.message=='card') {
+            //parse the url out of this fun
+            const url = message.card.buttons[0].postback;
+            this.dataService.emitChange({
+              message: 'embed',
+              data: url
+            });
+          }
+          if(message.message=='quickReplies') {
+            this.quickreplies = message.quickReplies.quickReplies;
+          }
+
+        }
+        /*
         this.botChat.push(data);
         // add quick replies
         if (data.bot_response.result.fulfillment) {
@@ -250,10 +282,8 @@ export class BotComponent implements OnInit {
           message: 'botanswer',
           data: data
         });
-        if (this.configModel.synthesis) {
-          this.msg.text = data.bot_response.result.fulfillment.speech;
-          speechSynthesis.speak(this.msg);
-        }
+
+        */
         // enable input again
         this.inputDisabled = false;
         // show chatlogtimer
