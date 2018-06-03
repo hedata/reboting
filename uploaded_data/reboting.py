@@ -148,25 +148,7 @@ def importAsNew (data_desc):
             "valueField": numeric_columnlist,
             "unit": "Anzahl",
             "colors": None,
-            "tooltip": tooltips,
-            "map_element": {
-            "viewport": {
-                "desktop": {
-                    "center": [
-                        13.99,
-                        47.88
-                    ],
-                    "zoom": 7
-                },
-                "mobile": {
-                    "center": [
-                        13.99,
-                        47.88
-                    ],
-                    "zoom": 5
-                }
-            }
-            }
+            "tooltip": tooltips
         },       
         "parameters": {
             "user": "erich-heil"
@@ -177,10 +159,17 @@ def importAsNew (data_desc):
     if(districtCode!=""):
         requestOBJ["meta"]["isoField"] = districtCode  
     #print(requestOBJ)
-    with open('request_data.tmp', 'w') as outfile:
-        json.dump(requestOBJ, outfile, cls=MyJsonEncoder)
-    #r = requests.post("https://doh.23degrees.io/services/mdc/api/v1/json_import", timeout=None, data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json', 'Authorization' : 'Bearer '+AUTH_TOKEN})    
-    #print(r.json());    
+    #with open('request_data.tmp', 'w') as outfile:
+    #    json.dump(requestOBJ, outfile, cls=MyJsonEncoder)
+    r = requests.post("https://doh.23degrees.io/services/mdc/api/v1/json_import", timeout=None, data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json', 'Authorization' : 'Bearer '+AUTH_TOKEN})    
+    print(r.status_code)
+    if(r.status_code == 201):
+        resp = r.json();
+        visual_amount = resp["data"]["number_of_vizzes"]
+        return visual_amount
+    else:
+        return 0
+        
     #resp = r.json()          
     #external_data_id =""
     #external_dataset_id =""

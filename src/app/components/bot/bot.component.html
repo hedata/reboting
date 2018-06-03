@@ -1,16 +1,91 @@
 <!--<h3 *ngIf="!(uploadState | async)">Bot waiting...</h3>-->
 <div *ngIf="show" style="background-color: transparent
     ;position:fixed
-    ;bottom:0px
+    ;top:0px
     ;z-index:2000;
-     left: 0;
     right: 0;
-    margin-left: auto;
-    margin-right: auto
-    ;max-width: 500px;
-    ;box-shadow: 0 0 0 0
-    ;padding:0px;">
-  <div *ngIf="configModel.userprofile">
+    max-width: 500px;
+    width:100%;
+    box-shadow: 0 0 0 0;
+    padding:0px">
+    <!-- left: 0; margin-left: auto;
+    margin-right: auto;
+     -->
+  <div class="input_container">
+
+    <div class="input-group input-group-lg chat_input">
+
+        <input
+                class="form-control"
+                type="text"
+                [disabled]="inputDisabled"
+                placeholder="Chat with Reboting"
+                (keyup.enter)="queryBot()"
+                autocomplete="off"
+                [(ngModel)]="chatmessage">
+        <!--- Buttons for
+          record
+          show / hide quick replies
+          user profile
+        -->
+
+      <span class="input-group-btn">
+        <button *ngIf="!configModel.autorecord" class="btn btn-success"
+                type="button"
+                [(ngModel)]="configModel.recording"
+                title="Record Input"
+                [disabled]="inputDisabled"
+                (click)="onClickRecord()"
+                btnCheckbox>
+          <i class="fa fa-microphone" aria-hidden="true"></i>
+        </button>
+        <button class="btn btn-success"
+                style="margin-left:0px; margin-right:0px"
+                  type="button"
+                  [(ngModel)]="showchatlog"
+                  title="Show / Hide Chatlog"
+                  btnCheckbox>
+            <i class="fa fa-comments" aria-hidden="true"></i>{{timeOut}}
+        </button>
+
+        <button class="btn btn-success"
+                   type="button"
+                   style="margin-left:0px; margin-right:0px;padding:5px"
+                   [(ngModel)]="configModel.userprofile"
+                   btnCheckbox>
+          <img src="../../../assets/anime_eye.svg" width="35px" alt="{{userData.name}}"/>
+          <!--<img *ngIf="userData.profile_pic" src="{{userData.profile_pic}}" width="35px" alt="Profile Image"/>-->
+        </button>
+      </span>
+    </div>
+
+    <div  class="quickreply_list">
+      <button *ngFor="let reply of quickreplies" class="btn btn-info"
+              style="display: inline;margin:3px;"
+              [disabled]="inputDisabled"
+              type="button"
+              (click)="onQuickReply(reply)">
+        {{reply}}
+      </button>
+      <!-- <div class="clearfix"></div> -->
+    </div>
+  </div>
+  <div *ngIf="showchatlog" style="padding-left:6px; padding-right:6px">
+    <div *ngFor="let message of botChat" class="list-group-item">
+      <div *ngIf="message.you" >
+        <!--
+        <img *ngIf="userData.profile_pic" src="{{userData.profile_pic}}" width="35px" alt="Profile Image"/>
+        -->
+        <img src="../../../assets/anime_eye.svg" width="35px" alt="{{userData.name}}"/>
+        {{message?.you}}
+      </div>
+      <div *ngIf="message.bot"><img src="../../../assets/bot_icon.svg" width="35px" alt="Profile Image"/>
+        {{ message?.bot?.text }}
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="configModel.userprofile" style="padding-left:6px; padding-right:6px">
     <!-- config buttons -->
     <div class="list-group-item reboting_list ">
         <button class="btn btn-success"
@@ -48,103 +123,6 @@
     </div>
   </div>
 
-  <div *ngIf="showchatlog" style="padding-left:6px; padding-right:6px">
-    <div *ngFor="let message of botChat" class="list-group-item">
-      <div *ngIf="message.you" >
-        <!--
-        <img *ngIf="userData.profile_pic" src="{{userData.profile_pic}}" width="35px" alt="Profile Image"/>
-        -->
-        <img src="../../../assets/anime_eye.svg" width="35px" alt="{{userData.name}}"/>
-        {{message?.you}}
-      </div>
-      <div *ngIf="message.bot"><img src="../../../assets/bot_icon.svg" width="35px" alt="Profile Image"/>
-        {{ message?.bot?.text }}
-      </div>
-    </div>
-  </div>
-  <div class="input_container">
-    <div  class="quickreply_list">
-      <button *ngFor="let reply of quickreplies" class="btn btn-info"
-              style="display: inline;margin:3px;"
-              [disabled]="inputDisabled"
-              type="button"
-              (click)="onQuickReply(reply)">
-        {{reply}}
-      </button>
-      <!-- <div class="clearfix"></div> -->
-    </div>
-    <div class="input-group input-group-lg chat_input" style="margin-top:6px">
-
-        <input
-                class="form-control"
-                type="text"
-                [disabled]="inputDisabled"
-                placeholder="Chat with Reboting"
-                (keyup.enter)="queryBot()"
-                autocomplete="off"
-                [(ngModel)]="chatmessage">
-        <!--- Buttons for
-          record
-          show / hide quick replies
-          user profile
-        -->
-        <span class="input-group-btn">
-            <button *ngIf="!configModel.autorecord" class="btn btn-success"
-                    type="button"
-                    [(ngModel)]="configModel.recording"
-                    title="Record Input"
-                    [disabled]="inputDisabled"
-                    (click)="onClickRecord()"
-                    btnCheckbox>
-              <i class="fa fa-microphone" aria-hidden="true"></i>
-            </button>
-
-        </span>
-
-      <span class="input-group-btn">
-        <!--
-        <button class="btn btn-info"
-                  style="margin-left:0px; margin-right:0px;width: 50%"
-                  type="button"
-                  [disabled]="inputDisabled || ratingDisabled"
-                   (click)="Like()"
-                   title="Like this Visual and Show next"
-                   btnCheckbox>
-            <i class="fa fa-thumbs-up" aria-hidden="true"></i>
-        </button>
-        -->
-        <button class="btn btn-success"
-                style="margin-left:0px; margin-right:0px;width: 50%"
-                  type="button"
-                  [(ngModel)]="showchatlog"
-                  title="Show / Hide Chatlog"
-                  btnCheckbox>
-            <i class="fa fa-comments" aria-hidden="true"></i>
-        </button>
-
-        <button class="btn btn-success"
-                   type="button"
-                   style="margin-left:0px; margin-right:0px;padding:5px;width: 50%"
-                   [(ngModel)]="configModel.userprofile"
-                   btnCheckbox>
-          <img src="../../../assets/anime_eye.svg" width="35px" alt="{{userData.name}}"/>
-          <!--<img *ngIf="userData.profile_pic" src="{{userData.profile_pic}}" width="35px" alt="Profile Image"/>-->
-        </button>
-        <!--
-        <button class="btn btn-info"
-                type="button"
-                style="margin-left:0px; margin-right:0px;width: 25%"
-                (click)="DontLike()"
-                [disabled]="inputDisabled || ratingDisabled"
-                title="Dont Like this Visual and Show next"
-                btnCheckbox>
-            <i class="fa fa-thumbs-down" aria-hidden="true"></i>
-          </button>
-         -->
-      </span>
-    </div>
-
-  </div>
 
 
 </div>

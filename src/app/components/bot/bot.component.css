@@ -1,3 +1,6 @@
+.btn {
+  background-color: rgba(0,0,0,0.3);
+}
 .full-width {
     width: 90vw;
 }
@@ -31,7 +34,7 @@
 }
 
 .list-group-item {
-  background-color: rgba(0,0,0,0.2);
-  border: 0px solid rgba(0,0,0,0.2);
+  background-color: rgba(0,0,0,0.3);
+  border: 0px solid rgba(0,0,0,0.3);
   color : white;
 }

@@ -3,6 +3,8 @@ import { DataService } from '../../services/data.service';
 import annyang from 'annyang';
 import {AuthService} from '../../services/auth.service';
 import {BotContextService} from '../../services/botcontext.service';
+import { Observable } from "rxjs/Observable";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: 'app-bot',
@@ -10,6 +12,8 @@ import {BotContextService} from '../../services/botcontext.service';
   styleUrls: ['./bot.component.css']
 })
 export class BotComponent implements OnInit {
+  countDown: Subscription;
+  timeOut: number;
   private austrianFederalStates: any =  ['Vienna', 'Styria' , 'Burgenland'
     , 'Carinthia', 'Salzburg', 'Vorarlberg', 'Upper Austria'
     , 'Lower Austria', 'Tirol'];
@@ -72,6 +76,7 @@ export class BotComponent implements OnInit {
       console.log('NO SYNTHESIS');
       console.log(err);
     }
+
     /*
       Listening to direct requests
      */
@@ -107,6 +112,7 @@ export class BotComponent implements OnInit {
             break;
         }
       });
+
   }
   onQuickReply(reply) {
     this.chatmessage = reply;
@@ -208,7 +214,7 @@ export class BotComponent implements OnInit {
     console.log('context:');
     console.log(this.botContext.getBotContext());
     console.log(this.chatmessage);
-    // this.showchatlog = true;
+     this.showchatlog = true;
     // mark this for cange detection
     const query = this.chatmessage;
     this.chatmessage = '';
@@ -286,6 +292,22 @@ export class BotComponent implements OnInit {
         */
         // enable input again
         this.inputDisabled = false;
+        if(this.countDown) {
+          this.countDown.unsubscribe();
+        }
+        this.timeOut = 5;
+        this.countDown = Observable.timer(0, 1000)
+        .subscribe(x => {
+            this.timeOut = this.timeOut - 1;
+            console.log("counting down "+this.timeOut);
+            if(this.timeOut === 0)
+            {
+              this.showchatlog = false;
+              this.countDown.unsubscribe();
+            }
+        });
+
+
         // show chatlogtimer
         /*
         this.showChatLogTime = new Date().getTime() / 1000;
