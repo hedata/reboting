@@ -62,7 +62,7 @@ def importAsNew (data_desc):
                     lambda row: row[potentialDistrictcode]+1 if row[potentialDistrictcode]>=90100 and row[potentialDistrictcode]<=92300 else row[potentialDistrictcode],
                     axis=1
                 )
-                df[potentialDistrictcode]='G'+ df[potentialDistrictcode].map(str)
+                df[potentialDistrictcode]='G_'+ df[potentialDistrictcode].map(str)
                 #is our district code really a district code easy test is it different or only one?
                 if df[potentialDistrictcode].nunique() > 2:
                     districtCode=potentialDistrictcode
@@ -161,13 +161,16 @@ def importAsNew (data_desc):
     #print(requestOBJ)
     #with open('request_data.tmp', 'w') as outfile:
     #    json.dump(requestOBJ, outfile, cls=MyJsonEncoder)
-    r = requests.post("https://doh.23degrees.io/services/mdc/api/v1/json_import", timeout=None, data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json', 'Authorization' : 'Bearer '+AUTH_TOKEN})    
-    print(r.status_code)
+    r = requests.post("https://app.23degrees.io/services/mdc/api/v1/json_import", timeout=None, data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json', 'Authorization' : 'Bearer '+AUTH_TOKEN})    
+    #print(r.status_code)
     if(r.status_code == 201):
         resp = r.json();
         visual_amount = resp["data"]["number_of_vizzes"]
         return visual_amount
     else:
+        print("Error from mdc for data: "+data_desc['url']);
+        resp = r.json();
+        print(resp)
         return 0
         
     #resp = r.json()          
@@ -238,7 +241,7 @@ def readCleanChart( data_desc ):
                     lambda row: row[potentialDistrictcode]+1 if row[potentialDistrictcode]>=90100 and row[potentialDistrictcode]<=92300 else row[potentialDistrictcode],
                     axis=1
                 )
-                df[potentialDistrictcode]='G'+ df[potentialDistrictcode].map(str)
+                df[potentialDistrictcode]='G_'+ df[potentialDistrictcode].map(str)
                 #is our district code really a district code easy test is it different or only one?
                 if df[potentialDistrictcode].nunique() > 2:
                     districtCode=potentialDistrictcode
@@ -377,7 +380,7 @@ def readCleanChart( data_desc ):
     if(districtCode!=""):
         requestOBJ["meta"]["isoField"] = districtCode  
     #print(requestOBJ)
-    r = requests.post("https://doh.23degrees.io/services/mdc/api/v1/json_import", timeout=None, data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json', 'Authorization' : 'Bearer '+AUTH_TOKEN})    
+    r = requests.post("https://app.23degrees.io/services/mdc/api/v1/json_import", timeout=None, data=json.dumps(requestOBJ, cls=MyJsonEncoder), headers={'Content-Type': 'application/json', 'Authorization' : 'Bearer '+AUTH_TOKEN})    
     #print(r.json());    
     resp = r.json()          
     external_data_id =""
