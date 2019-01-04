@@ -4,7 +4,7 @@ FROM node:latest
 RUN useradd --user-group --create-home --shell /bin/false app
 
 RUN npm install -g nodemon
-RUN npm install -g @angular/cli && npm cache clean
+RUN npm install -g @angular/cli
 
 RUN mkdir -p /usr/src/app
 
