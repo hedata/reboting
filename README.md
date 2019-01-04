@@ -1,5 +1,6 @@
-# Reboting
+# Reboting DEPRECATED
 Exploring austria's open Data with a bot
+* now merged into: https://github.com/hedata/reboting_pwa
 
 ## Introduction
 Web Client Interface for reboting.com. Angular Application with MongoDB as database and an express server. The express server handles communication with https://dialogflow.com/ for intent detection and natural language processing.
