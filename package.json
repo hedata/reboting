@@ -30,7 +30,7 @@
     "apiai": "^4.0.2",
     "core-js": "^2.4.1",
     "dialogflow": "^0.5.0",
-    "express": "^4.15.3",
+    "express": "^4.17.3",
     "jupyterlab": "^0.17.5",
     "mongoose": "^4.10.6",
     "ngx-bootstrap": "^1.7.1",
